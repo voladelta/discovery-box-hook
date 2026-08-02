@@ -12,10 +12,10 @@
     "whyV4": "A Uniswap v4 hook can apply a directional LP-fee override from irreversible onchain activation state and collect the mandatory Programmable fee inside every canonical-pool swap."
   },
   "builder": {
-    "github": null,
-    "contact": null,
+    "github": "voladelta",
+    "contact": "https://github.com/voladelta",
     "beneficiary": null,
-    "licenseDeclaration": null
+    "licenseDeclaration": "Discovery Box is submitted under the repository MIT License."
   },
   "publicMetadata": {
     "project": {
@@ -987,7 +987,7 @@
       ],
       "schemaPaths": [],
       "evidencePaths": [
-        "builder/discovery-box/EVIDENCE.md"
+        "submissions/discovery-box/EVIDENCE.md"
       ],
       "exposure": {
         "movesValue": true,
@@ -1452,7 +1452,7 @@
         "test/DiscoveryBox.t.sol"
       ],
       "evidencePaths": [
-        "builder/discovery-box/EVIDENCE.md"
+        "submissions/discovery-box/EVIDENCE.md"
       ],
       "testScenarios": [
         "Open one and multiple whole boxes from active and expired membership states.",
@@ -1498,9 +1498,9 @@
     ],
     "compilerBuildInfoPaths": [],
     "specificationPath": "DESIGN_CARD.md",
-    "testEvidencePath": "builder/discovery-box/EVIDENCE.md",
+    "testEvidencePath": "submissions/discovery-box/EVIDENCE.md",
     "dependencyLockPath": "DEPENDENCIES.md",
-    "gateStatusPath": "builder/discovery-box/compatibility-report.json",
+    "gateStatusPath": "submissions/discovery-box/compatibility-report.json",
     "reviewTargetPath": null,
     "runtimeAssetManifestPath": null
   },

@@ -1,7 +1,7 @@
 {
   "reportVersion": 2,
   "standardVersion": "1.3.0",
-  "submissionHash": "sha256:a507c40344b94c12eae5aea954da3ee41ab4e4859905ff4a2c971a4ecfd087cd",
+  "submissionHash": "sha256:c33af3aa8676b43ca59bc64b14304df7505198127d7ef4b91002df14572356ff",
   "toolchain": {
     "validatorSha256": "sha256:d3b4db147fbb955d0ecdff0d5d3a55d25a55a38bb72b33efe535d9c80c286318",
     "schemaSha256": "sha256:b3a67753b286a35a49d88a85e1bdaec50f19d86b241145901e2dd24327fd515a",
@@ -35,27 +35,6 @@
       "path": "$.hook.permissions.beforeSwapReturnDelta",
       "message": "beforeSwapReturnDelta can bypass concentrated-liquidity swap math and create a no-op swap.",
       "remediation": "Prove all four swap quadrants, backing, partial fills, slippage and zero-sum settlement with specialist review."
-    },
-    {
-      "severity": "warning",
-      "code": "BUILDER_FIELD_PENDING",
-      "path": "$.builder.contact",
-      "message": "This builder field may remain open during proposal work but is required before maintainer selection.",
-      "remediation": "Complete it in a prototype before requesting maintainer review."
-    },
-    {
-      "severity": "warning",
-      "code": "BUILDER_FIELD_PENDING",
-      "path": "$.builder.github",
-      "message": "This builder field may remain open during proposal work but is required before maintainer selection.",
-      "remediation": "Complete it in a prototype before requesting maintainer review."
-    },
-    {
-      "severity": "warning",
-      "code": "BUILDER_FIELD_PENDING",
-      "path": "$.builder.licenseDeclaration",
-      "message": "This builder field may remain open during proposal work but is required before maintainer selection.",
-      "remediation": "Complete it in a prototype before requesting maintainer review."
     },
     {
       "severity": "warning",

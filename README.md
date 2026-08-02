@@ -66,7 +66,7 @@ cp .env.example .env.local
 bun run dev
 ```
 
-See [Discovery Box hackathon scope](HACKATHON_SCOPE.md) for the acceptance criteria and [Discovery Box evidence](builder/discovery-box/EVIDENCE.md) for the current verification state.
+See [Discovery Box hackathon scope](HACKATHON_SCOPE.md) for the acceptance criteria and [Discovery Box evidence](submissions/discovery-box/EVIDENCE.md) for the current verification state.
 
 ## Contracts
 

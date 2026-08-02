@@ -26,21 +26,20 @@ Status: passed on 2 August 2026
 
 ```text
 node /Users/mbp/.codex/skills/programmable-v4-hook-builder/scripts/cli.mjs check \
-  builder/discovery-box/submission.json \
-  --write-report builder/discovery-box/compatibility-report.json \
+  submissions/discovery-box/submission.json \
+  --write-report submissions/discovery-box/compatibility-report.json \
   --repository-root /Users/mbp/Codehub/discovery-box
 ```
 
 - Node: 24.18.0
 - Decision: `PROTOTYPE_READY`
 - Blockers: 0
-- Warnings: 7
+- Warnings: 4
 - Report version: 2
-- Structured submission hash reported by checker: `sha256:a507c40344b94c12eae5aea954da3ee41ab4e4859905ff4a2c971a4ecfd087cd`
-- File SHA-256, `submission.json`: `28bee1ec0af29a5b9bd94d82ff107f5726040e1886c7349b0a3b0dcf669412dd`
-- File SHA-256, `compatibility-report.json`: `c5d4b411bde2896363e82ec3b7f46ca985cae4fbc2c0655630edc03c0f00e44f`
+- Structured submission hash reported by checker: `sha256:c33af3aa8676b43ca59bc64b14304df7505198127d7ef4b91002df14572356ff`
+- File SHA-256, `submission.json`: `1a58d603199a260b1c5a930e4c45d00f18d504a7f68844ab352a5bcb36b2813b`
 
-The warnings require independent review of `beforeSwapReturnDelta`, the novel project category and token behaviour, plus builder identity before submission. The checker does not prove the equations, source or deployment.
+The warnings require review of `beforeSwapReturnDelta`, the novel project category, the irreversible-redemption capability and the token behaviour. The checker does not prove the equations, source or deployment.
 
 ### Reduced-form economic model
 
