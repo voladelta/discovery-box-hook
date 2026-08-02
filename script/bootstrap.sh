@@ -2,8 +2,8 @@
 set -euo pipefail
 
 if [[ -e lib ]]; then
-  echo "lib already exists; remove it only if you intend to restore dependencies from scratch" >&2
-  exit 1
+  echo "Committed dependency closure is present; no bootstrap is required."
+  exit 0
 fi
 
 forge install --no-git --shallow \

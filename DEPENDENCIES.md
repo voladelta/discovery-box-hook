@@ -10,7 +10,11 @@ The prototype uses Solidity 0.8.26 and the Cancun EVM target.
 | `v4-periphery` | `Uniswap/v4-periphery` | `ad04c9f24a170accf5ea1b2836bbafd514537ca6` |
 | `forge-std` | `foundry-rs/forge-std` | `3b20d60d14b343ee4f908cb8079495c07f5e8981` |
 
-The `lib` directory is not committed. [The bootstrap script](script/bootstrap.sh) restores these exact revisions and their submodules with Foundry.
+The minimum compiler and test closure used by this project is committed as regular files under `lib`. This lets the Public GitHub PR Builder Beta bind the exact dependency bytes without relying on Git submodules or executing an installer. The rest of each dependency repository remains excluded.
+
+The v4-core closure includes Solmate test and support files pinned by v4-core at `4b47a19038b798b4a33d9749d25e570443520647`. Licence texts and provenance are preserved in `lib` and summarised in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+[The bootstrap script](script/bootstrap.sh) restores the full pinned dependency repositories only when `lib` is absent. A normal clone already contains the committed review closure and needs no bootstrap step.
 
 The local verification toolchain recorded on 2 August 2026 was:
 
