@@ -1500,7 +1500,7 @@
     "specificationPath": "DESIGN_CARD.md",
     "testEvidencePath": "submissions/discovery-box/EVIDENCE.md",
     "dependencyLockPath": "DEPENDENCIES.md",
-    "gateStatusPath": "submissions/discovery-box/compatibility-report.json",
+    "gateStatusPath": null,
     "reviewTargetPath": null,
     "runtimeAssetManifestPath": null
   },

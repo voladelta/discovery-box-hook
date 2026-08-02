@@ -36,8 +36,8 @@ node /Users/mbp/.codex/skills/programmable-v4-hook-builder/scripts/cli.mjs check
 - Blockers: 0
 - Warnings: 4
 - Report version: 2
-- Structured submission hash reported by checker: `sha256:c33af3aa8676b43ca59bc64b14304df7505198127d7ef4b91002df14572356ff`
-- File SHA-256, `submission.json`: `1a58d603199a260b1c5a930e4c45d00f18d504a7f68844ab352a5bcb36b2813b`
+- Structured submission hash reported by checker: `sha256:f2baa67a6f0329446a5a7104e7741f2e30f835e874b0d3ad270b4b1941bd6716`
+- File SHA-256, `submission.json`: `7fd11228c5196a570a4a18bfe77e4f1f193bbc5e454c8c26900408f2c32134c4`
 
 The warnings require review of `beforeSwapReturnDelta`, the novel project category, the irreversible-redemption capability and the token behaviour. The checker does not prove the equations, source or deployment.
 
