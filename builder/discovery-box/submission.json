@@ -1,0 +1,1555 @@
+{
+  "$schema": "urn:programmable:v4-hook-submission:1.3.0",
+  "schemaVersion": 1,
+  "standardVersion": "1.3.0",
+  "stage": "proposal",
+  "model": {
+    "id": "discovery-box",
+    "name": "Discovery Box",
+    "summary": "Trade an unopened membership bundle or burn one whole box to activate access and advance the pool's public maturity state.",
+    "userOutcome": "A holder can trade fractional BOX tokens or burn one whole BOX to activate a fixed 30-day membership bundle; each whole box opened permanently lowers the canonical pool's sell LP fee until 40 boxes have opened.",
+    "category": "other",
+    "whyV4": "A Uniswap v4 hook can apply a directional LP-fee override from irreversible onchain activation state and collect the mandatory Programmable fee inside every canonical-pool swap."
+  },
+  "builder": {
+    "github": null,
+    "contact": null,
+    "beneficiary": null,
+    "licenseDeclaration": null
+  },
+  "publicMetadata": {
+    "project": {
+      "name": "Discovery Box",
+      "description": "A Uniswap v4 market for fixed membership bundles where opening boxes advances a public maturity state and lowers the sell LP fee.",
+      "projectUri": null,
+      "logoUri": null,
+      "logoContentHash": null,
+      "metadataMutable": false,
+      "metadataOwner": null
+    },
+    "token": {
+      "name": "Discovery Box",
+      "symbol": "BOX",
+      "metadataUri": null,
+      "metadataContentHash": null,
+      "logoUri": null,
+      "logoContentHash": null,
+      "metadataMutable": false,
+      "metadataOwner": null
+    },
+    "claimedAffiliations": [],
+    "providerPresentations": []
+  },
+  "target": {
+    "chainId": 1,
+    "network": "ethereum",
+    "solidityVersion": "0.8.26",
+    "evmVersion": "cancun",
+    "dependencyBaseline": "programmable-tested",
+    "officialLaunchProfileId": null
+  },
+  "assets": [
+    {
+      "id": "eth",
+      "role": "quote",
+      "origin": "native-eth",
+      "address": null,
+      "decimals": 18,
+      "decimalsSource": "native-eth-protocol",
+      "supplyPolicy": "native",
+      "initialSupply": null,
+      "behaviors": [
+        "standard"
+      ],
+      "controls": []
+    },
+    {
+      "id": "launched-token",
+      "role": "launched",
+      "origin": "new-fixed-supply",
+      "address": null,
+      "decimals": 18,
+      "decimalsSource": "implementation-constant",
+      "supplyPolicy": "fixed-at-creation",
+      "initialSupply": "100000000000000000000",
+      "behaviors": [
+        "fixed-whole-unit-burn-for-membership"
+      ],
+      "controls": []
+    }
+  ],
+  "launchLifecycle": {
+    "tokenCreation": {
+      "applicable": true,
+      "actor": "The selected official launch path creates DiscoveryBox with exactly 100e18 base units and no later mint authority.",
+      "valueFlow": "The complete fixed supply enters the launch lifecycle; no ETH moves during token creation.",
+      "custody": "The launcher holds the supply only for atomic liquidity formation under the selected official launch profile.",
+      "failure": "Any metadata, supply or constructor mismatch reverts token creation and leaves no partial launch.",
+      "event": "DiscoveryBoxCreated(address indexed token,uint256 initialSupply,uint256 maturityTarget,uint256 membershipDuration)",
+      "notApplicableReason": null
+    },
+    "poolInitialization": {
+      "applicable": true,
+      "actor": "The selected official launcher initializes one registered BOX/ETH dynamic-fee PoolKey through the pinned PoolManager.",
+      "valueFlow": "No trader value moves; PoolManager records the initial price and the hook records the 30-basis-point initial LP fee.",
+      "custody": "PoolManager owns pool state; the hook owns no liquidity principal.",
+      "failure": "A wrong PoolKey, caller, initial price or repeated initialization reverts the complete initialization.",
+      "event": "DiscoveryPoolInitialized(bytes32 indexed poolId,address indexed token,address indexed hook,uint24 initialLpFee)",
+      "notApplicableReason": null
+    },
+    "liquidityFormation": {
+      "applicable": true,
+      "actor": "The selected official launch components create the initial one-sided position after pool initialization.",
+      "valueFlow": "The complete launch allocation of BOX enters the initial position; any Initial Buy contributes ETH under the official launch path.",
+      "custody": "The selected official locked-position component owns the initial position; third-party liquidity remains separately owned and removable.",
+      "failure": "Any position, tick, amount or custody mismatch reverts the launch transaction without a partial position.",
+      "event": "The selected official launcher emits its position and launch events; Discovery Box does not duplicate them.",
+      "notApplicableReason": null
+    },
+    "initialTransaction": {
+      "applicable": false,
+      "actor": null,
+      "valueFlow": null,
+      "custody": null,
+      "failure": null,
+      "event": null,
+      "notApplicableReason": "The prototype requires no launcher-owned Initial Buy. The first user purchase is an ordinary trading action through the canonical pool."
+    },
+    "trading": {
+      "applicable": true,
+      "actor": "Any user may trade through a compatible v4 router; PoolManager authenticates the hook callback and the hook never treats callback sender as the end user.",
+      "valueFlow": "PoolManager exchanges BOX and ETH, applies the bounded directional LP fee, and accrues exactly 10 basis points of executed gross ETH-side volume to Programmable.",
+      "custody": "PoolManager settles swap deltas; ERC-6909 native-currency claims minted to the hook back the separately recorded Programmable liability.",
+      "failure": "An unsupported PoolKey, insolvent fee delta, invalid amount or settlement failure reverts the complete swap.",
+      "event": "ProgrammableFeeAccrued(bytes32 indexed poolId,address indexed currency,uint256 grossQuote,uint256 fee)",
+      "notApplicableReason": null
+    },
+    "feesAndClaims": {
+      "applicable": true,
+      "actor": "Only Programmable's immutable owner can claim its liability and may choose the destination for that claim.",
+      "valueFlow": "Inside a claim-specific PoolManager unlock, the hook burns no more than the owner's recorded ERC-6909 backing and takes the equal native ETH to the owner-selected destination.",
+      "custody": "The hook owns PoolManager ERC-6909 claims separately from LP principal and the locked initial position.",
+      "failure": "An unauthorized, zero, excessive or insolvent claim reverts without reducing liability.",
+      "event": "ProgrammableFeeClaimed(bytes32 indexed poolId,address indexed currency,address indexed destination,uint256 amount)",
+      "notApplicableReason": null
+    },
+    "dependencyFailure": {
+      "applicable": true,
+      "actor": "Any caller may encounter a failed PoolManager, token-state read, router or RPC dependency.",
+      "valueFlow": "No value moves when an onchain dependency fails because the complete transaction reverts.",
+      "custody": "Existing tokens, positions and accrued liabilities remain with their recorded owners.",
+      "failure": "Fail closed onchain. The website displays an unavailable state and never treats a failed read as membership or settlement proof.",
+      "event": "No event is emitted for a reverted transaction; monitoring records the failed call outside consensus state.",
+      "notApplicableReason": null
+    },
+    "retirement": {
+      "applicable": false,
+      "actor": null,
+      "valueFlow": null,
+      "custody": null,
+      "failure": null,
+      "event": null,
+      "notApplicableReason": "The prototype has no administrative retirement or migration path. Holders may trade or open remaining boxes indefinitely, while liquidity exits follow each position's fixed custody rules."
+    }
+  },
+  "pool": {
+    "currency0": "eth",
+    "currency1": "launched-token",
+    "orderingRule": "Native ETH is currency0 and the launched token is currency1.",
+    "tickSpacing": 60,
+    "lpFee": {
+      "classification": "lp-fee",
+      "mode": "dynamic",
+      "hundredthsOfBip": null,
+      "initialHundredthsOfBip": 3000,
+      "initializationPath": "afterInitialize-updateDynamicLPFee",
+      "applicationMode": "before-swap-override",
+      "overrideFlagPolicy": "Every supported swap returns the bounded directional LP fee with the dynamic-fee override flag set.",
+      "persistentUpdateActor": null,
+      "persistentUpdateCallSites": [],
+      "rateLimit": null,
+      "updatePath": "beforeSwap reads IOpenableAsset.openedCount from the immutable selected asset and returns a buy or sell LP-fee override without persisting a mutable parameter.",
+      "minimum": 3000,
+      "maximum": 10000,
+      "inputMetric": "The immutable selected asset's openedCount. In the canonical launch, it increases only when whole DiscoveryBox units are burned for membership.",
+      "referenceAsset": "The opened-box count is denominated in whole BOX units and uses no external price reference.",
+      "measurementUnit": "Whole BOX tokens irreversibly burned through DiscoveryBox.open.",
+      "observationMode": "instantaneous",
+      "observationWindow": "The latest confirmed openedCount value in the current transaction; no time window or historic sample is used.",
+      "curve": "Buys use 3000 hundredths of a bip. Sells use 10000 - floor(min(openedCount,40) * 7000 / 40), bounded to 3000 through 10000.",
+      "updateCadence": "Every admitted swap recomputes the override from the current immutable counter.",
+      "liquidityDecreaseBehavior": "Liquidity changes do not affect the fee because the metric is irreversible box openings rather than pool liquidity.",
+      "manipulationResistance": "Only a successful whole-unit opening through the immutable selected asset can increase openedCount. In the canonical launch that requires burning DiscoveryBox. The count never decreases and cannot be changed by swaps, donations or liquidity flashes.",
+      "failureRule": "If the exact token-state read fails or the calculated fee is outside its immutable bounds, revert the swap before settlement.",
+      "recipient": "pool-liquidity-providers"
+    },
+    "canonical": true,
+    "alternativePools": "Alternative pools may exist and do not inherit this model's behavior."
+  },
+  "programmableFee": {
+    "policyId": "programmable-volume-fee-v1",
+    "policyVersion": "1.0.0",
+    "poolScope": "canonical-launch-pool-key",
+    "rates": {
+      "unit": "hundredths-of-bip",
+      "selectedHundredthsOfBip": 1000,
+      "minimumEffectiveHundredthsOfBip": 1000,
+      "effectiveHundredthsOfBip": 1000,
+      "platformHundredthsOfBip": 1000,
+      "projectHundredthsOfBip": 0,
+      "formula": "effective=max(selected,1000);platform=1000;project=effective-1000",
+      "lpFeeExcluded": true
+    },
+    "basis": {
+      "volume": "gross-quote-side-swap-volume",
+      "quoteAsset": "canonical-pool-quote-asset"
+    },
+    "ownership": {
+      "owner": "0x4957f49620AFf3Adbbe8195a4f633E49cc93376c",
+      "immutable": true,
+      "claimAuthority": "owner-only",
+      "claimAvailability": "anytime",
+      "claimDestinationPolicy": "owner-or-owner-selected-per-claim",
+      "storedMutableRecipient": false,
+      "builderCanMutate": false,
+      "projectCanMutate": false,
+      "administratorCanMutate": false
+    },
+    "collection": {
+      "status": "implemented",
+      "integration": "canonical-pool-hook",
+      "enforcement": "non-bypassable",
+      "hookFeeMechanismBinding": "hook.feeMechanism",
+      "supportedSwapModes": [
+        "zeroForOne-exactInput",
+        "zeroForOne-exactOutput",
+        "oneForZero-exactInput",
+        "oneForZero-exactOutput"
+      ],
+      "swapModePaths": {
+        "zeroForOneExactInput": "before-swap-return-delta",
+        "zeroForOneExactOutput": "after-swap-return-delta",
+        "oneForZeroExactInput": "after-swap-return-delta",
+        "oneForZeroExactOutput": "before-swap-return-delta"
+      },
+      "selfCallPolicy": "same-pool-swap-forbidden"
+    },
+    "accounting": {
+      "accrualMode": "claimable-liability",
+      "liabilityKeyDimensions": [
+        "poolId",
+        "currency",
+        "owner"
+      ],
+      "crossPoolNetting": false,
+      "valueFlowId": "programmable-volume-fee",
+      "collectionEvent": "ProgrammableFeeAccrued(bytes32 indexed poolId,address indexed currency,uint256 grossQuote,uint256 fee)",
+      "claimEvent": "ProgrammableFeeClaimed(bytes32 indexed poolId,address indexed currency,address indexed destination,uint256 amount)"
+    },
+    "evidence": {
+      "sourcePaths": [
+        "src/DiscoveryHook.sol",
+        "src/openable/IOpenableAsset.sol"
+      ],
+      "testPaths": [
+        "test/DiscoveryHook.t.sol"
+      ]
+    }
+  },
+  "hook": {
+    "used": true,
+    "base": "Pinned OpenZeppelin BaseHook with project-specific fee accounting",
+    "upgradeable": false,
+    "sharedAcrossPools": false,
+    "poolNamespace": "One hook instance admits one immutable PoolId derived from the registered BOX/ETH dynamic-fee PoolKey.",
+    "poolAdmission": {
+      "enforcement": "The constructor binds the pinned PoolManager and one-shot launch registration binds the exact BOX token, native ETH, dynamic fee flag, tick spacing and hook address.",
+      "factoryOrRegistry": "Only the selected official launcher or its immutable campaign factory may perform the one-shot canonical PoolKey registration.",
+      "alternativePoolBehavior": "Alternative pools may exist, but this hook rejects them and they do not inherit the directional LP fee or mandatory Programmable fee by implication.",
+      "rejectionRule": "Revert every callback whose PoolId differs from the registered canonical PoolId or whose caller is not the pinned PoolManager."
+    },
+    "permissions": {
+      "beforeInitialize": false,
+      "afterInitialize": true,
+      "beforeAddLiquidity": false,
+      "afterAddLiquidity": false,
+      "beforeRemoveLiquidity": false,
+      "afterRemoveLiquidity": false,
+      "beforeSwap": true,
+      "afterSwap": true,
+      "beforeDonate": false,
+      "afterDonate": false,
+      "beforeSwapReturnDelta": true,
+      "afterSwapReturnDelta": true,
+      "afterAddLiquidityReturnDelta": false,
+      "afterRemoveLiquidityReturnDelta": false
+    },
+    "callbackPolicies": [
+      {
+        "callback": "afterInitialize",
+        "necessity": "The dynamic-fee pool starts with an explicit 30-basis-point LP fee and the callback completes one-time canonical PoolId binding checks.",
+        "allowedReverts": "A wrong PoolKey, caller, duplicate initialization or failed initial-fee update reverts initialization atomically.",
+        "userExitImpact": "Initialization occurs once before users hold pool positions and cannot govern a later token or liquidity exit.",
+        "noSelfCallImpact": "The callback performs no swap and does not rely on a nested hook callback."
+      },
+      {
+        "callback": "beforeSwap",
+        "necessity": "Every swap needs the directional LP-fee override, and the two quadrants where ETH is specified need the Programmable fee before the core swap.",
+        "allowedReverts": "A wrong pool, failed token-state read, out-of-bounds fee or unbacked return delta reverts before settlement.",
+        "userExitImpact": "The callback affects swaps only and cannot block standard third-party liquidity removal or direct BOX transfer.",
+        "noSelfCallImpact": "The hook initiates no same-pool swap; same-pool self-calls are forbidden."
+      },
+      {
+        "callback": "afterSwap",
+        "necessity": "The two quadrants where executed gross ETH is the unspecified currency need afterSwap to calculate and accrue the exact Programmable fee.",
+        "allowedReverts": "An invalid executed amount, insolvent claim or accounting mismatch reverts the complete swap before unlock completion.",
+        "userExitImpact": "The callback affects swaps only and cannot block standard third-party liquidity removal or direct BOX transfer.",
+        "noSelfCallImpact": "The hook initiates no same-pool swap; same-pool self-calls are forbidden."
+      }
+    ],
+    "hookData": {
+      "used": false,
+      "schema": null,
+      "identitySource": null,
+      "trustedRouterDeploymentRecordId": null,
+      "callbackSenderRule": null,
+      "validation": null
+    },
+    "feeMechanism": {
+      "used": true,
+      "classification": "hook-owned-fee",
+      "chargedCurrency": "Native ETH, which is currency0 and the canonical quote asset, in every supported swap quadrant.",
+      "swapQuadrants": {
+        "zeroForOneExactInput": {
+          "currency": "currency0",
+          "basis": "gross-input",
+          "formula": "fee = floor(executed gross currency0 input * 1000 / 1000000)",
+          "rounding": "down",
+          "maximumHundredthsOfBip": 1000
+        },
+        "zeroForOneExactOutput": {
+          "currency": "currency0",
+          "basis": "unspecified-amount",
+          "formula": "Let x be executed AMM currency0 input. fee = floor(x * 1000 / 999000), so gross caller input g=x+fee and fee=floor(g*1000/1000000).",
+          "rounding": "down",
+          "maximumHundredthsOfBip": 1000
+        },
+        "oneForZeroExactInput": {
+          "currency": "currency0",
+          "basis": "unspecified-amount",
+          "formula": "fee = floor(executed gross unspecified currency0 output * 1000 / 1000000)",
+          "rounding": "down",
+          "maximumHundredthsOfBip": 1000
+        },
+        "oneForZeroExactOutput": {
+          "currency": "currency0",
+          "basis": "gross-output",
+          "formula": "Let n be the caller's requested net currency0 output. fee = floor(n * 1000 / 999000); gross AMM output g=n+fee and fee=floor(g*1000/1000000).",
+          "rounding": "down",
+          "maximumHundredthsOfBip": 1000
+        }
+      },
+      "maximumHundredthsOfBip": 1000,
+      "collectionPath": "quadrant-dependent-swap-return-delta",
+      "collectionValueFlowId": "programmable-volume-fee",
+      "liabilityKeyDimensions": [
+        "poolId",
+        "currency",
+        "beneficiary"
+      ],
+      "collectionEvent": "ProgrammableFeeAccrued(bytes32 indexed poolId,address indexed currency,uint256 grossQuote,uint256 fee)",
+      "recipients": [
+        {
+          "role": "programmable-owner",
+          "sharePpm": 1000000,
+          "addressSource": "fixed-address",
+          "address": "0x4957f49620AFf3Adbbe8195a4f633E49cc93376c",
+          "binding": "exact-address",
+          "derivationRule": null,
+          "mutable": false,
+          "mutationController": "none",
+          "newAddressValidation": "none",
+          "mutationEvent": null
+        }
+      ],
+      "ownership": "The immutable Programmable owner is the sole beneficiary and claim authority. The builder, project and administrators have no claim, rescue, sweep, netting or redirect path.",
+      "claimPolicy": "Only the immutable owner may claim at any time, either to itself or to a destination supplied for that claim. A failed destination reverts without reducing liability."
+    },
+    "customAccounting": {
+      "used": true,
+      "backingSource": "PoolManager return-delta accounting creates hook-owned currency0 value. The hook mints an equal PoolManager ERC-6909 claim inside the callback, so no pre-settlement native ETH transfer is required.",
+      "conservationEquation": "For each swap, final caller delta equals the core swap delta minus the hook fee delta; accrued liability equals newly backed hook value, and aggregate liability never exceeds redeemable backing.",
+      "settlement": "Inside the callback the hook mints the computed native-currency claim and records the equal liability, then returns the equal positive hook delta. PoolManager applies that delta in the same unlock, cancelling the hook's transient debt and debiting the caller.",
+      "partialFillBehavior": "When ETH is unspecified, calculate from actual executed gross ETH volume. When ETH is specified, verify complete core execution and revert a partial fill rather than charge the requested amount.",
+      "liabilityNamespace": "Liabilities are separate by canonical PoolId, currency0 and immutable Programmable beneficiary.",
+      "liabilityKeyDimensions": [
+        "poolId",
+        "currency",
+        "beneficiary"
+      ],
+      "crossPoolNetting": false,
+      "duplicateCurrencyPolicy": "A separate ledger entry is required for each PoolId even when another pool uses the same currency. This hook admits only one pool.",
+      "failureIsolation": "Any backing, bound or ledger mismatch reverts the complete swap; no partial liability is recorded.",
+      "withdrawalOrdering": "Validate authority and liability, reduce the exact liability, enter a claim-specific PoolManager unlock, burn the equal hook-owned ERC-6909 claim, take the same native ETH amount to the owner-selected destination and require a zero hook delta atomically."
+    },
+    "returnDeltaAccounting": {
+      "used": true,
+      "quadrants": {
+        "zeroForOneExactInput": {
+          "supported": true,
+          "specifiedCurrency": "currency0",
+          "unspecifiedCurrency": "currency1",
+          "amountSign": "negative-exact-input",
+          "specifiedComponent": {
+            "mode": "positive-only",
+            "formula": "For gross native input G=-amountSpecified, F=floor(G*1000/1000000). Return +F so the AMM receives G-F and the final caller currency0 delta remains -G.",
+            "minimum": "zero base units",
+            "maximum": "less than gross specified input G",
+            "minimumSign": "zero",
+            "maximumSign": "positive",
+            "positiveSettlementActions": [
+              {
+                "order": 1,
+                "actor": "hook",
+                "operation": "mint-claim",
+                "currency": "specified",
+                "assetKind": "native",
+                "deltaOwner": "hook",
+                "deltaEffect": "negative",
+                "counterparty": "hook",
+                "authorizationRule": null,
+                "msgValueRule": null,
+                "amountRule": "Mint exactly F PoolManager ERC-6909 native-currency claims to the hook before returning the equal positive specified delta.",
+                "completionDeadline": "before-hook-return"
+              },
+              {
+                "order": 2,
+                "actor": "hook",
+                "operation": "internal-ledger-update",
+                "currency": "specified",
+                "assetKind": "native",
+                "deltaOwner": "hook",
+                "deltaEffect": "none",
+                "counterparty": "not-applicable",
+                "authorizationRule": null,
+                "msgValueRule": null,
+                "amountRule": "Credit exactly F to the immutable Programmable owner liability for the canonical PoolId and native ETH.",
+                "completionDeadline": "before-hook-return"
+              }
+            ],
+            "negativeSettlementActions": []
+          },
+          "unspecifiedComponent": {
+            "mode": "zero-only",
+            "formula": null,
+            "minimum": "0",
+            "maximum": "0",
+            "minimumSign": "zero",
+            "maximumSign": "zero",
+            "positiveSettlementActions": [],
+            "negativeSettlementActions": []
+          },
+          "residualAmmEquation": "amountSpecified-plus-specifiedDelta",
+          "finalCallerDeltaEquation": "pool-manager-swap-delta-minus-hook-delta",
+          "specifiedDeltaCanConsumeEntireAmount": false,
+          "rounding": "Round F down. Amounts below 1000 wei may produce zero fee; F is always less than G.",
+          "zeroAmmLeg": "forbidden",
+          "partialFillRule": "A successful swap must consume the complete residual AMM input G-F. afterSwap compares the executed specified component with the residual and reverts any partial fill.",
+          "slippageInvariant": "The router validates minimum BOX output against the final caller delta after both the LP fee and Programmable fee.",
+          "failureRule": "Zero input, sign crossing, int128 overflow, a partial fill, failed claim mint or ledger mismatch reverts the complete swap."
+        },
+        "zeroForOneExactOutput": {
+          "supported": true,
+          "specifiedCurrency": "currency1",
+          "unspecifiedCurrency": "currency0",
+          "amountSign": "positive-exact-output",
+          "specifiedComponent": {
+            "mode": "zero-only",
+            "formula": null,
+            "minimum": "0",
+            "maximum": "0",
+            "minimumSign": "zero",
+            "maximumSign": "zero",
+            "positiveSettlementActions": [],
+            "negativeSettlementActions": []
+          },
+          "unspecifiedComponent": {
+            "mode": "zero-only",
+            "formula": null,
+            "minimum": "0",
+            "maximum": "0",
+            "minimumSign": "zero",
+            "maximumSign": "zero",
+            "positiveSettlementActions": [],
+            "negativeSettlementActions": []
+          },
+          "residualAmmEquation": "amountSpecified-plus-specifiedDelta",
+          "finalCallerDeltaEquation": "pool-manager-swap-delta-minus-hook-delta",
+          "specifiedDeltaCanConsumeEntireAmount": false,
+          "rounding": "The before-swap delta is exactly zero; afterSwap applies the declared gross-input rule.",
+          "zeroAmmLeg": "forbidden",
+          "partialFillRule": "The afterSwap fee uses the actual executed native input, so any router-permitted partial output is charged only on executed volume.",
+          "slippageInvariant": "The router validates maximum final native input and requested BOX output after the afterSwap surcharge.",
+          "failureRule": "A sign, conversion, claim-mint or ledger failure reverts the complete swap."
+        },
+        "oneForZeroExactInput": {
+          "supported": true,
+          "specifiedCurrency": "currency1",
+          "unspecifiedCurrency": "currency0",
+          "amountSign": "negative-exact-input",
+          "specifiedComponent": {
+            "mode": "zero-only",
+            "formula": null,
+            "minimum": "0",
+            "maximum": "0",
+            "minimumSign": "zero",
+            "maximumSign": "zero",
+            "positiveSettlementActions": [],
+            "negativeSettlementActions": []
+          },
+          "unspecifiedComponent": {
+            "mode": "zero-only",
+            "formula": null,
+            "minimum": "0",
+            "maximum": "0",
+            "minimumSign": "zero",
+            "maximumSign": "zero",
+            "positiveSettlementActions": [],
+            "negativeSettlementActions": []
+          },
+          "residualAmmEquation": "amountSpecified-plus-specifiedDelta",
+          "finalCallerDeltaEquation": "pool-manager-swap-delta-minus-hook-delta",
+          "specifiedDeltaCanConsumeEntireAmount": false,
+          "rounding": "The before-swap delta is exactly zero; afterSwap rounds the gross-output fee down.",
+          "zeroAmmLeg": "forbidden",
+          "partialFillRule": "The afterSwap fee uses actual executed gross native output, excluding every unfilled BOX input amount.",
+          "slippageInvariant": "The router validates minimum final native output after deducting the afterSwap Programmable fee.",
+          "failureRule": "A sign, conversion, claim-mint or ledger failure reverts the complete swap."
+        },
+        "oneForZeroExactOutput": {
+          "supported": true,
+          "specifiedCurrency": "currency0",
+          "unspecifiedCurrency": "currency1",
+          "amountSign": "positive-exact-output",
+          "specifiedComponent": {
+            "mode": "positive-only",
+            "formula": "For requested net native output N=amountSpecified, F=floor(N*1000/999000). Return +F, making gross AMM output G=N+F; caller receives G-F=N and F=floor(G*1000/1000000).",
+            "minimum": "zero base units",
+            "maximum": "less than gross specified output G",
+            "minimumSign": "zero",
+            "maximumSign": "positive",
+            "positiveSettlementActions": [
+              {
+                "order": 1,
+                "actor": "hook",
+                "operation": "mint-claim",
+                "currency": "specified",
+                "assetKind": "native",
+                "deltaOwner": "hook",
+                "deltaEffect": "negative",
+                "counterparty": "hook",
+                "authorizationRule": null,
+                "msgValueRule": null,
+                "amountRule": "Mint exactly F PoolManager ERC-6909 native-currency claims to the hook before returning the equal positive specified delta.",
+                "completionDeadline": "before-hook-return"
+              },
+              {
+                "order": 2,
+                "actor": "hook",
+                "operation": "internal-ledger-update",
+                "currency": "specified",
+                "assetKind": "native",
+                "deltaOwner": "hook",
+                "deltaEffect": "none",
+                "counterparty": "not-applicable",
+                "authorizationRule": null,
+                "msgValueRule": null,
+                "amountRule": "Credit exactly F to the immutable Programmable owner liability for the canonical PoolId and native ETH.",
+                "completionDeadline": "before-hook-return"
+              }
+            ],
+            "negativeSettlementActions": []
+          },
+          "unspecifiedComponent": {
+            "mode": "zero-only",
+            "formula": null,
+            "minimum": "0",
+            "maximum": "0",
+            "minimumSign": "zero",
+            "maximumSign": "zero",
+            "positiveSettlementActions": [],
+            "negativeSettlementActions": []
+          },
+          "residualAmmEquation": "amountSpecified-plus-specifiedDelta",
+          "finalCallerDeltaEquation": "pool-manager-swap-delta-minus-hook-delta",
+          "specifiedDeltaCanConsumeEntireAmount": false,
+          "rounding": "Gross-up rounds down under F=floor(N*1000/999000); dust can produce zero fee and the resulting F equals floor((N+F)*1000/1000000).",
+          "zeroAmmLeg": "forbidden",
+          "partialFillRule": "A successful swap must execute the complete gross output N+F. afterSwap verifies the core specified delta and reverts a partial exact-output fill.",
+          "slippageInvariant": "The final caller receives exactly N native ETH; the router validates maximum BOX input after the fee-preserving gross-up.",
+          "failureRule": "Zero output, sign crossing, int128 overflow, a partial fill, failed claim mint or ledger mismatch reverts the complete swap."
+        }
+      },
+      "executionEvent": "ProgrammableFeeAccrued(bytes32 indexed poolId,address indexed currency,uint256 grossQuote,uint256 fee)"
+    },
+    "postReturnDeltaAccounting": {
+      "afterSwap": {
+        "used": true,
+        "returnedDeltaShape": "unspecified-currency-int128",
+        "positiveMeaning": "hook-credit-caller-debit",
+        "negativeMeaning": "hook-debt-caller-credit",
+        "backingSource": "The hook mints the exact PoolManager ERC-6909 native-currency claim before returning the equal positive unspecified-currency delta, and records an equal owner liability.",
+        "callerDeltaEquation": "protocol-delta-minus-hook-delta",
+        "componentPolicies": {
+          "unspecified": {
+            "mode": "positive-only",
+            "formula": "When native ETH is unspecified: for zeroForOne exact output with AMM input X, F=floor(X*1000/999000); for oneForZero exact input with gross AMM output G, F=floor(G*1000/1000000). Otherwise return zero.",
+            "minimum": "zero base units",
+            "maximum": "less than the executed gross native ETH amount",
+            "minimumSign": "zero",
+            "maximumSign": "positive",
+            "positiveSettlementActions": [
+              {
+                "order": 1,
+                "actor": "hook",
+                "operation": "mint-claim",
+                "currency": "unspecified",
+                "assetKind": "native",
+                "deltaOwner": "hook",
+                "deltaEffect": "negative",
+                "counterparty": "hook",
+                "authorizationRule": null,
+                "msgValueRule": null,
+                "amountRule": "Mint exactly F PoolManager ERC-6909 native-currency claims to the hook before returning the equal positive unspecified delta.",
+                "completionDeadline": "before-hook-return"
+              },
+              {
+                "order": 2,
+                "actor": "hook",
+                "operation": "internal-ledger-update",
+                "currency": "unspecified",
+                "assetKind": "native",
+                "deltaOwner": "hook",
+                "deltaEffect": "none",
+                "counterparty": "not-applicable",
+                "authorizationRule": null,
+                "msgValueRule": null,
+                "amountRule": "Credit exactly F to the immutable Programmable owner liability for the canonical PoolId and native ETH.",
+                "completionDeadline": "before-hook-return"
+              }
+            ],
+            "negativeSettlementActions": []
+          },
+          "currency0": null,
+          "currency1": null
+        },
+        "bounds": "Return zero when native ETH is specified. Otherwise F is nonnegative, fits int128 and is strictly less than executed gross native volume.",
+        "rounding": "Round down in native base units. Gross-up exact-output input uses denominator 999000 so the resulting F equals ten basis points rounded down from final gross caller input.",
+        "slippageOrMinimums": "Maximum input and minimum output apply to the final caller delta after the hook charge; quotes must reproduce the same formulas.",
+        "failureRule": "Zero executed volume returns zero. A sign, bound, conversion, claim-mint, ledger or specified-path partial-fill check failure reverts the entire swap.",
+        "executionEvent": "ProgrammableFeeAccrued(bytes32 indexed poolId,address indexed currency,uint256 grossQuote,uint256 fee)"
+      },
+      "afterAddLiquidity": {
+        "used": false,
+        "returnedDeltaShape": null,
+        "positiveMeaning": null,
+        "negativeMeaning": null,
+        "backingSource": null,
+        "callerDeltaEquation": null,
+        "componentPolicies": {
+          "unspecified": null,
+          "currency0": null,
+          "currency1": null
+        },
+        "bounds": null,
+        "rounding": null,
+        "slippageOrMinimums": null,
+        "failureRule": null,
+        "executionEvent": null
+      },
+      "afterRemoveLiquidity": {
+        "used": false,
+        "returnedDeltaShape": null,
+        "positiveMeaning": null,
+        "negativeMeaning": null,
+        "backingSource": null,
+        "callerDeltaEquation": null,
+        "componentPolicies": {
+          "unspecified": null,
+          "currency0": null,
+          "currency1": null
+        },
+        "bounds": null,
+        "rounding": null,
+        "slippageOrMinimums": null,
+        "failureRule": null,
+        "executionEvent": null
+      }
+    },
+    "erc6909Claims": {
+      "used": true,
+      "currencyIdDerivation": "currency-address-uint160",
+      "claimBalanceScope": "claim-owner-and-currency",
+      "poolIdIncludedInClaimId": false,
+      "owner": "The DiscoveryHook contract owns every ERC-6909 native-currency claim minted for its return delta.",
+      "operatorPolicy": "The hook grants no operator approval and never transfers claims. It mints to and burns from itself through authenticated PoolManager execution.",
+      "mintFlow": "During beforeSwap or afterSwap, PoolManager.mint(address(this), currency0.toId(), F) creates a hook debt of F and an equal ERC-6909 claim before the hook returns +F.",
+      "burnFlow": "An owner claim calls PoolManager.unlock. In the authenticated unlockCallback, the hook burns exactly the requested amount from its own currency0 claim balance, creating an equal positive hook delta.",
+      "takeSettleFlow": "Immediately after burn in the same unlockCallback, the hook takes the equal native ETH amount to the owner-selected destination, creating the cancelling negative hook delta; unlock ends at zero.",
+      "liabilityKeys": "Internal liabilities remain keyed by canonical PoolId, native currency and immutable Programmable beneficiary even though PoolManager claim ids encode currency only.",
+      "liabilityKeyDimensions": [
+        "poolId",
+        "currency",
+        "beneficiary"
+      ],
+      "crossPoolNetting": false,
+      "transferPolicy": "Claims are non-transferable by project policy: the hook exposes no ERC-6909 transfer or operator-approval method and redemption pays underlying ETH only through owner claims.",
+      "redemption": "Only the immutable Programmable owner may start redemption. One claim-specific unlock burns no more than its liability and takes exactly that underlying amount to the destination supplied for that call.",
+      "roundingDust": "Fee calculation rounds down. A zero fee mints no claim; any claim balance above aggregate liability is surplus without a builder, project, rescue or sweep path.",
+      "aggregateSolvencyEquation": "For native currency id uint160(address(0)), PoolManager.balanceOf(DiscoveryHook,id) must be greater than or equal to the sum of all PoolId, currency and beneficiary liabilities; this hook admits one PoolId."
+    },
+    "nestedActions": {
+      "used": true,
+      "directPoolManagerCalls": true,
+      "routerCalls": false,
+      "allowedActions": [
+        "mint-claim",
+        "burn-claim",
+        "take"
+      ],
+      "samePoolPolicy": "Swap callbacks may mint only the exact fee claim. A claim-specific unlock may burn that claim and take equal underlying ETH. The hook cannot call swap, modifyLiquidity or donate for the canonical pool.",
+      "crossPoolPolicy": "The hook admits one PoolId and performs no action for any other pool.",
+      "callbackSuppression": "PoolManager skips this hook's callback on hook-initiated actions. Mint, burn and take trigger no swap callback; hook-initiated swaps are absent and forbidden.",
+      "directCallbackBehavior": "self-call-hook-callbacks-skipped",
+      "routerCallbackBehavior": null,
+      "maximumDepth": 1,
+      "stateCommitOrder": "Accrual computes and bounds F, mints the equal claim, increases liability, emits accrual and returns +F. Claim checks and decrements liability, unlocks PoolManager, burns the claim, takes equal ETH and emits only after successful return; any revert unwinds all steps.",
+      "transientDeltaOwner": "On accrual the hook's -F claim-mint delta is cancelled by returned +F. On redemption the hook's +amount burn delta is cancelled by the equal -amount take before unlock completion.",
+      "syncInterleaving": "No sync or ERC-20 settlement occurs because the underlying is native ETH. Claim burn and native take are adjacent inside one authenticated unlockCallback.",
+      "slippageAggregation": "The router validates the final caller BalanceDelta after the one hook fee; no nested trade has separate slippage.",
+      "failureAtomicity": "Any mint, burn, take, ledger, return-delta or end-of-unlock mismatch reverts the complete transaction."
+    }
+  },
+  "noHookArchitecture": null,
+  "valueFlows": [
+    {
+      "id": "canonical-swap",
+      "action": "trade BOX against native ETH",
+      "asset": "BOX and native ETH",
+      "from": "the router-authenticated swap payer",
+      "to": "PoolManager and the final swap recipient",
+      "amountRule": "PoolManager executes the requested direction and exactness against the canonical PoolKey after the dynamic LP-fee override and hook delta.",
+      "settlement": "The outer router settles every final negative BalanceDelta and takes every final positive BalanceDelta before unlock completion.",
+      "failure": "A pool, deadline, slippage, settlement, fee-accounting or balance-delta failure reverts the complete swap."
+    },
+    {
+      "id": "programmable-volume-fee",
+      "action": "accrue the mandatory Programmable swap fee",
+      "asset": "native ETH",
+      "from": "the canonical swap caller's final currency0 delta",
+      "to": "the DiscoveryHook ERC-6909 native-currency claim balance attributed to the immutable Programmable owner",
+      "amountRule": "Accrue exactly floor(executed gross native ETH volume * 1000 / 1000000), using the declared gross-up identities for exact-output input and output.",
+      "settlement": "The hook mints the exact native-currency claim, records the equal PoolId/currency/owner liability and returns the equal positive hook delta in one unlock.",
+      "failure": "Any arithmetic, claim-mint, liability or delta mismatch reverts the complete swap and records no fee."
+    },
+    {
+      "id": "programmable-fee-claim",
+      "action": "claim an accrued Programmable fee",
+      "asset": "native ETH",
+      "from": "the DiscoveryHook ERC-6909 native-currency claim balance",
+      "to": "the immutable owner or its per-claim destination",
+      "amountRule": "Transfer a positive requested amount no greater than the exact canonical PoolId, native ETH and owner liability.",
+      "settlement": "Check authority and claim solvency, decrement liability, unlock PoolManager, burn the equal ERC-6909 claim, take the same native ETH to the destination and emit atomically.",
+      "failure": "An unauthorized caller, zero or excessive amount, insolvent balance or failed ETH transfer reverts without changing liability."
+    },
+    {
+      "id": "open-membership-box",
+      "action": "open whole BOX units for membership time",
+      "asset": "whole BOX units and membership entitlement time",
+      "from": "the BOX holder",
+      "to": "irreversible burn and the same holder's onchain membership expiry",
+      "amountRule": "For n whole BOX units, burn n*1e18 base units, increase openedCount by n and extend expiry to max(currentExpiry,block.timestamp)+n*30 days.",
+      "settlement": "The burn, counter increase, expiry update and BoxOpened event occur atomically in DiscoveryBox.open.",
+      "failure": "The API accepts only a whole-box count. A zero count, insufficient whole-unit balance or timestamp overflow reverts without burning or extending membership."
+    }
+  ],
+  "authorities": [
+    {
+      "role": "canonical pool registrar",
+      "controller": "the immutable selected launcher or one-shot campaign factory",
+      "capabilities": [
+        "register the exact canonical BOX/ETH PoolKey once"
+      ],
+      "mutable": false,
+      "delay": "No delay; registration is allowed once during atomic launch and is irreversible.",
+      "userExitImpact": "After registration this role has no callable control and cannot block BOX transfers, opening or third-party liquidity removal."
+    },
+    {
+      "role": "Programmable fee owner",
+      "controller": "0x4957f49620AFf3Adbbe8195a4f633E49cc93376c",
+      "capabilities": [
+        "claim only its accrued native ETH liability to itself or a per-claim destination"
+      ],
+      "mutable": false,
+      "delay": "No delay is required because the role can move only its own already-accrued liability.",
+      "userExitImpact": "Claims cannot spend liquidity, BOX balances or another beneficiary's funds and do not govern user exits."
+    }
+  ],
+  "dependencies": {
+    "onchain": [],
+    "offchain": []
+  },
+  "operations": {
+    "keeper": {
+      "required": false,
+      "actor": null,
+      "action": null,
+      "cadence": null,
+      "authentication": null,
+      "funding": null,
+      "failure": null,
+      "fallback": null
+    },
+    "oracle": {
+      "required": false,
+      "actor": null,
+      "action": null,
+      "cadence": null,
+      "authentication": null,
+      "funding": null,
+      "failure": null,
+      "fallback": null
+    },
+    "monitoring": "The demo reconstructs AssetOpened, BoxOpened, ProgrammableFeeAccrued and ProgrammableFeeClaimed from confirmed logs, reconciles openedCount and the fee liability against direct contract reads, and shows stale or inconsistent data as unavailable.",
+    "incidentResponse": "The contracts have no pause or upgrade authority. If monitoring detects a mismatch, stop the demo's quote and trade controls, preserve read-only withdrawal and claim instructions, publish the exact affected PoolId and block, and require a new reviewed deployment rather than mutating this one."
+  },
+  "integration": {
+    "routerGeneration": "V2_0",
+    "routerDependencyId": null,
+    "permit2DependencyId": null,
+    "stateViewDependencyId": null,
+    "quoterDependencyId": null,
+    "sdkDependencies": [],
+    "routerActionProfile": {
+      "routerVersionExplicit": true,
+      "universalRouterCommand": "V4_SWAP",
+      "v4Actions": [
+        "SWAP_EXACT_IN_SINGLE",
+        "SWAP_EXACT_OUT_SINGLE",
+        "SETTLE_ALL",
+        "TAKE_ALL"
+      ],
+      "settlementMode": "The demo router settles native ETH directly, settles BOX through the pinned v4 router path, refunds unused native ETH and validates that no intermediate delta remains.",
+      "permit2Mode": "mixed",
+      "finalSwapDeltaValidated": true
+    },
+    "appSourcePaths": [],
+    "integrationTestPaths": [],
+    "quoteExecutionParity": "A local stateful quoter must execute the same hook callbacks and gross-up formulas at the same confirmed block. The UI withholds a quote when the opened-box count or pool state changes before submission.",
+    "swapModes": [
+      "zeroForOne-exactInput",
+      "zeroForOne-exactOutput",
+      "oneForZero-exactInput",
+      "oneForZero-exactOutput"
+    ],
+    "partialFills": "Specified-native paths reject partial execution after core swap verification; unspecified-native paths calculate the fee only from actual executed native volume and exclude every unfilled amount.",
+    "slippage": "Minimum output and maximum input are checked against the final caller BalanceDelta after the dynamic LP fee and Programmable hook fee, never against a pre-fee core delta.",
+    "deadline": "Every demo swap carries a user-visible deadline no more than 10 minutes after quote creation; an expired action reverts before settlement.",
+    "permit2": "BOX approval follows the exact reviewed router generation and chain deployment. Native ETH uses msg.value; the hook itself requests no permit, signature or allowance.",
+    "stateReads": "Read the exact PoolId, slot0, liquidity, IOpenableAsset.openedCount, membership expiry, PoolManager ERC-6909 native-currency balance of the hook and owner liability at one confirmed block; reject wrong-chain or stale reads.",
+    "events": [
+      "DiscoveryBoxCreated(address indexed token,uint256 initialSupply,uint256 maturityTarget,uint256 membershipDuration)",
+      "DiscoveryPoolRegistered(bytes32 indexed poolId,uint160 expectedSqrtPriceX96)",
+      "DiscoveryPoolInitialized(bytes32 indexed poolId,address indexed token,address indexed hook,uint24 initialLpFee)",
+      "BoxOpened(address indexed account,uint256 boxCount,uint256 newExpiry,uint256 totalOpenedBoxes)",
+      "ProgrammableFeeAccrued(bytes32 indexed poolId,address indexed currency,uint256 grossQuote,uint256 fee)",
+      "ProgrammableFeeClaimed(bytes32 indexed poolId,address indexed currency,address indexed destination,uint256 amount)"
+    ],
+    "routingAndDiscoverability": {
+      "routingMode": "custom-reviewed",
+      "allowlistTriggers": {
+        "usesDeltaFlag": true,
+        "addressStartsWith91": false,
+        "targetsMajorPair": false,
+        "permissionedPool": false
+      },
+      "uniswapRoutingStatus": "not-applicable",
+      "hookRegistryStatus": "not-submitted",
+      "customHookDataRequired": false,
+      "standardRouterCompatible": true,
+      "permissionedRouting": {
+        "required": false,
+        "minimumRouterGeneration": null,
+        "adapterCurrencyUsed": null,
+        "allowedWrapperBindings": null,
+        "positionManagerBinding": null,
+        "routingAllowlistRequiredPerChain": null
+      },
+      "sourcePaths": [
+        "src/DiscoveryHook.sol"
+      ],
+      "testPaths": [
+        "test/DiscoveryHook.t.sol"
+      ]
+    },
+    "dataReconstruction": {
+      "mode": "events-with-confirmed-reads",
+      "eventCoverage": "Reconstruct launch identity, opening count, membership expiry, Programmable fee accrual and claims. Pool swaps and liquidity remain authoritative in PoolManager rather than a project reserve ledger.",
+      "cursor": "block-number-transaction-index-log-index",
+      "startBlockPolicy": "Start from the recorded canonical launch block and reject any event whose chain, hook, token or PoolId differs from the immutable campaign record.",
+      "finalityDepth": 12,
+      "reorgPolicy": "Retain block hashes for every checkpoint. On a mismatch, roll back to the last common finalized block, delete later derived rows and replay logs in canonical order.",
+      "backfillPolicy": "Replay all declared events from the launch block in bounded block ranges, then reconcile the final opened count, expiry and fee liability with confirmed contract reads.",
+      "checkpointPolicy": "Checkpoint only finalized block number, block hash and last log cursor after all events in that block are applied and reconciliation succeeds.",
+      "freshnessTargetSeconds": 30,
+      "staleAfterSeconds": 120,
+      "freshnessMeasurement": "Compare the latest indexed finalized block timestamp and hash with the RPC head; display the age and withhold transactional state after 120 seconds.",
+      "reconciliation": "At each checkpoint, compare reconstructed openedCount and fee liability with direct reads. A mismatch marks the entire surface unavailable and triggers deterministic replay.",
+      "reserveReconstruction": {
+        "used": true,
+        "balanceSources": [
+          "Confirmed PoolManager ERC-6909 balance of the exact DiscoveryHook address for currency id uint160(address(0))"
+        ],
+        "liabilitySources": [
+          "Confirmed owner liability view and ProgrammableFeeAccrued minus ProgrammableFeeClaimed events"
+        ],
+        "attributionKeys": [
+          "chainId",
+          "modelVersion",
+          "poolId",
+          "currency",
+          "beneficiary"
+        ],
+        "solvencyEquation": "The hook's PoolManager ERC-6909 native-currency claim balance must be greater than or equal to the aggregate canonical PoolId, native currency and immutable owner liability.",
+        "poolLiquidityTreatment": "excluded-from-hook-reserves",
+        "donationAndDustPolicy": "Rounding dust mints no claim. Any ERC-6909 claim balance above liability is surplus but never creates an owner entitlement or builder, project, rescue or sweep path.",
+        "reconciliation": "Compare event-derived liability, the direct liability view and hook ERC-6909 claim balance at the same confirmed block; withhold data if liability values differ or exceed claim balance."
+      },
+      "sourcePaths": [
+        "src/openable/IOpenableAsset.sol",
+        "src/openable/OpenableERC20.sol",
+        "src/DiscoveryBox.sol",
+        "src/DiscoveryHook.sol"
+      ],
+      "testPaths": [
+        "test/DiscoveryBox.t.sol",
+        "test/DiscoveryHook.t.sol"
+      ]
+    },
+    "platformHandoff": {
+      "intended": true,
+      "websiteRegistryPath": null,
+      "uiSourcePaths": [],
+      "apiSourcePaths": [],
+      "indexerSourcePaths": [],
+      "testPaths": [],
+      "reviewStatus": "not-requested",
+      "maintainerReviewRequired": true,
+      "selfApproval": false,
+      "availabilityClaimed": false,
+      "handoffNotes": "The repository proposes a hook and local demonstration for independent review. It does not claim listing, routing, deployment, audit, acceptance or availability in Programmable or Uniswap interfaces."
+    }
+  },
+  "projectSurfaces": [
+    {
+      "id": "canonical-pool-model",
+      "kind": "onchain-contract",
+      "name": "Canonical pool model",
+      "summary": "The canonical launch token, PoolKey and optional hook behavior reviewed as one onchain project boundary.",
+      "executionBoundary": "onchain",
+      "capabilityIds": [
+        "canonical-pool-state",
+        "fixed-membership-open"
+      ],
+      "authorityRefs": [
+        "canonical pool registrar",
+        "Programmable fee owner"
+      ],
+      "valueFlowRefs": [
+        "canonical-swap",
+        "programmable-volume-fee",
+        "programmable-fee-claim",
+        "open-membership-box"
+      ],
+      "assetRefs": [
+        "eth",
+        "launched-token"
+      ],
+      "sourcePaths": [
+        "src/openable/IOpenableAsset.sol",
+        "src/openable/OpenableERC20.sol",
+        "src/DiscoveryBox.sol",
+        "src/DiscoveryHook.sol"
+      ],
+      "testPaths": [
+        "test/DiscoveryBox.t.sol",
+        "test/DiscoveryHook.t.sol"
+      ],
+      "schemaPaths": [],
+      "evidencePaths": [
+        "builder/discovery-box/EVIDENCE.md"
+      ],
+      "exposure": {
+        "movesValue": true,
+        "usesSignatures": false,
+        "makesExternalCalls": true,
+        "holdsCustody": true,
+        "handlesPii": false,
+        "usesGeolocation": false,
+        "usesSecrets": false
+      },
+      "profiles": {
+        "authority": {
+          "status": "applicable",
+          "summary": "PoolManager callback authentication and the declared launch authorities bound in this submission govern the exact onchain boundary.",
+          "controls": [
+            "Authenticate every hook callback through the exact PoolManager and declared pool-admission rule."
+          ],
+          "evidenceRefs": []
+        },
+        "valueFlow": {
+          "status": "applicable",
+          "summary": "The surface burns BOX for membership and uses backed return deltas to accrue and claim the native ETH Programmable fee.",
+          "controls": [
+            "Prove per-action conservation and atomic failure for opening, all four swap quadrants and owner claims."
+          ],
+          "evidenceRefs": []
+        },
+        "sourceOfTruth": {
+          "status": "applicable",
+          "summary": "Confirmed PoolManager and contract state for the exact chain and PoolId is the authoritative source of truth.",
+          "controls": [
+            "Key every state read and emitted event by the exact chain, model revision and PoolId."
+          ],
+          "evidenceRefs": []
+        },
+        "signaturesReplay": {
+          "status": "not-applicable",
+          "summary": "The starter surface consumes no model-specific signed message or signed offchain payload.",
+          "controls": [],
+          "evidenceRefs": []
+        },
+        "externalCalls": {
+          "status": "applicable",
+          "summary": "The hook reads the immutable token counter, mints and burns PoolManager claims, and takes redeemed native ETH to an owner-selected destination.",
+          "controls": [
+            "Fail closed on malformed reads and failed calls, forbid same-pool swaps and protect the claim interaction from reentrancy."
+          ],
+          "evidenceRefs": []
+        },
+        "custody": {
+          "status": "applicable",
+          "summary": "DiscoveryHook holds only PoolManager ERC-6909 native-currency claims that back the immutable Programmable owner's accrued liability; it holds no LP position or user BOX.",
+          "controls": [
+            "Maintain hook ERC-6909 claim balance greater than or equal to aggregate liability and expose no builder withdrawal, rescue or cross-pool netting path."
+          ],
+          "evidenceRefs": []
+        },
+        "piiGeolocation": {
+          "status": "not-applicable",
+          "summary": "The onchain starter surface collects no private identity data or precise user geolocation.",
+          "controls": [],
+          "evidenceRefs": []
+        },
+        "secretBoundary": {
+          "status": "not-applicable",
+          "summary": "The onchain starter surface assumes no secret can remain confidential in contract state or calldata.",
+          "controls": [],
+          "evidenceRefs": []
+        },
+        "sourceTestSchema": {
+          "status": "applicable",
+          "summary": "The implementation manifest binds the exact source, tests, compiler input and specification reviewed for this boundary.",
+          "controls": [
+            "Bind prototype source and tests to implementation paths and include every imported executable byte in the review target."
+          ],
+          "evidenceRefs": []
+        },
+        "failureRecovery": {
+          "status": "applicable",
+          "summary": "An invalid callback or state transition reverts atomically and does not block the separately declared user exit path.",
+          "controls": [
+            "Test dependency failure, callback revert and recovery without partial settlement or trapped user funds."
+          ],
+          "evidenceRefs": []
+        }
+      },
+      "signedDataSource": {
+        "used": false,
+        "signerAuthorityRefs": [],
+        "signatureScheme": null,
+        "payloadSchemaPath": null,
+        "freshnessRule": null,
+        "replayProtection": null,
+        "onchainVerifierSurfaceId": null
+      },
+      "onchainOracleVerifier": {
+        "used": false,
+        "verifiedSourceSurfaceIds": [],
+        "verificationRule": null,
+        "freshnessRule": null,
+        "replayProtection": null,
+        "failureRule": null
+      }
+    }
+  ],
+  "projectCapabilities": [
+    {
+      "id": "canonical-pool-state",
+      "kind": "state-observation",
+      "summary": "Read and update only the declared canonical PoolId state without adding value custody or an offchain trust dependency.",
+      "surfaceIds": [
+        "canonical-pool-model"
+      ],
+      "securityTriggers": {
+        "authority": true,
+        "valueFlow": true,
+        "sourceOfTruth": true,
+        "signaturesReplay": false,
+        "externalCalls": true,
+        "custody": true,
+        "piiGeolocation": false,
+        "secretBoundary": false,
+        "sourceTestSchema": true,
+        "failureRecovery": true
+      },
+      "requiredProfiles": [
+        "authority",
+        "value-flow",
+        "external-calls",
+        "custody",
+        "failure-recovery",
+        "source-of-truth",
+        "source-test-schema"
+      ]
+    },
+    {
+      "id": "fixed-membership-open",
+      "kind": "irreversible-token-redemption",
+      "summary": "Burn whole BOX units to extend the same wallet's fixed membership expiry and advance the immutable opened-box counter.",
+      "surfaceIds": [
+        "canonical-pool-model"
+      ],
+      "securityTriggers": {
+        "authority": true,
+        "valueFlow": true,
+        "sourceOfTruth": true,
+        "signaturesReplay": false,
+        "externalCalls": false,
+        "custody": false,
+        "piiGeolocation": false,
+        "secretBoundary": false,
+        "sourceTestSchema": true,
+        "failureRecovery": true
+      },
+      "requiredProfiles": [
+        "authority",
+        "value-flow",
+        "source-of-truth",
+        "source-test-schema",
+        "failure-recovery"
+      ]
+    }
+  ],
+  "capabilities": {
+    "externalCalls": {
+      "used": true,
+      "targets": [
+        "the immutable selected IOpenableAsset openedCount view",
+        "the pinned PoolManager mint, unlock, burn and take functions",
+        "the owner-selected ETH destination during a claim"
+      ],
+      "callSites": [
+        "DiscoveryHook.beforeSwap reads openedCount",
+        "DiscoveryHook.beforeSwap and afterSwap mint the exact native-currency claim",
+        "DiscoveryHook.claimProgrammableFee invokes an authenticated unlock that burns claims and takes underlying ETH"
+      ],
+      "reentrancyPolicy": "Callbacks authenticate PoolManager and one PoolId, mutate no user-selected target, and forbid same-pool swaps. Claim follows checks-effects-interactions under a non-reentrant guard.",
+      "stateDriftPolicy": "beforeSwap uses one openedCount read for the LP-fee calculation. The counter can change only through an independent atomic whole-unit opening and cannot decrease within the swap.",
+      "returnValuePolicy": "Require an exact ABI return for openedCount, exact unlock callback data, zero hook delta at unlock end and a successful underlying ETH transfer.",
+      "failureAtomicity": "A failed read, mint, unlock, burn, take or ETH transfer reverts the complete transaction and all related liability changes."
+    },
+    "permissionedAsset": {
+      "used": false,
+      "officialUniswapPermissionedPool": null,
+      "issuer": null,
+      "jurisdiction": null,
+      "legalDocuments": [],
+      "underlyingClaim": null,
+      "custodian": null,
+      "adapter": null,
+      "hooks": null,
+      "positionManager": null,
+      "swapEligibility": null,
+      "liquidityEligibility": null,
+      "positionTransferability": null,
+      "pauseFreezeUnwind": null,
+      "redemption": null,
+      "routingLimitations": null
+    },
+    "oracle": {
+      "used": false,
+      "source": null,
+      "value": null,
+      "deployment": null,
+      "runtimeHash": null,
+      "decimals": null,
+      "heartbeatSeconds": null,
+      "maxAgeSeconds": null,
+      "observationType": null,
+      "windowSeconds": null,
+      "minimumAnswer": null,
+      "maximumAnswer": null,
+      "maximumDeviation": null,
+      "roundChecks": null,
+      "manipulationResistance": null,
+      "governance": null,
+      "fallback": null,
+      "maxFallbackAgeSeconds": null,
+      "failureRule": null
+    },
+    "keeper": {
+      "used": false,
+      "executionMode": null,
+      "minIntervalSeconds": null,
+      "maxDelaySeconds": null,
+      "permissionlessFallbackAfterSeconds": null,
+      "idempotencyKey": null,
+      "duplicateBehavior": null,
+      "lastProcessedState": null,
+      "boundedWork": null,
+      "maxItems": null,
+      "retryPolicy": null,
+      "zeroWorkBehavior": null,
+      "fundingSource": null,
+      "minimumGasRunway": null,
+      "alertThreshold": null,
+      "maximumGas": null,
+      "failureImpact": null,
+      "userExitIndependent": null,
+      "poolBinding": null,
+      "slippage": null,
+      "deadline": null,
+      "mevPolicy": null
+    },
+    "proof": {
+      "used": false,
+      "proofSystem": null,
+      "circuitRevision": null,
+      "verifyingKeyHash": null,
+      "verifierAddress": null,
+      "runtimeHash": null,
+      "setupType": null,
+      "setupProvenance": null,
+      "publicInputs": [],
+      "domainBindings": {
+        "chainId": null,
+        "verifyingContract": null,
+        "modelVersion": null,
+        "pool": null,
+        "action": null,
+        "actorOrRecipient": null,
+        "amountBounds": null,
+        "epochOrDeadline": null
+      },
+      "replayMode": null,
+      "nullifierScope": null,
+      "nullifierDerivation": null,
+      "nullifierStorage": null,
+      "atomicSpentCheck": null,
+      "resetPolicy": null,
+      "maximumProofBytes": null,
+      "maximumVerificationGas": null,
+      "verifierAuthority": null,
+      "failureRule": null,
+      "privacyClaim": null,
+      "metadataLeakage": null
+    },
+    "crossChain": {
+      "used": false,
+      "bridgeDependencyId": null,
+      "source": {
+        "network": {
+          "namespace": null,
+          "reference": null
+        },
+        "domain": null,
+        "authenticatedSender": {
+          "encoding": null,
+          "value": null,
+          "canonicalizationRule": null
+        }
+      },
+      "destination": {
+        "chainId": null,
+        "domain": null,
+        "receiver": null,
+        "receiverDependencyId": null,
+        "authenticatedBridgeCaller": null
+      },
+      "message": {
+        "identifierDerivation": null,
+        "nonceDerivation": null,
+        "nonceScope": null,
+        "customNonceRule": null,
+        "payloadHashRule": null,
+        "idempotencyKeyRule": null,
+        "idempotencyStorage": null,
+        "atomicConsumption": null,
+        "duplicateBehavior": null,
+        "domainBindings": {
+          "bridgeDependencyId": null,
+          "sourceNetwork": null,
+          "sourceDomain": null,
+          "sourceSender": null,
+          "destinationChainId": null,
+          "destinationDomain": null,
+          "receiver": null,
+          "receiverDependencyId": null,
+          "modelId": null,
+          "poolId": null,
+          "action": null,
+          "payloadHash": null,
+          "timestampOrExpiry": null,
+          "messageId": null,
+          "nonce": null
+        }
+      },
+      "finality": {
+        "mode": null,
+        "minimumSourceConfirmations": null,
+        "challengePeriodSeconds": null,
+        "attestationRule": null,
+        "reorgBehavior": null,
+        "customFinalityRule": null
+      },
+      "ordering": {
+        "mode": null,
+        "sequenceKey": null,
+        "outOfOrderBehavior": null,
+        "maximumPendingMessages": null,
+        "queueOverflowBehavior": null,
+        "pendingMessageExpirySeconds": null,
+        "cleanupRule": null,
+        "releaseRule": null
+      },
+      "staleness": {
+        "timestampSource": null,
+        "customTimestampRule": null,
+        "maximumMessageAgeSeconds": null,
+        "maximumFutureSkewSeconds": null,
+        "staleMessageBehavior": null
+      },
+      "failureBehavior": null,
+      "failureRule": null,
+      "fallback": {
+        "mode": null,
+        "authority": null,
+        "rule": null
+      },
+      "quarantine": {
+        "used": null,
+        "storageRule": null,
+        "maximumEntries": null,
+        "entryExpirySeconds": null,
+        "overflowBehavior": null,
+        "cleanupRule": null,
+        "releaseMode": null,
+        "releaseRule": null,
+        "releaseAuthority": null,
+        "atomicRelease": null
+      }
+    },
+    "externalLiquidity": {
+      "used": false,
+      "custody": null,
+      "ownership": null,
+      "shareAccounting": null,
+      "solvencyEquation": null,
+      "lossAllocation": null,
+      "donationPolicy": null,
+      "exitPath": null,
+      "dependencyFailure": null
+    },
+    "asyncSwap": {
+      "used": false,
+      "supportedExactness": null,
+      "custody": null,
+      "fillRule": null,
+      "partialFillRule": null,
+      "cancellation": null,
+      "expiry": null,
+      "refund": null,
+      "queueBound": null,
+      "liveness": null,
+      "failureRule": null
+    },
+    "customCurve": {
+      "used": false,
+      "invariant": null,
+      "domain": null,
+      "rounding": null,
+      "monotonicity": null,
+      "discontinuities": null,
+      "inverse": null,
+      "differentialReference": null,
+      "failureRule": null
+    }
+  },
+  "capabilityExtensions": [],
+  "tokenBehaviorExtensions": [
+    {
+      "id": "fixed-whole-unit-burn-for-membership",
+      "assetId": "launched-token",
+      "behavior": "fixed-whole-unit-burn-for-membership",
+      "summary": "Any holder may burn one or more whole BOX units. The immutable token atomically reduces supply, advances openedCount and extends only that holder's membership expiry by 30 days per box from the later of current expiry and block time.",
+      "projectCapabilityId": "fixed-membership-open",
+      "authorityRefs": [],
+      "valueFlowIds": [
+        "open-membership-box"
+      ],
+      "mutable": false,
+      "visibility": "fully-disclosed",
+      "supplyImpact": "fixed-burn",
+      "transferImpact": "none",
+      "failureRule": "The API accepts only a whole-box count. Reject zero counts, insufficient whole-unit balances and timestamp overflow. Burn, counter and expiry changes are atomic and no generic public burn path exists.",
+      "providerImpact": {
+        "routing": "Ordinary ERC-20 transfers and PoolManager settlement remain untaxed and unrestricted; routers do not call open and need no custom transfer handling.",
+        "quoting": "Quotes must read the changing total supply only for display; swap math uses pool state, while the hook reads openedCount solely for its LP-fee override.",
+        "indexing": "Indexers may reconstruct burns from Transfer to zero and membership state from BoxOpened, but must not infer unique people or actual app usage.",
+        "status": "requires-provider-review",
+        "evidence": [],
+        "limitations": [
+          "No third-party router, indexer, scanner or interface support is claimed before exact provider review."
+        ],
+        "fallback": "The project demo uses direct confirmed contract reads and a custom reviewed route; it withholds unsupported third-party availability claims."
+      },
+      "securityTriggers": {
+        "authority": true,
+        "valueFlow": true,
+        "sourceOfTruth": true,
+        "signaturesReplay": false,
+        "externalCalls": false,
+        "custody": false,
+        "piiGeolocation": false,
+        "secretBoundary": false,
+        "sourceTestSchema": true,
+        "failureRecovery": true
+      },
+      "requiredProfiles": [
+        "authority",
+        "value-flow",
+        "source-of-truth",
+        "source-test-schema",
+        "failure-recovery"
+      ],
+      "sourcePaths": [
+        "src/openable/IOpenableAsset.sol",
+        "src/openable/OpenableERC20.sol",
+        "src/DiscoveryBox.sol"
+      ],
+      "testPaths": [
+        "test/DiscoveryBox.t.sol"
+      ],
+      "evidencePaths": [
+        "builder/discovery-box/EVIDENCE.md"
+      ],
+      "testScenarios": [
+        "Open one and multiple whole boxes from active and expired membership states.",
+        "Reject zero counts and opening from an insufficient or fractional BOX balance without changing supply, expiry or openedCount.",
+        "Maintain openedCount plus totalSupply divided by one whole token equals 100 after every open sequence."
+      ]
+    }
+  ],
+  "security": {
+    "usesTxOrigin": false,
+    "userControlledDelegatecall": false,
+    "arbitraryExecution": false,
+    "unboundedCriticalLoop": false,
+    "ignoredCallResults": false,
+    "hiddenControls": false,
+    "assumesOnchainSecrecy": false,
+    "bypassesHookAddressValidation": false,
+    "signatureScheme": {
+      "used": false,
+      "standard": null,
+      "nonce": null,
+      "deadline": null,
+      "chain": null,
+      "verifyingContract": null,
+      "action": null,
+      "parameters": null,
+      "erc1271": null
+    }
+  },
+  "implementation": {
+    "sourcePaths": [
+      "src/openable/IOpenableAsset.sol",
+      "src/openable/OpenableERC20.sol",
+      "src/DiscoveryBox.sol",
+      "src/DiscoveryHook.sol",
+      "src/applications/TicketBox.sol",
+      "src/applications/CollectibleBox.sol"
+    ],
+    "testPaths": [
+      "test/DiscoveryBox.t.sol",
+      "test/DiscoveryHook.t.sol",
+      "test/OpenableApplications.t.sol"
+    ],
+    "compilerBuildInfoPaths": [],
+    "specificationPath": "DESIGN_CARD.md",
+    "testEvidencePath": "builder/discovery-box/EVIDENCE.md",
+    "dependencyLockPath": "DEPENDENCIES.md",
+    "gateStatusPath": "builder/discovery-box/compatibility-report.json",
+    "reviewTargetPath": null,
+    "runtimeAssetManifestPath": null
+  },
+  "risk": {
+    "dimensions": {
+      "complexity": 4,
+      "customMath": 3,
+      "externalDependencies": 2,
+      "externalLiquidity": 0,
+      "valueAtRisk": 2,
+      "teamMaturity": 3,
+      "upgradeability": 0,
+      "autonomy": 1,
+      "priceImpact": 3
+    },
+    "rationales": {
+      "complexity": "One hook combines dynamic LP-fee overrides, four-quadrant return-delta fees, ERC-6909 claim custody and underlying redemption, which creates several interacting accounting paths.",
+      "customMath": "The linear LP-fee curve is simple, but exact-output gross-up, signed deltas and floor identities require differential and boundary testing.",
+      "externalDependencies": "The design relies on pinned PoolManager, router and launch components plus one immutable state read from the selected IOpenableAsset; it uses no oracle or keeper.",
+      "externalLiquidity": "The hook holds no LP position, vault share, collateral or off-pool liquidity and does not rebalance the canonical pool.",
+      "valueAtRisk": "The prototype supply is fixed at 100 boxes, but swaps and accrued native ETH fees can carry real value and no artificial low-value cap is claimed.",
+      "teamMaturity": "This is a new hackathon codebase without production operating history, completed audit evidence or a demonstrated incident-response record.",
+      "upgradeability": "The canonical DiscoveryBox and DiscoveryHook are non-upgradeable, and no proxy, admin parameter mutation or rescue authority exists.",
+      "autonomy": "The sell LP fee changes automatically from an irreversible onchain counter, but the curve and all bounds are immutable and require no keeper.",
+      "priceImpact": "The hook changes the LP fee on every swap and uses return deltas to change the caller's final ETH amount in all four swap quadrants."
+    },
+    "declaredTotal": 18,
+    "declaredTier": "high",
+    "featureTriggers": [
+      "custom-accounting",
+      "price-impact",
+      "return-delta",
+      "autonomous",
+      "custom-math",
+      "novel-token-behavior",
+      "project-custody",
+      "project-external-calls",
+      "project-value-flow",
+      "external-calls",
+      "custody",
+      "project-surface-value-movement"
+    ]
+  },
+  "disclosures": [
+    "Opening proves irreversible entitlement activation for a wallet; it does not prove product use, a unique person or Sybil resistance.",
+    "Every box grants the same 30-day membership bundle. Visual reveals have no financial, access or redemption advantage.",
+    "The dynamic sell LP fee is a market-maturity signal. The model found that the 1.00% to 0.30% spread creates almost no additional opening demand.",
+    "Alternative pools do not inherit the canonical hook, directional LP fee or Programmable fee policy.",
+    "This proposal does not claim audit, deployment, registry listing, hosted routing, interface availability or Programmable acceptance."
+  ],
+  "unresolved": []
+}
