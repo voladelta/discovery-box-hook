@@ -82,7 +82,7 @@ forge test -vv
 - `IOpenableAsset.sol` SHA-256: `e4f2f5a93ba30259d6a334474630b7aa2613605927e4d143ad2f3a1f14cfa352`
 - `OpenableERC20.sol` SHA-256: `0b34080e99e27060aa8e5008c8024ff190f76f91c024b7f4f480730b08e2477a`
 - `DiscoveryBox.sol` SHA-256: `78d27b65215d410155ac6ca02b733bfb0ce649b12439f228b7ec7f280f611df6`
-- `DiscoveryHook.sol` SHA-256: `234c9d2a9c329feb275558d1755c99c5445adb56f078966c57bf02b8b54dcf7f`
+- `DiscoveryHook.sol` SHA-256: `f47d1302b0dbe3336db421493c0b86a92811ca05e2bf37523c3aeeb52eaa4d98`
 - `TicketBox.sol` SHA-256: `4ee0567224fca1d7e71e7d064abcd8e33472f62a0b7ad4a349265128b945f099`
 - `CollectibleBox.sol` SHA-256: `367d9d797fa6b25fe675fe18ca53678b9549bfae481993c4a4c859b237eb807b`
 - `DiscoveryBox.t.sol` SHA-256: `2d80bce86e0abe510382cfdc6adcfdd95d2f97b189c41b0116344b5038997dd3`
