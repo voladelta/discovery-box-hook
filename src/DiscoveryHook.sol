@@ -5,6 +5,7 @@ import { BaseHook } from "@openzeppelin/uniswap-hooks/src/base/BaseHook.sol";
 import { CurrencySettler } from "@openzeppelin/uniswap-hooks/src/utils/CurrencySettler.sol";
 import { ReentrancyGuardTransient } from "@openzeppelin/contracts/utils/ReentrancyGuardTransient.sol";
 import { Hooks } from "@uniswap/v4-core/src/libraries/Hooks.sol";
+import { FullMath } from "@uniswap/v4-core/src/libraries/FullMath.sol";
 import { LPFeeLibrary } from "@uniswap/v4-core/src/libraries/LPFeeLibrary.sol";
 import { SafeCast } from "@uniswap/v4-core/src/libraries/SafeCast.sol";
 import { IHooks } from "@uniswap/v4-core/src/interfaces/IHooks.sol";
@@ -34,7 +35,10 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     uint24 public constant PROGRAMMABLE_FEE = 1_000;
     uint24 public constant FEE_DENOMINATOR = 1_000_000;
     uint24 public constant NET_DENOMINATOR = FEE_DENOMINATOR - PROGRAMMABLE_FEE;
+    // Least common multiple of the gross and fee-on-top denominators.
+    uint256 public constant FEE_REMAINDER_DENOMINATOR = 999_000_000;
     int24 public constant TICK_SPACING = 60;
+    address public constant PROGRAMMABLE_OWNER = 0x4957f49620AFf3Adbbe8195a4f633E49cc93376c;
 
     IOpenableAsset public immutable openableAsset;
     uint256 public immutable maturityTarget;
@@ -48,6 +52,16 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
 
     mapping(PoolId poolId => mapping(Currency currency => mapping(address beneficiary => uint256 amount))) public
         liability;
+    mapping(PoolId poolId => mapping(Currency currency => mapping(address beneficiary => uint256 remainder))) public
+        feeRemainder;
+
+    struct PendingSpecifiedSwap {
+        PoolId poolId;
+        uint256 fee;
+        bool active;
+    }
+
+    PendingSpecifiedSwap private pendingSpecifiedSwap;
 
     bool private claimInProgress;
     bytes32 private claimContextHash;
@@ -67,6 +81,7 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     error InsolventLiability();
     error InvalidClaimCallback();
     error InvalidClaimResult();
+    error InvalidPendingSwap();
 
     event DiscoveryPoolRegistered(bytes32 indexed poolId, uint160 expectedSqrtPriceX96);
     event DiscoveryPoolInitialized(
@@ -80,9 +95,10 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     constructor(IPoolManager manager, IOpenableAsset openableAsset_, address registrar_, address programmableOwner_)
         BaseHook(manager)
     {
-        if (address(openableAsset_) == address(0) || registrar_ == address(0) || programmableOwner_ == address(0)) {
+        if (address(openableAsset_) == address(0) || registrar_ == address(0)) {
             revert InvalidAddress();
         }
+        if (programmableOwner_ != PROGRAMMABLE_OWNER) revert UnauthorizedProgrammableOwner();
 
         uint256 target = openableAsset_.maturityTarget();
         if (target == 0) revert InvalidMaturityTarget();
@@ -90,7 +106,7 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
         openableAsset = openableAsset_;
         maturityTarget = target;
         registrar = registrar_;
-        programmableOwner = programmableOwner_;
+        programmableOwner = PROGRAMMABLE_OWNER;
     }
 
     function getHookPermissions() public pure override returns (Hooks.Permissions memory permissions) {
@@ -132,11 +148,11 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     }
 
     function programmableFeeFromGrossQuote(uint256 grossQuote) public pure returns (uint256) {
-        return grossQuote * PROGRAMMABLE_FEE / FEE_DENOMINATOR;
+        return FullMath.mulDiv(grossQuote, PROGRAMMABLE_FEE, FEE_DENOMINATOR);
     }
 
     function programmableFeeOnTopOfNetQuote(uint256 netQuote) public pure returns (uint256) {
-        return netQuote * PROGRAMMABLE_FEE / NET_DENOMINATOR;
+        return FullMath.mulDiv(netQuote, PROGRAMMABLE_FEE, NET_DENOMINATOR);
     }
 
     function claimProgrammableFee(uint256 amount, address destination) external nonReentrant {
@@ -204,12 +220,7 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
         int128 specifiedDelta = 0;
 
         if (_isEthSpecified(params)) {
-            uint256 grossQuote = _absoluteAmount(params.amountSpecified);
-            uint256 fee = params.amountSpecified < 0
-                ? programmableFeeFromGrossQuote(grossQuote)
-                : programmableFeeOnTopOfNetQuote(grossQuote);
-            _accrue(fee, params.amountSpecified < 0 ? grossQuote : grossQuote + fee);
-            specifiedDelta = fee.toInt128();
+            specifiedDelta = _prepareSpecifiedSwap(key, params).toInt128();
         }
 
         return
@@ -225,10 +236,14 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
 
         int128 coreEthDelta = delta.amount0();
         if (_isEthSpecified(params)) {
+            if (!pendingSpecifiedSwap.active || PoolId.unwrap(pendingSpecifiedSwap.poolId) != PoolId.unwrap(key.toId()))
+            {
+                revert InvalidPendingSwap();
+            }
+
+            uint256 specifiedFee = pendingSpecifiedSwap.fee;
+            pendingSpecifiedSwap.active = false;
             uint256 requested = _absoluteAmount(params.amountSpecified);
-            uint256 specifiedFee = params.amountSpecified < 0
-                ? programmableFeeFromGrossQuote(requested)
-                : programmableFeeOnTopOfNetQuote(requested);
             int128 expectedCoreEthDelta = params.amountSpecified < 0
                 ? -(requested - specifiedFee).toInt128()
                 : (requested + specifiedFee).toInt128();
@@ -237,17 +252,31 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
         }
 
         uint256 coreQuote = _absoluteAmount(coreEthDelta);
-        uint256 fee = params.amountSpecified < 0
-            ? programmableFeeFromGrossQuote(coreQuote)
-            : programmableFeeOnTopOfNetQuote(coreQuote);
-        uint256 grossQuote = params.amountSpecified < 0 ? coreQuote : coreQuote + fee;
-        _accrue(fee, grossQuote);
+        uint256 remainderBefore = feeRemainder[registeredPoolId][CurrencyLibrary.ADDRESS_ZERO][programmableOwner];
+        (uint256 fee, uint256 grossQuote, uint256 remainderAfter) = params.amountSpecified < 0
+            ? _feeFromGrossQuote(coreQuote, remainderBefore)
+            : _feeOnTopOfNetQuote(coreQuote, remainderBefore);
+        _accrue(fee, grossQuote, remainderAfter);
         return (IHooks.afterSwap.selector, fee.toInt128());
     }
 
     function _requireRegisteredPool(PoolKey calldata key) private view {
         if (!poolRegistered) revert PoolNotRegistered();
         if (PoolId.unwrap(key.toId()) != PoolId.unwrap(registeredPoolId)) revert InvalidPoolKey();
+    }
+
+    function _prepareSpecifiedSwap(PoolKey calldata key, SwapParams calldata params) private returns (uint256 fee) {
+        uint256 quote = _absoluteAmount(params.amountSpecified);
+        uint256 remainderBefore = feeRemainder[registeredPoolId][CurrencyLibrary.ADDRESS_ZERO][programmableOwner];
+        uint256 feeBasis;
+        uint256 remainderAfter;
+        if (params.amountSpecified < 0) {
+            (fee, feeBasis, remainderAfter) = _feeFromGrossQuote(quote, remainderBefore);
+        } else {
+            (fee, feeBasis, remainderAfter) = _feeOnTopOfNetQuote(quote, remainderBefore);
+        }
+        _accrue(fee, feeBasis, remainderAfter);
+        pendingSpecifiedSwap = PendingSpecifiedSwap({ poolId: key.toId(), fee: fee, active: true });
     }
 
     function _requireInitializedPool(PoolKey calldata key) private view {
@@ -260,13 +289,40 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
         return params.zeroForOne == exactInput;
     }
 
-    function _accrue(uint256 fee, uint256 grossQuote) private {
+    function _accrue(uint256 fee, uint256 grossQuote, uint256 remainderAfter) private {
+        feeRemainder[registeredPoolId][CurrencyLibrary.ADDRESS_ZERO][programmableOwner] = remainderAfter;
         if (fee == 0) return;
 
         Currency nativeCurrency = CurrencyLibrary.ADDRESS_ZERO;
         liability[registeredPoolId][nativeCurrency][programmableOwner] += fee;
         emit ProgrammableFeeAccrued(PoolId.unwrap(registeredPoolId), Currency.unwrap(nativeCurrency), grossQuote, fee);
         nativeCurrency.take(poolManager, address(this), fee, true);
+    }
+
+    function _feeFromGrossQuote(uint256 grossQuote, uint256 remainderBefore)
+        private
+        pure
+        returns (uint256 fee, uint256 grossBasis, uint256 remainderAfter)
+    {
+        uint256 fraction = mulmod(grossQuote, PROGRAMMABLE_FEE, FEE_DENOMINATOR) * 999;
+        uint256 combinedFraction = fraction + remainderBefore;
+        fee = FullMath.mulDiv(grossQuote, PROGRAMMABLE_FEE, FEE_DENOMINATOR) + combinedFraction
+            / FEE_REMAINDER_DENOMINATOR;
+        remainderAfter = combinedFraction % FEE_REMAINDER_DENOMINATOR;
+        grossBasis = grossQuote;
+    }
+
+    function _feeOnTopOfNetQuote(uint256 netQuote, uint256 remainderBefore)
+        private
+        pure
+        returns (uint256 fee, uint256 grossBasis, uint256 remainderAfter)
+    {
+        uint256 fraction = mulmod(netQuote, PROGRAMMABLE_FEE, NET_DENOMINATOR) * 1_000;
+        uint256 combinedFraction = fraction + remainderBefore;
+        fee =
+            FullMath.mulDiv(netQuote, PROGRAMMABLE_FEE, NET_DENOMINATOR) + combinedFraction / FEE_REMAINDER_DENOMINATOR;
+        remainderAfter = combinedFraction % FEE_REMAINDER_DENOMINATOR;
+        grossBasis = netQuote + fee;
     }
 
     function _absoluteAmount(int256 amount) private pure returns (uint256) {

@@ -252,7 +252,8 @@
         "src/openable/IOpenableAsset.sol"
       ],
       "testPaths": [
-        "test/DiscoveryHook.t.sol"
+        "test/DiscoveryHook.t.sol",
+        "test/DiscoveryHookInvariant.t.sol"
       ]
     }
   },
@@ -705,7 +706,7 @@
       "crossPoolNetting": false,
       "transferPolicy": "Claims are non-transferable by project policy: the hook exposes no ERC-6909 transfer or operator-approval method and redemption pays underlying ETH only through owner claims.",
       "redemption": "Only the immutable Programmable owner may start redemption. One claim-specific unlock burns no more than its liability and takes exactly that underlying amount to the destination supplied for that call.",
-      "roundingDust": "Fee calculation rounds down. A zero fee mints no claim; any claim balance above aggregate liability is surplus without a builder, project, rescue or sweep path.",
+      "roundingDust": "Fee calculation rounds the accumulated fractional numerator down and carries the residual in a common 999000000-denominator accumulator across swaps. A zero fee mints no claim; any claim balance above aggregate liability is surplus without a builder, project, rescue or sweep path.",
       "aggregateSolvencyEquation": "For native currency id uint160(address(0)), PoolManager.balanceOf(DiscoveryHook,id) must be greater than or equal to the sum of all PoolId, currency and beneficiary liabilities; this hook admits one PoolId."
     },
     "nestedActions": {
@@ -933,7 +934,8 @@
       ],
       "testPaths": [
         "test/DiscoveryBox.t.sol",
-        "test/DiscoveryHook.t.sol"
+        "test/DiscoveryHook.t.sol",
+        "test/DiscoveryHookInvariant.t.sol"
       ]
     },
     "platformHandoff": {
@@ -983,7 +985,8 @@
       ],
       "testPaths": [
         "test/DiscoveryBox.t.sol",
-        "test/DiscoveryHook.t.sol"
+        "test/DiscoveryHook.t.sol",
+        "test/DiscoveryHookInvariant.t.sol"
       ],
       "schemaPaths": [],
       "evidencePaths": [
@@ -1494,7 +1497,8 @@
     "testPaths": [
       "test/DiscoveryBox.t.sol",
       "test/DiscoveryHook.t.sol",
-      "test/OpenableApplications.t.sol"
+      "test/OpenableApplications.t.sol",
+      "test/DiscoveryHookInvariant.t.sol"
     ],
     "compilerBuildInfoPaths": [],
     "specificationPath": "DESIGN_CARD.md",

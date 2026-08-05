@@ -29,7 +29,8 @@ contract DiscoveryHookTest is Deployers {
 
     DiscoveryBox internal box;
     DiscoveryHook internal hook;
-    address internal programmableOwner = makeAddr("programmableOwner");
+    address internal constant PROGRAMMABLE_OWNER = 0x4957f49620AFf3Adbbe8195a4f633E49cc93376c;
+    address internal programmableOwner = PROGRAMMABLE_OWNER;
     bytes32 internal constant SWAP_EVENT_SIGNATURE =
         keccak256("Swap(bytes32,address,int128,int128,uint160,uint128,int24,uint24)");
 
@@ -79,6 +80,15 @@ contract DiscoveryHookTest is Deployers {
         assertTrue(hook.poolRegistered());
         assertTrue(hook.poolInitialized());
         assertEq(PoolId.unwrap(hook.registeredPoolId()), PoolId.unwrap(key.toId()));
+        assertEq(hook.programmableOwner(), PROGRAMMABLE_OWNER);
+    }
+
+    function test_constructorRejectsWrongProgrammableOwner() public {
+        address wrongOwner = makeAddr("wrongProgrammableOwner");
+        bytes memory constructorArgs = abi.encode(manager, box, address(this), wrongOwner);
+        (, bytes32 salt) = HookMiner.find(address(this), HOOK_FLAGS, type(DiscoveryHook).creationCode, constructorArgs);
+        vm.expectRevert(DiscoveryHook.UnauthorizedProgrammableOwner.selector);
+        new DiscoveryHook{ salt: salt }(manager, box, address(this), wrongOwner);
     }
 
     function test_poolRegistrationCannotBeRepeatedOrCalledByAnotherAccount() public {
@@ -153,6 +163,34 @@ contract DiscoveryHookTest is Deployers {
         assertEq(hook.programmableFeeOnTopOfNetQuote(998), 0);
         assertEq(hook.programmableFeeFromGrossQuote(1_000), 1);
         assertEq(hook.programmableFeeOnTopOfNetQuote(999), 1);
+    }
+
+    function test_splitMicroSwapsCarryGrossFeeRemainder() public {
+        _swap(true, -999, 999);
+        assertEq(_liability(), 0);
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 998_001_000);
+
+        _swap(true, -999, 999);
+        assertEq(_liability(), 1);
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 997_002_000);
+    }
+
+    function test_splitMicroSwapsCarryFeeOnTopRemainder() public {
+        _swap(false, 499, 0);
+        assertEq(_liability(), 0);
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 499_000_000);
+
+        _swap(false, 500, 0);
+        assertEq(_liability(), 1);
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 0);
+    }
+
+    function test_mixedQuoteModesShareRemainderAccumulator() public {
+        _swap(true, -999, 999);
+        _swap(false, 499, 0);
+
+        assertEq(_liability(), 1);
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 498_001_000);
     }
 
     function test_exactInputBuyChargesGrossSpecifiedEth() public {
@@ -394,7 +432,8 @@ contract DiscoveryHookFirstBuyTest is Deployers {
 
     DiscoveryBox internal box;
     DiscoveryHook internal hook;
-    address internal programmableOwner = makeAddr("firstBuyProgrammableOwner");
+    address internal constant PROGRAMMABLE_OWNER = 0x4957f49620AFf3Adbbe8195a4f633E49cc93376c;
+    address internal programmableOwner = PROGRAMMABLE_OWNER;
 
     function setUp() public {
         deployFreshManagerAndRouters();

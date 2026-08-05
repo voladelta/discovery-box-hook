@@ -1,6 +1,6 @@
 # Discovery Box evidence
 
-This ledger separates completed local checks from planned prototype, candidate and release work. It is tracked with the initial public repository state. Reviewers should bind their review to the exact `main` commit they inspect rather than rely on a self-referential hash embedded in that commit.
+This ledger separates completed local checks from planned prototype, candidate and release work. It was regenerated for the repaired source revision. Reviewers should bind their review to the exact public `main` commit and the central package's source binding rather than rely on a self-referential hash embedded in that commit.
 
 ## Current identity
 
@@ -22,7 +22,7 @@ This ledger separates completed local checks from planned prototype, candidate a
 
 ### Deterministic compatibility preflight
 
-Status: passed on 2 August 2026
+Status: passed on 6 August 2026
 
 ```text
 node /Users/mbp/.codex/skills/programmable-v4-hook-builder/scripts/cli.mjs check \
@@ -36,14 +36,14 @@ node /Users/mbp/.codex/skills/programmable-v4-hook-builder/scripts/cli.mjs check
 - Blockers: 0
 - Warnings: 4
 - Report version: 2
-- Structured submission hash reported by checker: `sha256:f2baa67a6f0329446a5a7104e7741f2e30f835e874b0d3ad270b4b1941bd6716`
-- File SHA-256, `submission.json`: `7fd11228c5196a570a4a18bfe77e4f1f193bbc5e454c8c26900408f2c32134c4`
+- Structured submission hash reported by checker: `sha256:89681186b8c8ad5e81b964d2b4ae4e535eb302971769f736a753f92831214b87`
+- File SHA-256, `submission.json`: `a18629a8bc69530a5f43d16060795191669878f7ded2b3a807e26355da5d5f0b`
 
 The warnings require review of `beforeSwapReturnDelta`, the novel project category, the irreversible-redemption capability and the token behaviour. The checker does not prove the equations, source or deployment.
 
 ### Reduced-form economic model
 
-Status: passed on 2 August 2026
+Status: passed on 6 August 2026
 
 ```text
 uv run --python 3.14 analysis/economic_model.py --runs 20000
@@ -62,7 +62,7 @@ This is a threshold-choice stress model, not a demand forecast or exact v4 liqui
 
 ### Solidity build and tests
 
-Status: passed on 2 August 2026
+Status: passed on 6 August 2026
 
 ```text
 forge fmt --check
@@ -72,23 +72,25 @@ forge test -vv
 
 - Solidity: 0.8.26
 - EVM target: Cancun
-- Test result: 40 passed, 0 failed, 0 skipped
+- Test result: 47 passed, 0 failed, 0 skipped
+- Stateful invariant result: 3 invariant properties passed at 256 runs and depth 64; 16,384 calls per property; 0 reverts
 - Fuzz runs: 1,000 for each of 3 fuzz properties
 - `DiscoveryBox` runtime: 4,015 bytes; initcode: 5,392 bytes
-- `DiscoveryHook` runtime: 12,058 bytes; initcode: 13,236 bytes
+- `DiscoveryHook` runtime: 13,190 bytes; initcode: 14,451 bytes
 - `TicketBox` runtime: 4,563 bytes; initcode: 6,045 bytes
 - `CollectibleBox` runtime: 9,469 bytes; initcode: 11,031 bytes
 - `IOpenableAsset.sol` SHA-256: `e4f2f5a93ba30259d6a334474630b7aa2613605927e4d143ad2f3a1f14cfa352`
 - `OpenableERC20.sol` SHA-256: `0b34080e99e27060aa8e5008c8024ff190f76f91c024b7f4f480730b08e2477a`
 - `DiscoveryBox.sol` SHA-256: `78d27b65215d410155ac6ca02b733bfb0ce649b12439f228b7ec7f280f611df6`
-- `DiscoveryHook.sol` SHA-256: `e9735f669953d1b96926467eb775fe0b6470e8130226a229b9e8c938d62d125f`
+- `DiscoveryHook.sol` SHA-256: `234c9d2a9c329feb275558d1755c99c5445adb56f078966c57bf02b8b54dcf7f`
 - `TicketBox.sol` SHA-256: `4ee0567224fca1d7e71e7d064abcd8e33472f62a0b7ad4a349265128b945f099`
 - `CollectibleBox.sol` SHA-256: `367d9d797fa6b25fe675fe18ca53678b9549bfae481993c4a4c859b237eb807b`
 - `DiscoveryBox.t.sol` SHA-256: `2d80bce86e0abe510382cfdc6adcfdd95d2f97b189c41b0116344b5038997dd3`
-- `DiscoveryHook.t.sol` SHA-256: `12608c4263591253800c7e381e141382f9d865e8e822114bc8ed3b265353307f`
+- `DiscoveryHook.t.sol` SHA-256: `b82a4b68f5d4a2a55c732b9534c68dbbc404f089859a397c0067317dd1df9d16`
+- `DiscoveryHookInvariant.t.sol` SHA-256: `10b4259875a4afad96647d4248f04b10195eddf9e0654f166c6d483eb258f16d`
 - `OpenableApplications.t.sol` SHA-256: `3b1ab926a772d197258d25e9cd55c2163707334fab70289966054e2787cae61f`
 
-The tests use the real v4 PoolManager and test routers. They cover all 4 swap modes, the dynamic LP-fee milestones, gross-up fuzzing, specified-ETH partial-fill rejection, claim authorization and rollback, full-supply opening and the first buy from a BOX-only pool with a zero native ETH PoolManager balance. They also prove that the same hook boundary accepts the ticket application and cover application-data validation, atomic rollback, ticket consumption, deterministic ERC-1155 outcomes and receiver re-entry rejection.
+The tests use the real v4 PoolManager and test routers. They cover all 4 swap modes, the dynamic LP-fee milestones, gross-up fuzzing, specified-ETH partial-fill rejection, exact-owner enforcement, split micro-swaps in both quote modes (including mixed modes), claim authorization and rollback, full-supply opening and the first buy from a BOX-only pool with a zero native ETH PoolManager balance. The stateful handler exercises arbitrary buys, sells, openings and partial claims while checking liability backing, common-denominator remainder bounds and supply conservation. They also prove that the same hook boundary accepts the ticket application and cover application-data validation, atomic rollback, ticket consumption, deterministic ERC-1155 outcomes and receiver re-entry rejection.
 
 ### Demonstration website
 
@@ -137,7 +139,7 @@ The visual checks confirmed the first-screen hierarchy, responsive reflow, mobil
 
 ### Static analysis
 
-Status: passed with 2 accepted findings on 2 August 2026
+Status: passed with 2 accepted findings on 6 August 2026
 
 ```text
 uvx --python 3.13 --from slither-analyzer slither . \
@@ -150,7 +152,7 @@ uvx --python 3.13 --from slither-analyzer slither . \
 - Detectors run: 102
 - Findings: 2 timestamp comparisons in `DiscoveryBox`
 
-Both findings are intentional. Membership starts or extends from the later of the current expiry and block time, and active membership is defined by expiry after block time. Validator control over a few seconds does not create a material advantage against a fixed 30-day duration. No reentrancy, ignored-return, uninitialised-local or fee-accounting finding remained after the hardening pass.
+Both findings are intentional timestamp comparisons in `DiscoveryBox`. Membership starts or extends from the later of the current expiry and block time, and active membership is defined by expiry after block time. Validator control over a few seconds does not create a material advantage against a fixed 30-day duration. No reentrancy, ignored-return, uninitialised-local or fee-accounting finding remained after the repair.
 
 ### Gross-up arithmetic identity
 
@@ -173,7 +175,7 @@ For `F=floor(N*1000/999000)` and `G=N+F`, all 210,000 cases satisfied `F=floor(G
 - Paths: before swap when ETH is specified; after swap when ETH is unspecified.
 - Owner and sole claim authority: `0x4957f49620AFf3Adbbe8195a4f633E49cc93376c`.
 - Liability: `(poolId, native ETH, owner)` with no cross-pool netting.
-- Accrual: claimable liability backed by a PoolManager ERC-6909 native-currency claim minted to the hook.
+- Accrual: claimable liability backed by a PoolManager ERC-6909 native-currency claim minted to the hook. Fractional fee carry is stored in a common `999000000` denominator so gross and fee-on-top quote modes share one accumulator.
 - Collection event: `ProgrammableFeeAccrued`.
 - Claim event: `ProgrammableFeeClaimed`.
 - Same-pool hook-initiated swap: forbidden.
@@ -184,12 +186,12 @@ The exact source and test paths are bound in `submission.json`. Dependencies are
 
 | Gate | State | Required evidence |
 | --- | --- | --- |
-| Compiler and dependency closure | partial | Pinned revisions and a clean local build pass; compiler build information and expanded closure manifest remain |
+| Compiler and dependency closure | passed locally | One committed dependency closure, pinned revisions, clean bootstrap no-op, compatibility closure `complete` and clean local build; compiler build information remains a maintainer evidence input |
 | Permission address | partial | Local CREATE2 mining and all 14 flag checks pass; release salt, initcode hash and deployment remain |
 | Unit tests | passed | Generic opening, membership, tickets, collectibles, initialization, fee curve, claims and failures |
 | 4-quadrant fee tests | passed | Exact amounts, rounding, gross-up, final caller deltas and PoolManager execution |
 | Fuzz tests | passed | 1,000 runs each for gross-up identity, fee monotonicity and supply conservation |
-| Stateful invariants | partial | Supply conservation and liability backing pass in focused and fuzz tests; a stateful handler remains |
+| Stateful invariants | passed locally | Three properties pass at 256 runs and depth 64 with arbitrary swap, claim and open sequences |
 | Fork tests | planned | Exact deployment records, pinned block and current-head smoke |
 | Static analysis | passed | Slither 0.11.6 found only 2 intentional membership timestamp comparisons |
 | Gas and code size | passed | All canonical and reference contracts are below runtime and initcode limits |
