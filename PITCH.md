@@ -138,14 +138,16 @@ Specified-ETH swaps reject partial core fills. Unspecified-ETH swaps charge only
 
 The local prototype currently has:
 
-- 40 passing Foundry tests
+- 55 passing Foundry tests
 - coverage of all 4 swap modes against the real v4 PoolManager
+- 5 stateful invariants at 256 runs and depth 64, including non-vacuous exact-output coverage and the cumulative gross-volume fee identity
+- caller-bound atomic launch and registrar-only CREATE2 child deployment regressions
 - an end-to-end proof that ticket openings move the same hook fee curve through `IOpenableAsset`
 - a passing first-buy test from a `BOX`-only pool with no starting native ETH
 - a responsive Bun and Vite demo for the complete buy, open, membership and fee-change story
 - wagmi and viem contract reads plus an optional configured `open(1)` write, with no deployment claim
 - 3 fuzz properties with 1,000 runs each
-- Slither analysis with only 2 accepted membership timestamp findings
+- Slither analysis with 5 accepted findings: 2 intentional membership timestamp comparisons and 3 transient-guarded launch heuristics
 - a `PROTOTYPE_READY` Builder result with 0 blockers
 
 This PR does not claim deployment, audit, routing approval, acceptance or product availability.

@@ -26,7 +26,7 @@ All 4 direction and exactness modes must work. When ETH is unspecified, the fee 
 
 Programmable receives exactly 10 basis points of executed gross ETH-side volume. This is the complete hook-owned charge. The project receives no hook-owned swap fee.
 
-LP fees belong to liquidity providers. Fees earned by the locked initial position go to one immutable campaign recipient.
+LP fees belong to liquidity providers. The raw initial position is permanently owned by `DiscoveryLaunchFactory`; its caller-bound launch derives a unique BOX salt, stores that caller as the immutable per-pool fee recipient and permits fee-only collection without principal removal. Direct child deployment is restricted to the launch factory, so copied or predeploying transactions cannot take that entitlement. Third-party positions retain their ordinary ownership and exits.
 
 Opening burns `BOX`. It does not create a cash claim, refund or random reward.
 
@@ -53,11 +53,11 @@ Only Programmable's immutable owner can claim its liability. The owner can selec
 
 ## Dependencies
 
-The contracts depend only on pinned Uniswap v4, Programmable and selected official launch components.
+The contracts depend on the pinned Uniswap v4 PoolManager and the bound BOX, HookMiner and atomic launch factories recorded in the launch specification.
 
 The model uses no oracle, keeper, randomness, bridge, governance or user identity in hook callbacks.
 
-The website reads confirmed chain state. It does not make an indexer authoritative.
+When configured, the website reads the latest BOX opening count and hook sell fee directly from Ethereum mainnet and can submit `open(1)`. Its buy flow, membership cards and reference applications remain labelled local simulations. It supplies no router or indexer.
 
 ## Failure behaviour
 
@@ -69,7 +69,7 @@ An app can stop providing its service. The onchain expiry proves entitlement, no
 
 ## Product surfaces
 
-The canonical prototype contains 2 deployed project contracts and one demonstration website.
+The canonical prototype deploys 3 reusable launch factories plus one BOX asset and one mined hook per launch, together with one demonstration website.
 
 The source also contains a generic interface, an abstract fixed-supply base and 2 reference applications. These are not extra canonical launch assets.
 

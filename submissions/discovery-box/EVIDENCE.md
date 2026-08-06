@@ -36,9 +36,9 @@ node /Users/mbp/.codex/skills/programmable-v4-hook-builder/scripts/cli.mjs check
 - Blockers: 0
 - Warnings: 4
 - Report version: 2
-- Structured submission hash reported by checker: `sha256:d6e4068536b9e661e275f139bef3278aa7ed81c9e1522a3ea8a902094099daf5`
-- File SHA-256, `submission.json`: `33965d053fd05cce95e92ddfc2bf87e823a91b676094cbd3000945013ad4d7ef`
-- File SHA-256, `launch.json`: `69a47b397aef4eb04c48bf93cda268075fd8351ee122f72b9895973231cc718b`
+- Structured submission hash reported by checker: `sha256:64d53f0767e37e094a7529b328f64348a81fdc01c79dbaae7d29b19842e215cc`
+- File SHA-256, `submission.json`: `40722054dbc515d37fbff1399ac5390bc1b32aa6e83dbd208a9f963727ff772a`
+- File SHA-256, `launch.json`: `7946227c494dcbb297aed18e525e9bf3b69a4b622bd4d3eae23cb4e4f0a52d62`
 
 The warnings require review of `beforeSwapReturnDelta`, the novel project category, the irreversible-redemption capability and the token behaviour. The checker does not prove the equations, source or deployment.
 
@@ -69,29 +69,41 @@ Status: passed on 6 August 2026
 forge fmt --check
 forge build --sizes
 forge test -vv
+forge test --gas-report --match-contract DiscoveryLaunchFactoryTest
 ```
 
 - Solidity: 0.8.26
 - EVM target: Cancun
-- Test result: 47 passed, 0 failed, 0 skipped
-- Stateful invariant result: 3 invariant properties passed at 256 runs and depth 64; 16,384 calls per property; 0 reverts
+- Build warnings: 0
+- Test result: 55 passed, 0 failed, 0 skipped
+- Stateful invariant result: 5 invariant properties passed at 256 runs and depth 64; 16,384 calls per property; 0 handler reverts
+- Exact-output invariant calls: more than 2,600 handler calls in each direction in the final report; successful exact-output buys and sells are asserted nonzero and attempts equal successes plus caught inner reverts
 - Fuzz runs: 1,000 for each of 3 fuzz properties
 - `DiscoveryBox` runtime: 4,015 bytes; initcode: 5,392 bytes
-- `DiscoveryHook` runtime: 13,190 bytes; initcode: 14,451 bytes
+- `DiscoveryBoxFactory` runtime: 5,818 bytes; initcode: 5,846 bytes
+- `DiscoveryHook` runtime: 13,246 bytes; initcode: 14,507 bytes
+- `DiscoveryHookFactory` runtime: 15,741 bytes; initcode: 15,769 bytes
+- `DiscoveryLaunchFactory` runtime: 10,258 bytes; initcode: 10,633 bytes
+- `DiscoveryLaunchFactory.launch` measured maximum: 3,956,865 gas in the targeted local report
+- `DiscoveryLaunchFactory.collectFees` measured maximum: 114,120 gas in the targeted local report
 - `TicketBox` runtime: 4,563 bytes; initcode: 6,045 bytes
 - `CollectibleBox` runtime: 9,469 bytes; initcode: 11,031 bytes
 - `IOpenableAsset.sol` SHA-256: `e4f2f5a93ba30259d6a334474630b7aa2613605927e4d143ad2f3a1f14cfa352`
 - `OpenableERC20.sol` SHA-256: `0b34080e99e27060aa8e5008c8024ff190f76f91c024b7f4f480730b08e2477a`
 - `DiscoveryBox.sol` SHA-256: `78d27b65215d410155ac6ca02b733bfb0ce649b12439f228b7ec7f280f611df6`
-- `DiscoveryHook.sol` SHA-256: `f47d1302b0dbe3336db421493c0b86a92811ca05e2bf37523c3aeeb52eaa4d98`
+- `DiscoveryBoxFactory.sol` SHA-256: `dbd1a5b532cfd88eb6f3412738c44e852b1c0e305efa003dc788985e50a71b74`
+- `DiscoveryHook.sol` SHA-256: `17b6febf869ea367df2008b1de18007843e43c81ae1702daaf19e95fea657ec3`
+- `DiscoveryHookFactory.sol` SHA-256: `4050c131cd6dc55b447157d37ead2472c6b5f93cbdbdb6a9027f511c02f0f5d1`
+- `DiscoveryLaunchFactory.sol` SHA-256: `abda631409b964bb185e6d6d2abc10d0f3cca378814c4e5bf9ef65a7b2ac0011`
 - `TicketBox.sol` SHA-256: `4ee0567224fca1d7e71e7d064abcd8e33472f62a0b7ad4a349265128b945f099`
 - `CollectibleBox.sol` SHA-256: `367d9d797fa6b25fe675fe18ca53678b9549bfae481993c4a4c859b237eb807b`
-- `DiscoveryBox.t.sol` SHA-256: `2d80bce86e0abe510382cfdc6adcfdd95d2f97b189c41b0116344b5038997dd3`
-- `DiscoveryHook.t.sol` SHA-256: `b82a4b68f5d4a2a55c732b9534c68dbbc404f089859a397c0067317dd1df9d16`
-- `DiscoveryHookInvariant.t.sol` SHA-256: `10b4259875a4afad96647d4248f04b10195eddf9e0654f166c6d483eb258f16d`
+- `DiscoveryBox.t.sol` SHA-256: `8cc7be0de771f3a864a01175b6622dca9590cdbfb0fb513640a68fc159fd5b28`
+- `DiscoveryHook.t.sol` SHA-256: `1ad1cb07de5fa627446b8d3ed1021c8ebbfe7f5ee5ab0a727d4d4b80ae53c1c4`
+- `DiscoveryLaunchFactory.t.sol` SHA-256: `6fa2449570f7727491d42d6895c00821c29dbf0983b2dcae44a693d7c530ed9c`
+- `DiscoveryHookInvariant.t.sol` SHA-256: `14cf7a1921a7594c02682d41364a480afa12c2eb31c1efe3e526bb36f3c62dba`
 - `OpenableApplications.t.sol` SHA-256: `3b1ab926a772d197258d25e9cd55c2163707334fab70289966054e2787cae61f`
 
-The tests use the real v4 PoolManager and test routers. They cover all 4 swap modes, the dynamic LP-fee milestones, gross-up fuzzing, specified-ETH partial-fill rejection, exact-owner enforcement, split micro-swaps in both quote modes (including mixed modes), claim authorization and rollback, full-supply opening and the first buy from a BOX-only pool with a zero native ETH PoolManager balance. The stateful handler exercises arbitrary buys, sells, openings and partial claims while checking liability backing, common-denominator remainder bounds and supply conservation. They also prove that the same hook boundary accepts the ticket application and cover application-data validation, atomic rollback, ticket consumption, deterministic ERC-1155 outcomes and receiver re-entry rejection.
+The tests use the real v4 PoolManager and test routers. They cover all 4 swap modes, the exact 999-wei then 1-wei zero-core regression, the dynamic LP-fee milestones, gross-up fuzzing, specified-ETH partial-fill rejection, exact-owner enforcement, split micro-swaps in both quote modes (including mixed modes), claim authorization and rollback, full-supply opening and the first buy from a BOX-only pool with a zero native ETH PoolManager balance. The stateful handler records exact-input and exact-output buys and sells, openings and partial claims while checking non-vacuous exact-output execution, liability backing, the sub-1,000,000 remainder bound, the exact cumulative-gross fee identity and supply conservation. The launch tests bind separate BOX and HookMiner factories, caller-bound BOX salts, registrar-only child deployment, copied-calldata front-running failure, constructor configuration, permission bits, atomic registration, initialization, one-sided locked liquidity, immutable LP-fee recipient collection without principal removal, invalid-salt rollback and callback authentication. The suite also proves that the same hook boundary accepts the ticket application and covers application-data validation, atomic rollback, ticket consumption, deterministic ERC-1155 outcomes and receiver re-entry rejection.
 
 ### Demonstration website
 
@@ -140,7 +152,7 @@ The visual checks confirmed the first-screen hierarchy, responsive reflow, mobil
 
 ### Static analysis
 
-Status: passed with 2 accepted findings on 6 August 2026
+Status: completed with 5 accepted findings on 6 August 2026
 
 ```text
 uvx --python 3.13 --from slither-analyzer slither . \
@@ -149,11 +161,11 @@ uvx --python 3.13 --from slither-analyzer slither . \
 ```
 
 - Slither: 0.11.6
-- Contracts analysed: 50
+- Contracts analysed: 59
 - Detectors run: 102
-- Findings: 2 timestamp comparisons in `DiscoveryBox`
+- Findings: 2 timestamp comparisons in `DiscoveryBox`; 2 balance-read reentrancy heuristics and 1 benign-reentrancy heuristic in `DiscoveryLaunchFactory`
 
-Both findings are intentional timestamp comparisons in `DiscoveryBox`. Membership starts or extends from the later of the current expiry and block time, and active membership is defined by expiry after block time. Validator control over a few seconds does not create a material advantage against a fixed 30-day duration. No reentrancy, ignored-return, uninitialised-local or fee-accounting finding remained after the repair.
+The timestamp comparisons are intentional: membership starts or extends from the later of the current expiry and block time, and active membership is defined by expiry after block time. Validator control over a few seconds does not create a material advantage against a fixed 30-day duration. The three launch findings are false-positive heuristics against a function protected by `ReentrancyGuardTransient.nonReentrant`: the external factories and BOX are exact bound implementations, both child factories authenticate the launch registrar, the PoolManager callback additionally requires the active context hash, and the fixed BOX transfer has no receiver callback. The launch tests cover front-running, direct child deployment, direct callback rejection, invalid-salt rollback and the complete nested PoolManager path. Slither reported no ignored return, uninitialised local or fee-accounting finding.
 
 ### Gross-up arithmetic identity
 
@@ -176,7 +188,7 @@ For `F=floor(N*1000/999000)` and `G=N+F`, all 210,000 cases satisfied `F=floor(G
 - Paths: before swap when ETH is specified; after swap when ETH is unspecified.
 - Owner and sole claim authority: `0x4957f49620AFf3Adbbe8195a4f633E49cc93376c`.
 - Liability: `(poolId, native ETH, owner)` with no cross-pool netting.
-- Accrual: claimable liability backed by a PoolManager ERC-6909 native-currency claim minted to the hook. Fractional fee carry is stored in a common `999000000` denominator so gross and fee-on-top quote modes share one accumulator.
+- Accrual: claimable liability backed by a PoolManager ERC-6909 native-currency claim minted to the hook. The shared remainder is below 1,000,000 and satisfies `accruedFee * 1,000,000 + remainder = cumulativeGrossVolume * 1000` across gross and fee-on-top modes.
 - Collection event: `ProgrammableFeeAccrued`.
 - Claim event: `ProgrammableFeeClaimed`.
 - Same-pool hook-initiated swap: forbidden.
@@ -192,11 +204,11 @@ The exact source and test paths are bound in `submission.json`. Dependencies are
 | Unit tests | passed | Generic opening, membership, tickets, collectibles, initialization, fee curve, claims and failures |
 | 4-quadrant fee tests | passed | Exact amounts, rounding, gross-up, final caller deltas and PoolManager execution |
 | Fuzz tests | passed | 1,000 runs each for gross-up identity, fee monotonicity and supply conservation |
-| Stateful invariants | passed locally | Three properties pass at 256 runs and depth 64 with arbitrary swap, claim and open sequences |
+| Stateful invariants | passed locally | Five properties pass at 256 runs and depth 64 with exact-input/output swaps in both directions, non-vacuity counters, claims and opening sequences |
 | Fork tests | planned | Exact deployment records, pinned block and current-head smoke |
-| Static analysis | passed | Slither 0.11.6 found only 2 intentional membership timestamp comparisons |
-| Gas and code size | passed | All canonical and reference contracts are below runtime and initcode limits |
-| Router parity | planned | Universal Router V2.0 quote and execution across all 4 modes |
+| Static analysis | passed | Slither 0.11.6 produced 5 accepted findings: 2 intentional timestamp comparisons and 3 transient-guarded launcher reentrancy heuristics |
+| Gas and code size | passed | All canonical and reference contracts are below runtime and initcode limits; targeted launch and fee-collection maxima are recorded above |
+| Router parity | planned | Select and bind a reviewed production route, then prove quote and execution parity across all 4 modes; no swap client is supplied here |
 | Demo app | planned | Real confirmed membership gate plus stale and wrong-chain states |
 | Internal accounting review | passed | Return-delta signs, gross basis, first-buy liveness, ERC-6909 custody and claims reviewed against v4 core source |
 | Independent accounting review | required | An external reviewer must repeat the accounting review before candidate status |

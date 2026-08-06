@@ -122,13 +122,13 @@ The implementation must cover:
 
 We will use the released builder skill and its fee policy as the source of truth. We will not recreate the return-delta accounting from memory.
 
-## Reuse the official launch path
+## Build the narrow bound launch path
 
-We will not build a campaign factory, position manager or fee-split vault for the hackathon.
+The reviewed source includes separate BOX and HookMiner CREATE2 factories plus one atomic launch factory. Splitting the deployment boundaries keeps every runtime below EIP-170 while binding token creation, hook configuration, PoolKey registration, initialization and the permanent one-sided position.
 
-We will reuse the official launch components where they match this model. The launch will use one immutable campaign recipient for fees earned by the locked initial position.
+The BOX salt is caller-bound and both child factories accept only the launch registrar, so copied calldata or direct predeployment cannot take the intended caller's immutable per-pool fee entitlement. The launch factory exposes fee-only collection and no principal-removal path.
 
-The future product may split these fees among participating apps. That split is outside this submission.
+The future product may replace the single launch-recipient entitlement with a separately reviewed immutable app split. That split is outside this submission.
 
 ## Build one demonstration website
 

@@ -12,7 +12,7 @@ contract DiscoveryBoxTest is Test {
 
     function setUp() public {
         box = new DiscoveryBox(address(this));
-        box.transfer(alice, 10 ether);
+        assertTrue(box.transfer(alice, 10 ether));
     }
 
     function test_constructorCreatesFixedSupply() public view {

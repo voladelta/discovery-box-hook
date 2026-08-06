@@ -76,6 +76,8 @@ See [Discovery Box hackathon scope](HACKATHON_SCOPE.md) for the acceptance crite
 - `TicketBox` is a reference admission application
 - `CollectibleBox` is a deterministic ERC-1155 reference application
 - `DiscoveryHook` binds one native ETH and openable-asset PoolKey, applies directional LP fees and accounts for Programmable's fee in all 4 swap modes
+- `DiscoveryBoxFactory` and `DiscoveryHookFactory` restrict caller-bound CREATE2 child deployment to the atomic launch registrar
+- `DiscoveryLaunchFactory` deploys, registers, initializes and permanently seeds the canonical pool while allowing only fee collection from its locked initial position
 
 The canonical contracts are not upgradeable. There is no owner mint, pause, blacklist, rescue or mutable fee parameter.
 
