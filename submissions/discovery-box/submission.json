@@ -1,7 +1,7 @@
 {
-  "$schema": "urn:programmable:v4-hook-submission:1.3.0",
+  "$schema": "urn:programmable:v4-hook-submission:1.5.0",
   "schemaVersion": 1,
-  "standardVersion": "1.3.0",
+  "standardVersion": "1.5.0",
   "stage": "proposal",
   "model": {
     "id": "discovery-box",
@@ -16,6 +16,11 @@
     "contact": "https://github.com/voladelta",
     "beneficiary": null,
     "licenseDeclaration": "Discovery Box is submitted under the repository MIT License."
+  },
+  "builderTemplate": {
+    "schemaVersion": "1.0.0",
+    "source": "manual",
+    "templateSelection": null
   },
   "publicMetadata": {
     "project": {
@@ -37,6 +42,7 @@
       "metadataMutable": false,
       "metadataOwner": null
     },
+    "localDiscoveryTags": [],
     "claimedAffiliations": [],
     "providerPresentations": []
   },
@@ -188,7 +194,7 @@
   },
   "programmableFee": {
     "policyId": "programmable-volume-fee-v1",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.1.0",
     "poolScope": "canonical-launch-pool-key",
     "rates": {
       "unit": "hundredths-of-bip",
@@ -242,6 +248,11 @@
         "owner"
       ],
       "crossPoolNetting": false,
+      "roundingPolicy": "cumulative-independent-platform-project-remainders",
+      "remainderScope": "canonical-pool-lifetime",
+      "claimResetsRemainders": false,
+      "minimumGrossQuoteUnits": 1000,
+      "fragmentationResistant": true,
       "valueFlowId": "programmable-volume-fee",
       "collectionEvent": "ProgrammableFeeAccrued(bytes32 indexed poolId,address indexed currency,uint256 grossQuote,uint256 fee)",
       "claimEvent": "ProgrammableFeeClaimed(bytes32 indexed poolId,address indexed currency,address indexed destination,uint256 amount)"
@@ -253,7 +264,8 @@
       ],
       "testPaths": [
         "test/DiscoveryHook.t.sol",
-        "test/DiscoveryHookInvariant.t.sol"
+        "test/DiscoveryHookInvariant.t.sol",
+        "test/DiscoveryMainnetFork.t.sol"
       ]
     }
   },
@@ -706,7 +718,7 @@
       "crossPoolNetting": false,
       "transferPolicy": "Claims are non-transferable by project policy: the hook exposes no ERC-6909 transfer or operator-approval method and redemption pays underlying ETH only through owner claims.",
       "redemption": "Only the immutable Programmable owner may start redemption. One claim-specific unlock burns no more than its liability and takes exactly that underlying amount to the destination supplied for that call.",
-      "roundingDust": "The accumulator stores the residual of cumulative gross native volume times 1000 on a 1,000,000-unit scale. Gross modes divide by 1,000,000; fee-on-top modes solve the same identity by dividing net-volume numerators by 999,000. Thus accruedFee*1,000,000 + remainder equals cumulativeGrossVolume*1000 across mixed modes. A zero fee mints no claim, and a specified gross swap reverts if carried dust would leave a zero AMM leg.",
+      "roundingDust": "The platform accumulator stores the residual of cumulative gross native volume times 1000 on a 1,000,000-unit scale for the canonical pool lifetime; claims do not reset it. Gross modes divide by 1,000,000; fee-on-top modes solve the same identity by dividing net-volume numerators by 999,000. Thus accruedFee*1,000,000 + remainder equals cumulativeGrossVolume*1000 across mixed modes before claims, while lifetime fees earned are independent of claim timing. The project rate is zero and its independent stream is inert. Zero execution is fee-free; every positive executed gross quote below 1,000 units reverts before accounting in all four quadrants.",
       "aggregateSolvencyEquation": "For native currency id uint160(address(0)), PoolManager.balanceOf(DiscoveryHook,id) must be greater than or equal to the sum of all PoolId, currency and beneficiary liabilities; this hook admits one PoolId."
     },
     "nestedActions": {
@@ -857,6 +869,16 @@
       "permit2Mode": null,
       "finalSwapDeltaValidated": null
     },
+    "sdkSafetyProfile": {
+      "packageRootImportsOnly": null,
+      "hookedQuoteSource": null,
+      "localHookedPoolMathDisabled": null,
+      "hookDataParity": null,
+      "multiHopHookDataMode": null,
+      "perHopPriceBounds": null,
+      "slippageSemantics": null,
+      "deprecatedLiquidityActionsDisabled": null
+    },
     "appSourcePaths": [],
     "integrationTestPaths": [],
     "quoteExecutionParity": null,
@@ -999,7 +1021,8 @@
       "testPaths": [
         "test/DiscoveryBox.t.sol",
         "test/DiscoveryHook.t.sol",
-        "test/DiscoveryHookInvariant.t.sol"
+        "test/DiscoveryHookInvariant.t.sol",
+        "test/DiscoveryMainnetFork.t.sol"
       ],
       "schemaPaths": [],
       "evidencePaths": [
@@ -1515,7 +1538,8 @@
       "test/DiscoveryHook.t.sol",
       "test/DiscoveryLaunchFactory.t.sol",
       "test/OpenableApplications.t.sol",
-      "test/DiscoveryHookInvariant.t.sol"
+      "test/DiscoveryHookInvariant.t.sol",
+      "test/DiscoveryMainnetFork.t.sol"
     ],
     "compilerBuildInfoPaths": [],
     "specificationPath": "submissions/discovery-box/launch.json",

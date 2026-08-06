@@ -33,8 +33,10 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     uint24 public constant INITIAL_SELL_LP_FEE = 10_000;
     uint24 public constant SELL_LP_FEE_RANGE = INITIAL_SELL_LP_FEE - BUY_LP_FEE;
     uint24 public constant PROGRAMMABLE_FEE = 1_000;
+    uint24 public constant PROJECT_FEE = 0;
     uint24 public constant FEE_DENOMINATOR = 1_000_000;
     uint24 public constant NET_DENOMINATOR = FEE_DENOMINATOR - PROGRAMMABLE_FEE;
+    uint256 public constant MINIMUM_GROSS_QUOTE = 1_000;
     // Fee numerators use the same 1e6 scale as gross quote volume.
     uint256 public constant FEE_REMAINDER_DENOMINATOR = FEE_DENOMINATOR;
     int24 public constant TICK_SPACING = 60;
@@ -77,7 +79,7 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     error InvalidInitializer();
     error InvalidInitialPrice();
     error PartialFillUnsupported();
-    error ZeroCoreSwapUnsupported();
+    error GrossQuoteBelowMinimum(uint256 grossQuote);
     error InvalidClaimAmount();
     error InsolventLiability();
     error InvalidClaimCallback();
@@ -273,7 +275,6 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
         uint256 remainderAfter;
         if (params.amountSpecified < 0) {
             (fee, feeBasis, remainderAfter) = _feeFromGrossQuote(quote, remainderBefore);
-            if (fee >= quote) revert ZeroCoreSwapUnsupported();
         } else {
             (fee, feeBasis, remainderAfter) = _feeOnTopOfNetQuote(quote, remainderBefore);
         }
@@ -292,6 +293,8 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     }
 
     function _accrue(uint256 fee, uint256 grossQuote, uint256 remainderAfter) private {
+        if (grossQuote != 0 && grossQuote < MINIMUM_GROSS_QUOTE) revert GrossQuoteBelowMinimum(grossQuote);
+
         feeRemainder[registeredPoolId][CurrencyLibrary.ADDRESS_ZERO][programmableOwner] = remainderAfter;
         if (fee == 0) return;
 

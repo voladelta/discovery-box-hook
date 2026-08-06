@@ -106,7 +106,7 @@ contract DiscoveryHookInvariantHandler is Deployers {
         modifyLiquidityRouter.modifyLiquidity{ value: 1 ether }(key, LIQUIDITY_PARAMS, ZERO_BYTES);
 
         _recordExactOutput(true, 1_000_000, 1 ether);
-        _recordExactOutput(false, 1, 0);
+        _recordExactOutput(false, 1_000_000, 0);
         if (exactOutputBuySuccesses == 0 || exactOutputSellSuccesses == 0) {
             revert ExactOutputCoveragePrimingFailed();
         }

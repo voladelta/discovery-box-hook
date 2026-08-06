@@ -161,60 +161,73 @@ contract DiscoveryHookTest is Deployers {
         assertLt(fee, grossQuote + 1);
     }
 
-    function test_dustRoundsDownToZero() public view {
+    function test_feeMathDoesNotMakeSubminimumSwapsAdmissible() public view {
         assertEq(hook.programmableFeeFromGrossQuote(999), 0);
         assertEq(hook.programmableFeeOnTopOfNetQuote(998), 0);
         assertEq(hook.programmableFeeFromGrossQuote(1_000), 1);
         assertEq(hook.programmableFeeOnTopOfNetQuote(999), 1);
+        assertEq(hook.MINIMUM_GROSS_QUOTE(), 1_000);
+        assertEq(hook.PROJECT_FEE(), 0);
     }
 
-    function test_splitMicroSwapsCarryGrossFeeRemainder() public {
-        _swap(true, -999, 999);
-        assertEq(_liability(), 0);
-        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 999_000);
-
-        _swap(true, -999, 999);
+    function test_splitAcceptedSwapsCarryGrossFeeRemainder() public {
+        _swap(true, -1_500, 1_500);
         assertEq(_liability(), 1);
-        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 998_000);
-    }
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 500_000);
 
-    function test_carriedFeeCannotConsumeTheEntireSpecifiedGrossInput() public {
-        _swap(true, -999, 999);
-        uint256 liabilityBefore = _liability();
-        uint256 remainderBefore = hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner);
-
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                CustomRevert.WrappedError.selector,
-                address(hook),
-                IHooks.beforeSwap.selector,
-                abi.encodeWithSelector(DiscoveryHook.ZeroCoreSwapUnsupported.selector),
-                abi.encodeWithSelector(Hooks.HookCallFailed.selector)
-            )
-        );
-        _swap(true, -1, 1);
-
-        assertEq(_liability(), liabilityBefore);
-        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), remainderBefore);
-        assertEq(manager.balanceOf(address(hook), 0), liabilityBefore);
-    }
-
-    function test_splitMicroSwapsCarryFeeOnTopRemainder() public {
-        _swap(false, 499, 0);
-        assertEq(_liability(), 0);
-        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 499_000);
-
-        _swap(false, 500, 0);
-        assertEq(_liability(), 1);
+        _swap(true, -1_500, 1_500);
+        assertEq(_liability(), 3);
         assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 0);
     }
 
-    function test_mixedQuoteModesShareRemainderAccumulator() public {
-        _swap(true, -999, 999);
-        _swap(false, 499, 0);
+    function test_claimDoesNotResetLifetimeRemainder() public {
+        _swap(true, -1_500, 1_500);
+        uint256 liabilityBefore = _liability();
+        uint256 remainderBefore = hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner);
 
+        vm.prank(programmableOwner);
+        hook.claimProgrammableFee(liabilityBefore, programmableOwner);
+
+        assertEq(_liability(), 0);
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), remainderBefore);
+        assertEq(manager.balanceOf(address(hook), 0), 0);
+    }
+
+    function test_positiveGrossQuoteBelowMinimumRevertsInAllFourSwapQuadrants() public {
+        uint256 liabilityBefore = _liability();
+        uint256 remainderBefore = hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner);
+        uint256 backingBefore = manager.balanceOf(address(hook), 0);
+
+        _expectHookMinimumRevert(IHooks.beforeSwap.selector, 999);
+        _swap(true, -999, 999);
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
+
+        _expectHookMinimumRevert(IHooks.afterSwap.selector, 3);
+        _swap(true, 1, 1 ether);
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
+
+        _expectHookMinimumRevert(IHooks.afterSwap.selector, 988);
+        _swap(false, -999, 0);
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
+
+        _expectHookMinimumRevert(IHooks.beforeSwap.selector, 998);
+        _swap(false, 998, 0);
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
+
+        _swap(true, -1_000, 1_000);
         assertEq(_liability(), 1);
-        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 499_000);
+    }
+
+    function test_fuzzSubminimumSpecifiedGrossInputRevertsAtomically(uint16 rawGrossQuote) public {
+        uint256 grossQuote = bound(uint256(rawGrossQuote), 1, 999);
+        uint256 liabilityBefore = _liability();
+        uint256 remainderBefore = hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner);
+        uint256 backingBefore = manager.balanceOf(address(hook), 0);
+
+        _expectHookMinimumRevert(IHooks.beforeSwap.selector, grossQuote);
+        _swap(true, -grossQuote.toInt256(), grossQuote);
+
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
     }
 
     function test_exactInputBuyChargesGrossSpecifiedEth() public {
@@ -421,6 +434,27 @@ contract DiscoveryHookTest is Deployers {
 
     function _liability() private view returns (uint256) {
         return hook.liability(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner);
+    }
+
+    function _assertFeeState(uint256 expectedLiability, uint256 expectedRemainder, uint256 expectedBacking)
+        private
+        view
+    {
+        assertEq(_liability(), expectedLiability);
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), expectedRemainder);
+        assertEq(manager.balanceOf(address(hook), 0), expectedBacking);
+    }
+
+    function _expectHookMinimumRevert(bytes4 callback, uint256 grossQuote) private {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                CustomRevert.WrappedError.selector,
+                address(hook),
+                callback,
+                abi.encodeWithSelector(DiscoveryHook.GrossQuoteBelowMinimum.selector, grossQuote),
+                abi.encodeWithSelector(Hooks.HookCallFailed.selector)
+            )
+        );
     }
 
     function _lastSwapFee(Vm.Log[] memory logs) private view returns (uint24 fee) {
