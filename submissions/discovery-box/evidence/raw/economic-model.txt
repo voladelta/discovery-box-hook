@@ -1,0 +1,41 @@
+sourceCommit: 9583b93c3fb6345a7beae5276a721ec9afda60ce
+command: uv run --python 3.14 python analysis/economic_model.py --runsBalanceBalanced perceived membership value: $10.00
+
+| Target | Reach probability | Median opened | 10% to 90% opened | Fee-induced openings | Median sell LP fee |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 20 | 98.4% | 48 | 30 to 67 | 0.00 | 30.0 bps |
+| 30 | 90.7% | 48 | 30 to 67 | 0.01 | 30.0 bps |
+| 40 | 72.9% | 48 | 30 to 67 | 0.02 | 30.0 bps |
+| 50 | 47.2% | 48 | 30 to 67 | 0.05 | 32.8 bps |
+| 60 | 23.3% | 48 | 30 to 67 | 0.10 | 44.0 bps |
+| 70 | 7.5% | 49 | 30 to 67 | 0.14 | 51.0 bps |
+
+Value sensitivity at target 30
+
+| Perceived-value median | Reach probability | Median opened | 25% to 75% opened |
+| ---: | ---: | ---: | ---: |
+| $7.00 | 35.1% | 25 | 17 to 34 |
+| $10.00 | 90.9% | 49 | 38 to 59 |
+| $15.00 | 99.9% | 76 | 67 to 83 |
+| $30.00 | 100.0% | 98 | 95 to 99 |
+| $50.00 | 100.0% | 100 | 100 to 100 |
+
+Fee sensitivity at target 60
+
+| Starting sell LP fee | Reach probability | Median opened | Fee-induced openings |
+| ---: | ---: | ---: | ---: |
+| 100 bps | 22.8% | 48 | 0.10 |
+| 300 bps | 22.8% | 49 | 0.37 |
+| 500 bps | 22.8% | 49 | 0.64 |
+| 1000 bps | 22.8% | 50 | 1.27 |
+
+Assumptions
+- supply: 100 boxes
+- median market price: $10.00
+- sell LP fee: 100 to 30 bps
+- Programmable fee: 10 bps
+- opening transaction cost: $0.50
+- selling transaction cost: $0.25
+- holders choose between opening now and selling now
+- values and market prices are independent lognormal draws
+exitCode: 0

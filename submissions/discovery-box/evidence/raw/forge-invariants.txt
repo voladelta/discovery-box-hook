@@ -1,0 +1,414 @@
+sourceCommit: 9583b93c3fb6345a7beae5276a721ec9afda60ce
+command: forge test --match-path test/DiscoveryHookInvariant.t.sol -vv
+No files changed, compilation skipped
+
+Ran 5 tests for test/DiscoveryHookInvariant.t.sol:DiscoveryHookInvariantTest
+[PASS] invariant_cumulativeGrossVolumeEqualsFeesPlusRemainder() (runs: 256, calls: 16384, reverts: 0)
+
+╭-------------------------------+-----------------+-------+---------+----------╮
+| Contract                      | Selector        | Calls | Reverts | Discards |
++==============================================================================+
+| DiscoveryHookInvariantHandler | buy             | 2749  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2804  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | claim           | 2725  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | openBoxes       | 2686  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sell            | 2758  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sellExactOutput | 2662  | 0       | 0        |
+╰-------------------------------+-----------------+-------+---------+----------╯
+
+Logs:
+  Bound result 33
+  Bound result 655
+  Bound result 5582636173
+  Bound result 999999035677
+  Bound result 778652523483
+  Bound result 12341150863359367230
+  Bound result 999999010525
+  Bound result 7660
+  Bound result 3426
+  Bound result 8754
+  Bound result 4714
+  Bound result 2173
+  Bound result 49
+  Bound result 6
+  Bound result 507838590
+  Bound result 1253736346
+  Bound result 12
+  Bound result 778652523483
+  Bound result 32
+  Bound result 987941518486574973
+  Bound result 2756965649
+  Bound result 3527
+  Bound result 38773518
+  Bound result 3543950333
+  Bound result 2682394
+  Bound result 5184298524
+  Bound result 646
+  Bound result 9859526840
+  Bound result 5468201649369
+  Bound result 194506281932433552
+  Bound result 999999935349
+  Bound result 1
+  Bound result 21283
+  Bound result 1000000
+  Bound result 5907275777
+  Bound result 987940733311834620
+  Bound result 3893362073931
+  Bound result 987939716329240789
+  Bound result 688871769856
+  Bound result 152822725
+  Bound result 1742
+  Bound result 3822
+  Bound result 205959264833688509
+  Bound result 2790
+  Bound result 6752300957
+  Bound result 4113140425
+  Bound result 102109641661412714
+  Bound result 987939714207076864
+  Bound result 987939714207071789
+  Bound result 186582571
+  Bound result 278543014461
+  Bound result 137695695
+  Bound result 126
+  Bound result 243714062605
+  Bound result 778652523481
+  Bound result 114873880286
+  Bound result 987941141538800439
+  Bound result 778652523481
+  Bound result 22159
+  Bound result 22328
+  Bound result 7217
+
+[PASS] invariant_exactOutputCoverageIsNonVacuous() (runs: 256, calls: 16384, reverts: 0)
+
+╭-------------------------------+-----------------+-------+---------+----------╮
+| Contract                      | Selector        | Calls | Reverts | Discards |
++==============================================================================+
+| DiscoveryHookInvariantHandler | buy             | 2749  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2804  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | claim           | 2725  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | openBoxes       | 2686  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sell            | 2758  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sellExactOutput | 2662  | 0       | 0        |
+╰-------------------------------+-----------------+-------+---------+----------╯
+
+Logs:
+  Bound result 33
+  Bound result 655
+  Bound result 5582636173
+  Bound result 999999035677
+  Bound result 778652523483
+  Bound result 12341150863359367230
+  Bound result 113034397462
+  Bound result 7778
+  Bound result 3414
+  Bound result 8754
+  Bound result 4568
+  Bound result 3275
+  Bound result 49
+  Bound result 6
+  Bound result 507838590
+  Bound result 1253736346
+  Bound result 12
+  Bound result 778652523483
+  Bound result 32
+  Bound result 987940624405199905
+  Bound result 2756965649
+  Bound result 195237819141
+  Bound result 38773518
+  Bound result 3543950333
+  Bound result 2682394
+  Bound result 5184298524
+  Bound result 615
+  Bound result 9859526840
+  Bound result 7
+  Bound result 391299670126025107
+  Bound result 999999935349
+  Bound result 2564
+  Bound result 21285
+  Bound result 1000000
+  Bound result 5907275777
+  Bound result 987940736002152266
+  Bound result 3893362073931
+  Bound result 334712333488388757
+  Bound result 688871769856
+  Bound result 152822725
+  Bound result 1742
+  Bound result 3703
+  Bound result 12060161233043211
+  Bound result 2808
+  Bound result 6752300957
+  Bound result 4113140425
+  Bound result 71780896618344682
+  Bound result 987939716897391962
+  Bound result 987939716897386862
+  Bound result 186582571
+  Bound result 278543014461
+  Bound result 137695695
+  Bound result 126
+  Bound result 243714062605
+  Bound result 778652523481
+  Bound result 114873880286
+  Bound result 987941144229115511
+  Bound result 778652523481
+  Bound result 22159
+  Bound result 22328
+  Bound result 7216
+
+[PASS] invariant_feeRemainderIsBounded() (runs: 256, calls: 16384, reverts: 0)
+
+╭-------------------------------+-----------------+-------+---------+----------╮
+| Contract                      | Selector        | Calls | Reverts | Discards |
++==============================================================================+
+| DiscoveryHookInvariantHandler | buy             | 2749  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2804  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | claim           | 2725  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | openBoxes       | 2686  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sell            | 2758  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sellExactOutput | 2662  | 0       | 0        |
+╰-------------------------------+-----------------+-------+---------+----------╯
+
+Logs:
+  Bound result 33
+  Bound result 655
+  Bound result 5582636173
+  Bound result 999999035677
+  Bound result 778652523483
+  Bound result 12341150863359367230
+  Bound result 113034397462
+  Bound result 7778
+  Bound result 3414
+  Bound result 8754
+  Bound result 4568
+  Bound result 3275
+  Bound result 49
+  Bound result 6
+  Bound result 507838590
+  Bound result 1253736346
+  Bound result 12
+  Bound result 778652523483
+  Bound result 32
+  Bound result 987940624405199905
+  Bound result 2756965649
+  Bound result 195237819141
+  Bound result 38773518
+  Bound result 3543950333
+  Bound result 2682394
+  Bound result 5184298524
+  Bound result 615
+  Bound result 9859526840
+  Bound result 7
+  Bound result 391299670126025107
+  Bound result 999999935349
+  Bound result 2564
+  Bound result 21285
+  Bound result 1000000
+  Bound result 5907275777
+  Bound result 987940736002152266
+  Bound result 3893362073931
+  Bound result 334712333488388757
+  Bound result 688871769856
+  Bound result 152822725
+  Bound result 1742
+  Bound result 3703
+  Bound result 643794991318510010
+  Bound result 2823
+  Bound result 6752300957
+  Bound result 4113140425
+  Bound result 71780896618344682
+  Bound result 987939716897391961
+  Bound result 987939716897386893
+  Bound result 186582571
+  Bound result 278543014461
+  Bound result 137695695
+  Bound result 126
+  Bound result 243714062605
+  Bound result 778652523481
+  Bound result 114873880286
+  Bound result 987941144229115467
+  Bound result 778652523481
+  Bound result 22159
+  Bound result 22328
+  Bound result 7215
+
+[PASS] invariant_openableSupplyIsConserved() (runs: 256, calls: 16384, reverts: 0)
+
+╭-------------------------------+-----------------+-------+---------+----------╮
+| Contract                      | Selector        | Calls | Reverts | Discards |
++==============================================================================+
+| DiscoveryHookInvariantHandler | buy             | 2749  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2804  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | claim           | 2725  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | openBoxes       | 2686  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sell            | 2758  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sellExactOutput | 2662  | 0       | 0        |
+╰-------------------------------+-----------------+-------+---------+----------╯
+
+Logs:
+  Bound result 33
+  Bound result 655
+  Bound result 5582636173
+  Bound result 999999035677
+  Bound result 778652523483
+  Bound result 12341150863359367230
+  Bound result 113034397462
+  Bound result 7778
+  Bound result 3414
+  Bound result 8754
+  Bound result 4568
+  Bound result 3275
+  Bound result 49
+  Bound result 6
+  Bound result 507838590
+  Bound result 1253736346
+  Bound result 12
+  Bound result 778652523483
+  Bound result 32
+  Bound result 987940624405191682
+  Bound result 2756965649
+  Bound result 3496
+  Bound result 38773518
+  Bound result 3543950333
+  Bound result 2682394
+  Bound result 5184298524
+  Bound result 615
+  Bound result 9859526840
+  Bound result 1748471758658
+  Bound result 391299670126025107
+  Bound result 999999935349
+  Bound result 3532
+  Bound result 21285
+  Bound result 1000000
+  Bound result 5907275777
+  Bound result 987940736002147498
+  Bound result 3893362073931
+  Bound result 1000001
+  Bound result 688871769856
+  Bound result 152822725
+  Bound result 1742
+  Bound result 3702
+  Bound result 168855566527958801
+  Bound result 2808
+  Bound result 6752300957
+  Bound result 4113140425
+  Bound result 71780896652164600
+  Bound result 987939716897391959
+  Bound result 987939716897386859
+  Bound result 186582571
+  Bound result 278543014461
+  Bound result 137695695
+  Bound result 126
+  Bound result 243714062605
+  Bound result 778652523481
+  Bound result 114873880286
+  Bound result 987941144229115508
+  Bound result 778652523481
+  Bound result 22159
+  Bound result 22328
+  Bound result 7216
+
+[PASS] invariant_swapFeesRemainBacked() (runs: 256, calls: 16384, reverts: 0)
+
+╭-------------------------------+-----------------+-------+---------+----------╮
+| Contract                      | Selector        | Calls | Reverts | Discards |
++==============================================================================+
+| DiscoveryHookInvariantHandler | buy             | 2749  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2804  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | claim           | 2725  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | openBoxes       | 2686  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sell            | 2758  | 0       | 0        |
+|-------------------------------+-----------------+-------+---------+----------|
+| DiscoveryHookInvariantHandler | sellExactOutput | 2662  | 0       | 0        |
+╰-------------------------------+-----------------+-------+---------+----------╯
+
+Logs:
+  Bound result 33
+  Bound result 655
+  Bound result 5582636173
+  Bound result 999999035677
+  Bound result 778652523483
+  Bound result 12341150863359367230
+  Bound result 113034397462
+  Bound result 7778
+  Bound result 3414
+  Bound result 8754
+  Bound result 4568
+  Bound result 3275
+  Bound result 49
+  Bound result 6
+  Bound result 507838590
+  Bound result 1253736346
+  Bound result 12
+  Bound result 778652523483
+  Bound result 32
+  Bound result 987940624405199905
+  Bound result 2756965649
+  Bound result 195237819141
+  Bound result 38773518
+  Bound result 3543950333
+  Bound result 2682394
+  Bound result 5184298524
+  Bound result 615
+  Bound result 9859526840
+  Bound result 7
+  Bound result 391299670126025107
+  Bound result 999999935349
+  Bound result 2564
+  Bound result 21285
+  Bound result 1000000
+  Bound result 5907275777
+  Bound result 987940736002152266
+  Bound result 3893362073931
+  Bound result 334712333488388757
+  Bound result 688871769856
+  Bound result 152822725
+  Bound result 1742
+  Bound result 3703
+  Bound result 5985412177770
+  Bound result 2808
+  Bound result 6752300957
+  Bound result 4113140425
+  Bound result 71780896618344682
+  Bound result 987939716897391962
+  Bound result 987939716897386862
+  Bound result 186582571
+  Bound result 278543014461
+  Bound result 137695695
+  Bound result 126
+  Bound result 243714062605
+  Bound result 778652523481
+  Bound result 114873880286
+  Bound result 987941144229115511
+  Bound result 778652523481
+  Bound result 22159
+  Bound result 22328
+  Bound result 7216
+
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 7.39s (35.30s CPU time)
+
+Ran 1 test suite in 7.39s (7.39s CPU time): 5 tests passed, 0 failed, 0 skipped (5 total tests)
+exitCode: 0

@@ -1,0 +1,3 @@
+sourceCommit: 9583b93c3fb6345a7beae5276a721ec9afda60ce
+command: forge fmt --check
+exitCode: 0

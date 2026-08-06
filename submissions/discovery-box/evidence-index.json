@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "1.0.0",
+  "standardVersion": "1.5.0",
+  "modelId": "discovery-box",
+  "generatedAt": "2026-08-06T17:37:42Z",
+  "boundSourceCommit": "9583b93c3fb6345a7beae5276a721ec9afda60ce",
+  "sourceBaselineCommit": "2435073e4f950058d535438da4979f58fc95d0c9",
+  "revisionPolicy": "Every executable artifact was produced from boundSourceCommit. The evidence-only packaging commit may be later; any executable-source, test, configuration or submission change requires affected commands and every digest to be regenerated.",
+  "claims": {
+    "audit": false,
+    "deployment": false,
+    "routingApproval": false,
+    "maintainerAcceptance": false,
+    "availability": false,
+    "slitherScannerClean": false
+  },
+  "ownershipBoundary": {
+    "applicantCompleted": [
+      "strict standard 1.5 manifest and policy 1.1 migration",
+      "minimum-gross and lifetime-remainder implementation and tests",
+      "format, build, size, unit, integration, fuzz and invariant runs",
+      "pinned-block and current-head Mainnet PoolManager fork smoke runs",
+      "pinned Slither output and finding dispositions",
+      "local web model tests and production build"
+    ],
+    "platformOrMaintainer": [
+      "trusted-main strict 1.5 seven-file validator upgrade",
+      "final central package generation and immutable public revision binding",
+      "production router or adapter selection and quote-execution parity",
+      "registry, UI, API and indexer integration including reorg, backfill and freshness tests",
+      "deployment authorization, runtime and source verification, monitoring and availability decision",
+      "independent accounting, security, custody, architecture and provider reviews"
+    ]
+  },
+  "artifacts": [
+    {
+      "id": "evidence-ledger",
+      "path": "submissions/discovery-box/EVIDENCE.md",
+      "sha256": "sha256:f0c6a220beebfc8a99b12164c1063cd45f39d65500f4965eb2325982337e1fc0",
+      "result": "authored",
+      "command": "manual evidence ledger assembled from the hash-bound raw artifacts in this index",
+      "toolVersion": "evidence-index schema 1.0.0",
+      "scope": "Human-readable results, dispositions, ownership boundary and non-claims for the bound source revision."
+    },
+    {
+      "id": "strict-1.5-submission",
+      "path": "submissions/discovery-box/submission.json",
+      "sha256": "sha256:5eb8e004978cb186ac95100e5d2656c2c6479fe573baa139d7aac0a758dbe3bb",
+      "result": "passed",
+      "command": "node /Users/mbp/Codehub/programmable-v4-builder/skills/programmable-v4-hook-builder/scripts/cli.mjs check submissions/discovery-box/submission.json --repository-root /Users/mbp/Codehub/discovery-box --write-report submissions/discovery-box/compatibility-report.json",
+      "toolVersion": "programmable-v4-builder commit 5b47504299c5dbe0ab694be8d163e80d352c8166",
+      "scope": "Strict standard 1.5 structured submission consumed by the deterministic local compatibility preflight."
+    },
+    {
+      "id": "compatibility-report",
+      "path": "submissions/discovery-box/compatibility-report.json",
+      "sha256": "sha256:04950f6c2469d0d88ed949a6975cc7155b8a9463fe4d948058723647680f68f9",
+      "result": "passed-with-review-warnings",
+      "command": "node /Users/mbp/Codehub/programmable-v4-builder/skills/programmable-v4-hook-builder/scripts/cli.mjs check submissions/discovery-box/submission.json --repository-root /Users/mbp/Codehub/discovery-box --write-report submissions/discovery-box/compatibility-report.json",
+      "toolVersion": "programmable-v4-builder commit 5b47504299c5dbe0ab694be8d163e80d352c8166",
+      "scope": "Structural compatibility and repository closure only; it does not validate, accept, audit, deploy or approve routing."
+    },
+    {
+      "id": "launch-specification",
+      "path": "submissions/discovery-box/launch.json",
+      "sha256": "sha256:5f414db443635d9508bee013118628943a79824ed5e4e46984c2479fa7545524",
+      "result": "bound",
+      "command": "shasum -a 256 submissions/discovery-box/launch.json",
+      "toolVersion": "macOS shasum using Digest::SHA 6.02",
+      "scope": "Machine-readable launch specification referenced by the strict 1.5 submission."
+    },
+    {
+      "id": "builder-check-raw",
+      "path": "submissions/discovery-box/evidence/raw/builder-check.txt",
+      "sha256": "sha256:464bf659221f3138e8d7254a88b220155b83a416ee9b539d4f408e25c34b3484",
+      "result": "passed-with-review-warnings",
+      "command": "node /Users/mbp/Codehub/programmable-v4-builder/skills/programmable-v4-hook-builder/scripts/cli.mjs check submissions/discovery-box/submission.json --repository-root /Users/mbp/Codehub/discovery-box --write-report submissions/discovery-box/compatibility-report.json",
+      "toolVersion": "programmable-v4-builder commit 5b47504299c5dbe0ab694be8d163e80d352c8166",
+      "scope": "Raw deterministic preflight output for standard 1.5 and complete repository closure."
+    },
+    {
+      "id": "tool-versions-raw",
+      "path": "submissions/discovery-box/evidence/raw/tool-versions.txt",
+      "sha256": "sha256:23f1ac3070599504d5d4579edc243b534eb6d4356d6b13f83ad7347d462136bc",
+      "result": "recorded",
+      "command": "forge --version; node --version; bun --version; uv --version; git --version; forge config --json",
+      "toolVersion": "Foundry 1.7.1-Homebrew; Node 24.18.0; Bun 1.3.14; uv 0.12.0; Git 2.50.1",
+      "scope": "Exact local tool versions and complete Foundry configuration used for the evidence run."
+    },
+    {
+      "id": "source-cleanliness-raw",
+      "path": "submissions/discovery-box/evidence/raw/source-cleanliness.txt",
+      "sha256": "sha256:a227d98f9e744015bfd234f2ca08e173db858393de6a9d1e3214c9deec890cd7",
+      "result": "passed",
+      "command": "git diff --exit-code HEAD -- src test foundry.toml remappings.txt package.json bun.lock analysis/economic_model.py submissions/discovery-box/submission.json submissions/discovery-box/PROPOSAL.md submissions/discovery-box/TEST_PLAN.md submissions/discovery-box/THREAT_MODEL.md submissions/discovery-box/compatibility-report.json",
+      "toolVersion": "Git 2.50.1 (Apple Git-155)",
+      "scope": "Proves the executable sources, tests, configuration and strict 1.5 submission inputs matched boundSourceCommit during execution."
+    },
+    {
+      "id": "forge-format-raw",
+      "path": "submissions/discovery-box/evidence/raw/forge-fmt.txt",
+      "sha256": "sha256:fd33fad4750d1b7720e889bc9c79ad771da669ef87ee892b4ec1c9e6ed461d03",
+      "result": "passed",
+      "command": "forge fmt --check",
+      "toolVersion": "Foundry 1.7.1-Homebrew commit 4072e48705af9d93e3c0f6e29e93b5e9a40caed8",
+      "scope": "Formatting check for the bound Solidity source and tests."
+    },
+    {
+      "id": "forge-build-size-raw",
+      "path": "submissions/discovery-box/evidence/raw/forge-build-sizes.txt",
+      "sha256": "sha256:1f11e22cc39ad16568e6b5b50d6c3fafa748742b09469209cef4ec714f172e7c",
+      "result": "passed",
+      "command": "forge build --sizes",
+      "toolVersion": "Foundry 1.7.1-Homebrew; Solidity 0.8.26",
+      "scope": "Raw compiler result and runtime/initcode size table for the complete project closure."
+    },
+    {
+      "id": "forge-tests-raw",
+      "path": "submissions/discovery-box/evidence/raw/forge-tests.txt",
+      "sha256": "sha256:61a8d2e38f35cc0d36aac3bcda5e5dea65536fdd03575404328ea8a4b8db8edd",
+      "result": "passed-with-one-declared-fork-skip",
+      "command": "forge test -vv",
+      "toolVersion": "Foundry 1.7.1-Homebrew; Solidity 0.8.26",
+      "scope": "55 passed, 0 failed and 1 chain-gated fork skip across unit, integration, fuzz and invariant suites; fork execution is recorded separately."
+    },
+    {
+      "id": "forge-invariants-raw",
+      "path": "submissions/discovery-box/evidence/raw/forge-invariants.txt",
+      "sha256": "sha256:20a2bd2994331cbc67b8b0dd2f4a8f989ea7fb242038d44481a385522f484f9a",
+      "result": "passed",
+      "command": "forge test --match-path test/DiscoveryHookInvariant.t.sol -vv",
+      "toolVersion": "Foundry 1.7.1-Homebrew; Solidity 0.8.26",
+      "scope": "Five stateful invariants at 256 runs and depth 64, 16,384 calls per property and zero handler reverts."
+    },
+    {
+      "id": "forge-gas-raw",
+      "path": "submissions/discovery-box/evidence/raw/forge-gas.txt",
+      "sha256": "sha256:0f3256cc1235ccdda7d9780f2e068a5d2b92330b6398b049adb2ef11c7503cb9",
+      "result": "passed",
+      "command": "forge test --gas-report --match-contract DiscoveryLaunchFactoryTest",
+      "toolVersion": "Foundry 1.7.1-Homebrew; Solidity 0.8.26",
+      "scope": "Targeted local gas measurements for atomic launch and locked-liquidity fee collection."
+    },
+    {
+      "id": "fork-pinned-mainnet-raw",
+      "path": "submissions/discovery-box/evidence/raw/fork-pinned-mainnet.txt",
+      "sha256": "sha256:5a41f41828b8922274a0f099b6ecb5c10e1a7ba7a08ef90c3fb2f4f9f9b950a6",
+      "result": "passed",
+      "command": "forge test --match-path test/DiscoveryMainnetFork.t.sol --fork-url https://eth.drpc.org --fork-block-number 23000000 -vv",
+      "toolVersion": "Foundry 1.7.1-Homebrew; Solidity 0.8.26",
+      "scope": "Pinned Ethereum mainnet fork at block 23,000,000 against the expected PoolManager address/runtime; launch, four quadrants, backing and claim passed."
+    },
+    {
+      "id": "fork-current-mainnet-raw",
+      "path": "submissions/discovery-box/evidence/raw/fork-current-mainnet.txt",
+      "sha256": "sha256:0bdc33171a8dbf482c319c740fd4a7eefc286405157346769107c924375b2bf9",
+      "result": "passed",
+      "command": "forge test --match-path test/DiscoveryMainnetFork.t.sol --fork-url https://eth.drpc.org --fork-block-number 25697445 -vv",
+      "toolVersion": "Foundry 1.7.1-Homebrew; Solidity 0.8.26",
+      "scope": "Current-head Ethereum mainnet snapshot observed at block 25,697,445 against the expected PoolManager address/runtime; launch, four quadrants, backing and claim passed."
+    },
+    {
+      "id": "slither-raw",
+      "path": "submissions/discovery-box/evidence/raw/slither.txt",
+      "sha256": "sha256:d8150497be5e0a4ba553caba8a8f925150f3e472ea3d25a673e8537348db10b9",
+      "result": "completed-with-findings",
+      "exitCode": 255,
+      "command": "uvx --python 3.13 --from slither-analyzer==0.11.6 slither . --filter-paths 'lib|test' --exclude-dependencies",
+      "toolVersion": "Slither 0.11.6; Python 3.13 via uvx 0.12.0",
+      "scope": "Raw output for 59 contracts, 102 detectors and 5 findings. The technical disposition is in EVIDENCE.md; this is not scanner-clean."
+    },
+    {
+      "id": "web-tests-raw",
+      "path": "submissions/discovery-box/evidence/raw/web-tests.txt",
+      "sha256": "sha256:9a37fb47caef56293a0b89c57179c63410df810baef96baa283ece4cefacf3e1",
+      "result": "passed",
+      "command": "bun test ./web/demo-model.test.ts ./web/judge-model.test.ts",
+      "toolVersion": "Bun 1.3.14",
+      "scope": "Eleven local demonstration and judge-mode model tests; no production router, wallet-provider or deployment claim."
+    },
+    {
+      "id": "web-build-raw",
+      "path": "submissions/discovery-box/evidence/raw/web-build.txt",
+      "sha256": "sha256:52f532e261699c48cfbd374750de3af0fd5ae78181d64ec79e17e8561b382784",
+      "result": "passed",
+      "command": "bun run build",
+      "toolVersion": "Bun 1.3.14; TypeScript 7.0.2; Vite 8.1.5",
+      "scope": "TypeScript and Vite production build for the explicitly local demonstration surface."
+    },
+    {
+      "id": "economic-model-raw",
+      "path": "submissions/discovery-box/evidence/raw/economic-model.txt",
+      "sha256": "sha256:e9ccfa05244326d39e4951b9dcdfc9d672ea73150b1662a6700510ecf09fe552",
+      "result": "passed",
+      "command": "uv run --python 3.14 python analysis/economic_model.py --runs 20000",
+      "toolVersion": "uv 0.12.0; Python 3.14.4",
+      "scope": "Fixed-seed reduced-form threshold-choice stress model; not a forecast or v4 liquidity simulation."
+    }
+  ]
+}
