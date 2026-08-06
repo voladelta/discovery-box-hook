@@ -25,6 +25,19 @@
   "components": [
     {
       "attributes": {
+        "summary": "Registrar-bound CREATE2 deployer for the Discovery Box child."
+      },
+      "componentId": "component:box-factory",
+      "kind": "evm.contract",
+      "sourceIds": [
+        "source:primary"
+      ],
+      "targetIds": [
+        "target:box-factory"
+      ]
+    },
+    {
+      "attributes": {
         "summary": "Registrar-bound Discovery Box token deployed atomically for one canonical launch pool."
       },
       "componentId": "component:discovery-box",
@@ -47,16 +60,27 @@
     },
     {
       "attributes": {
-        "summary": "Atomic token, mined hook, canonical pool initialization, and permanently locked one-sided liquidity launcher."
+        "summary": "HookMiner-validating CREATE2 deployer for the fully bound Discovery Hook child."
       },
-      "componentId": "component:launch-system",
-      "kind": "evm.contract-system",
+      "componentId": "component:hook-factory",
+      "kind": "evm.contract",
       "sourceIds": [
         "source:primary"
       ],
       "targetIds": [
-        "target:box-factory",
-        "target:hook-factory",
+        "target:hook-factory"
+      ]
+    },
+    {
+      "attributes": {
+        "summary": "Atomic token, mined hook, canonical pool initialization, and permanently locked one-sided liquidity launcher."
+      },
+      "componentId": "component:launch-factory",
+      "kind": "evm.contract",
+      "sourceIds": [
+        "source:primary"
+      ],
+      "targetIds": [
         "target:launch-factory"
       ]
     },
@@ -87,7 +111,7 @@
         "method": "DiscoveryBoxFactory.deploy"
       },
       "edgeId": "edge:box-deployed-by-box-factory",
-      "fromComponentId": "component:launch-system",
+      "fromComponentId": "component:box-factory",
       "kind": "deployment.create2",
       "toComponentId": "component:discovery-box"
     },
@@ -97,7 +121,7 @@
         "method": "DiscoveryHookFactory.deploy"
       },
       "edgeId": "edge:hook-deployed-by-hook-factory",
-      "fromComponentId": "component:launch-system",
+      "fromComponentId": "component:hook-factory",
       "kind": "deployment.hook-miner-create2",
       "toComponentId": "component:discovery-hook"
     },
@@ -118,7 +142,7 @@
       "edgeId": "edge:hook-uses-launch-registrar",
       "fromComponentId": "component:discovery-hook",
       "kind": "constructor.target",
-      "toComponentId": "component:launch-system"
+      "toComponentId": "component:launch-factory"
     },
     {
       "attributes": {
@@ -136,14 +160,14 @@
       "edgeId": "edge:hook-uses-programmable-owner",
       "fromComponentId": "component:discovery-hook",
       "kind": "constructor.declared-identity",
-      "toComponentId": "component:launch-system"
+      "toComponentId": "component:launch-factory"
     },
     {
       "attributes": {
         "atomicPhase": "pool-initialization"
       },
       "edgeId": "edge:launch-initializes-pool",
-      "fromComponentId": "component:launch-system",
+      "fromComponentId": "component:launch-factory",
       "kind": "runtime.initialize",
       "toComponentId": "component:pool-manager"
     },
@@ -153,7 +177,7 @@
         "positionRemovable": false
       },
       "edgeId": "edge:launch-locks-liquidity",
-      "fromComponentId": "component:launch-system",
+      "fromComponentId": "component:launch-factory",
       "kind": "runtime.position-lock",
       "toComponentId": "component:pool-manager"
     },
@@ -162,25 +186,25 @@
         "constructorWord": 1
       },
       "edgeId": "edge:launch-uses-box-factory",
-      "fromComponentId": "component:launch-system",
+      "fromComponentId": "component:launch-factory",
       "kind": "constructor.target",
-      "toComponentId": "component:launch-system"
+      "toComponentId": "component:box-factory"
     },
     {
       "attributes": {
         "constructorWord": 2
       },
       "edgeId": "edge:launch-uses-hook-factory",
-      "fromComponentId": "component:launch-system",
+      "fromComponentId": "component:launch-factory",
       "kind": "constructor.target",
-      "toComponentId": "component:launch-system"
+      "toComponentId": "component:hook-factory"
     },
     {
       "attributes": {
         "constructorWord": 0
       },
       "edgeId": "edge:launch-uses-pool-manager",
-      "fromComponentId": "component:launch-system",
+      "fromComponentId": "component:launch-factory",
       "kind": "constructor.external",
       "toComponentId": "component:pool-manager"
     }
@@ -334,12 +358,12 @@
     }
   },
   "releaseModules": [],
-  "rootComponentId": "component:launch-system",
+  "rootComponentId": "component:launch-factory",
   "rootTargetId": "target:launch-factory",
   "schemaVersion": "programmable.launch-specification.v1",
   "targets": [
     {
-      "componentId": "component:launch-system",
+      "componentId": "component:box-factory",
       "constructor": {
         "abiEncodedArguments": "0x",
         "addressLocators": []
@@ -358,7 +382,7 @@
       "targetId": "target:box-factory"
     },
     {
-      "componentId": "component:launch-system",
+      "componentId": "component:hook-factory",
       "constructor": {
         "abiEncodedArguments": "0x",
         "addressLocators": []
@@ -377,7 +401,7 @@
       "targetId": "target:hook-factory"
     },
     {
-      "componentId": "component:launch-system",
+      "componentId": "component:launch-factory",
       "constructor": {
         "abiEncodedArguments": "0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
         "addressLocators": [
