@@ -1501,7 +1501,7 @@
       "test/DiscoveryHookInvariant.t.sol"
     ],
     "compilerBuildInfoPaths": [],
-    "specificationPath": "DESIGN_CARD.md",
+    "specificationPath": "submissions/discovery-box/launch.json",
     "testEvidencePath": "submissions/discovery-box/EVIDENCE.md",
     "dependencyLockPath": "DEPENDENCIES.md",
     "gateStatusPath": null,

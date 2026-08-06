@@ -15,7 +15,7 @@ This ledger separates completed local checks from planned prototype, candidate a
 | Foundry | 1.7.1, commit `4072e48705af9d93e3c0f6e29e93b5e9a40caed8` |
 | Repository target | `main`; resolve the exact review target with `git rev-parse HEAD` |
 | Deployment | none claimed |
-| Maintainer review | not requested |
+| Maintainer review | changes requested on the prior revision; exact-revision re-review required |
 | Availability | not claimed |
 
 ## Completed local checks
@@ -36,8 +36,9 @@ node /Users/mbp/.codex/skills/programmable-v4-hook-builder/scripts/cli.mjs check
 - Blockers: 0
 - Warnings: 4
 - Report version: 2
-- Structured submission hash reported by checker: `sha256:89681186b8c8ad5e81b964d2b4ae4e535eb302971769f736a753f92831214b87`
-- File SHA-256, `submission.json`: `a18629a8bc69530a5f43d16060795191669878f7ded2b3a807e26355da5d5f0b`
+- Structured submission hash reported by checker: `sha256:d6e4068536b9e661e275f139bef3278aa7ed81c9e1522a3ea8a902094099daf5`
+- File SHA-256, `submission.json`: `33965d053fd05cce95e92ddfc2bf87e823a91b676094cbd3000945013ad4d7ef`
+- File SHA-256, `launch.json`: `69a47b397aef4eb04c48bf93cda268075fd8351ee122f72b9895973231cc718b`
 
 The warnings require review of `beforeSwapReturnDelta`, the novel project category, the irreversible-redemption capability and the token behaviour. The checker does not prove the equations, source or deployment.
 
