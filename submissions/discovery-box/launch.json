@@ -1,326 +1,418 @@
 {
-  "schemaVersion": "programmable.launch-specification.v1",
   "applicationId": "discovery-box",
-  "language": "solidity",
+  "chain": {
+    "namespace": "eip155",
+    "profileId": "ethereum-mainnet-v1",
+    "reference": "1"
+  },
   "compiler": {
     "family": "solc",
     "profileId": "programmable:solidity-solc-0.8.26-v1",
-    "version": "0.8.26",
     "settings": {
+      "evmVersion": "cancun",
+      "metadata": {
+        "appendCBOR": false,
+        "bytecodeHash": "none"
+      },
       "optimizer": {
         "enabled": true,
         "runs": 20000
       },
-      "evmVersion": "cancun",
-      "bytecodeHash": "none",
-      "cborMetadata": false
-    }
+      "viaIR": false
+    },
+    "version": "0.8.26"
   },
-  "chain": {
-    "namespace": "eip155",
-    "reference": "1",
-    "profileId": "ethereum-mainnet-v1"
-  },
-  "launcher": {
-    "route": {
-      "kind": "model-specific-atomic-v4-launch-v1",
-      "adapterId": "discovery-launch-factory-v1"
-    },
-    "entryTargetId": "target:launch-factory",
-    "entrypoint": "launch(bytes32,bytes32)",
-    "atomicActions": [
-      "derive-caller-bound-box-salt",
-      "deploy-registrar-authorized-box-create2",
-      "deploy-registrar-authorized-mined-hook-create2",
-      "register-canonical-pool",
-      "initialize-canonical-pool",
-      "lock-one-sided-liquidity",
-      "return-rounding-remainder"
-    ]
-  },
-  "rootTargetId": "target:launch-factory",
-  "rootComponentId": "component:launch-system",
-  "targets": [
-    {
-      "targetId": "target:box-factory",
-      "componentId": "component:launch-system",
-      "sourceId": "source:box-factory",
-      "sourceUnitName": "src/DiscoveryBoxFactory.sol",
-      "sourceSha256": "sha256:dbd1a5b532cfd88eb6f3412738c44e852b1c0e305efa003dc788985e50a71b74",
-      "contractName": "DiscoveryBoxFactory",
-      "deploymentMode": "create2-deterministic",
-      "saltStrategy": "compiler-deterministic-v1",
-      "declaredHookPermissions": [],
-      "deploymentValueWei": "0",
-      "initializerValueWei": "0",
-      "constructor": {
-        "abiEncodedArguments": "0x",
-        "addressLocators": []
-      },
-      "initializer": null,
-      "libraries": []
-    },
-    {
-      "targetId": "target:hook-factory",
-      "componentId": "component:launch-system",
-      "sourceId": "source:hook-factory",
-      "sourceUnitName": "src/DiscoveryHookFactory.sol",
-      "sourceSha256": "sha256:4050c131cd6dc55b447157d37ead2472c6b5f93cbdbdb6a9027f511c02f0f5d1",
-      "contractName": "DiscoveryHookFactory",
-      "deploymentMode": "create2-deterministic",
-      "saltStrategy": "compiler-deterministic-v1",
-      "declaredHookPermissions": [],
-      "deploymentValueWei": "0",
-      "initializerValueWei": "0",
-      "constructor": {
-        "abiEncodedArguments": "0x",
-        "addressLocators": []
-      },
-      "initializer": null,
-      "libraries": []
-    },
-    {
-      "targetId": "target:launch-factory",
-      "componentId": "component:launch-system",
-      "sourceId": "source:launch-factory",
-      "sourceUnitName": "src/DiscoveryLaunchFactory.sol",
-      "sourceSha256": "sha256:abda631409b964bb185e6d6d2abc10d0f3cca378814c4e5bf9ef65a7b2ac0011",
-      "contractName": "DiscoveryLaunchFactory",
-      "deploymentMode": "create2-deterministic",
-      "saltStrategy": "compiler-deterministic-v1",
-      "declaredHookPermissions": [],
-      "deploymentValueWei": "0",
-      "initializerValueWei": "0",
-      "constructor": {
-        "abiEncodedArguments": "0x000000000000000000000000000000000004444c5dc75cb358380d2e3de08a9000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-        "addressLocators": [
-          {
-            "argumentIndex": 0,
-            "source": "external-dependency:v4-poolmanager-ethereum"
-          },
-          {
-            "argumentIndex": 1,
-            "source": "target:box-factory"
-          },
-          {
-            "argumentIndex": 2,
-            "source": "target:hook-factory"
-          }
-        ]
-      },
-      "initializer": null,
-      "libraries": []
-    },
-    {
-      "targetId": "target:discovery-box",
-      "componentId": "component:canonical-pool",
-      "sourceId": "source:box",
-      "sourceUnitName": "src/DiscoveryBox.sol",
-      "sourceSha256": "sha256:78d27b65215d410155ac6ca02b733bfb0ce649b12439f228b7ec7f280f611df6",
-      "contractName": "DiscoveryBox",
-      "deploymentMode": "create2-runtime-child",
-      "saltStrategy": "keccak256-abi-encode-launch-caller-and-seed-v1",
-      "declaredHookPermissions": [],
-      "deploymentValueWei": "0",
-      "initializerValueWei": "0",
-      "constructor": {
-        "abiEncodedArguments": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "addressLocators": [
-          {
-            "argumentIndex": 0,
-            "source": "target:launch-factory"
-          }
-        ]
-      },
-      "initializer": null,
-      "libraries": []
-    },
-    {
-      "targetId": "target:discovery-hook",
-      "componentId": "component:canonical-pool",
-      "sourceId": "source:hook",
-      "sourceUnitName": "src/DiscoveryHook.sol",
-      "sourceSha256": "sha256:17b6febf869ea367df2008b1de18007843e43c81ae1702daaf19e95fea657ec3",
-      "contractName": "DiscoveryHook",
-      "deploymentMode": "create2-runtime-child",
-      "saltStrategy": "hook-miner-v1",
-      "declaredHookPermissions": [
-        "afterInitialize",
-        "afterSwap",
-        "afterSwapReturnDelta",
-        "beforeSwap",
-        "beforeSwapReturnDelta"
-      ],
-      "deploymentValueWei": "0",
-      "initializerValueWei": "0",
-      "constructor": {
-        "abiEncodedArguments": "0x000000000000000000000000000000000004444c5dc75cb358380d2e3de08a90000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004957f49620aff3adbbe8195a4f633e49cc93376c",
-        "addressLocators": [
-          {
-            "argumentIndex": 0,
-            "source": "external-dependency:v4-poolmanager-ethereum"
-          },
-          {
-            "argumentIndex": 1,
-            "source": "runtime-child:target:discovery-box"
-          },
-          {
-            "argumentIndex": 2,
-            "source": "target:launch-factory"
-          },
-          {
-            "argumentIndex": 3,
-            "source": "declared-identity:programmable-owner"
-          }
-        ]
-      },
-      "initializer": null,
-      "libraries": []
-    }
-  ],
   "components": [
     {
-      "componentId": "component:launch-system",
-      "kind": "atomic-v4-launch-factory",
+      "attributes": {
+        "summary": "Registrar-bound Discovery Box token deployed atomically for one canonical launch pool."
+      },
+      "componentId": "component:discovery-box",
+      "kind": "evm.internal-child",
       "sourceIds": [
-        "source:box-factory",
-        "source:hook-factory",
-        "source:launch-factory"
+        "source:primary"
+      ],
+      "targetIds": []
+    },
+    {
+      "attributes": {
+        "summary": "HookMiner-addressed Discovery Hook bound to PoolManager, its openable asset, launch registrar, and the fixed Programmable owner."
+      },
+      "componentId": "component:discovery-hook",
+      "kind": "evm.internal-child",
+      "sourceIds": [
+        "source:primary"
+      ],
+      "targetIds": []
+    },
+    {
+      "attributes": {
+        "summary": "Atomic token, mined hook, canonical pool initialization, and permanently locked one-sided liquidity launcher."
+      },
+      "componentId": "component:launch-system",
+      "kind": "evm.contract-system",
+      "sourceIds": [
+        "source:primary"
       ],
       "targetIds": [
         "target:box-factory",
         "target:hook-factory",
         "target:launch-factory"
-      ],
-      "attributes": {
-        "summary": "Deploys the token and mined hook, registers and initializes the canonical pool, and permanently locks the one-sided initial position atomically."
-      }
-    },
-    {
-      "componentId": "component:canonical-pool",
-      "kind": "v4-hook-pool",
-      "sourceIds": [
-        "source:box",
-        "source:hook"
-      ],
-      "targetIds": [
-        "target:discovery-box",
-        "target:discovery-hook"
-      ],
-      "attributes": {
-        "summary": "Discovery Box token and its single-pool dynamic LP-fee and Programmable volume-fee hook."
-      }
-    }
-  ],
-  "edges": [
-    {
-      "from": "target:launch-factory",
-      "to": "target:box-factory",
-      "kind": "immutable-constructor-dependency"
-    },
-    {
-      "from": "target:launch-factory",
-      "to": "target:hook-factory",
-      "kind": "immutable-constructor-dependency"
-    },
-    {
-      "from": "target:launch-factory",
-      "to": "external-dependency:v4-poolmanager-ethereum",
-      "kind": "immutable-constructor-dependency"
-    },
-    {
-      "from": "target:box-factory",
-      "to": "target:discovery-box",
-      "kind": "create2-runtime-child"
-    },
-    {
-      "from": "target:hook-factory",
-      "to": "target:discovery-hook",
-      "kind": "hook-miner-create2-runtime-child"
-    },
-    {
-      "from": "target:launch-factory",
-      "to": "target:discovery-hook",
-      "kind": "atomic-register-initialize-liquidity"
-    }
-  ],
-  "externalOnchainDependencies": [
-    {
-      "dependencyId": "v4-poolmanager-ethereum",
-      "deploymentRecordId": "v4-poolmanager-ethereum",
-      "chainId": 1,
-      "contractName": "PoolManager",
-      "address": "0x000000000004444c5dc75cB358380D2e3dE08A90",
-      "sourceRepository": "https://github.com/Uniswap/v4-core",
-      "sourceRevision": "59d3ecf53afa9264a16bba0e38f4c5d2231f80bc",
-      "failureRule": "Revert the complete launch or pool action on missing code, callback failure, settlement failure, or interface mismatch."
-    }
-  ],
-  "internalChildDeployments": [
-    {
-      "parentTargetId": "target:launch-factory",
-      "factoryTargetId": "target:box-factory",
-      "childTargetId": "target:discovery-box",
-      "entrypoint": "deploy(bytes32,address)",
-      "atomicWithRootEntrypoint": true
-    },
-    {
-      "parentTargetId": "target:launch-factory",
-      "factoryTargetId": "target:hook-factory",
-      "childTargetId": "target:discovery-hook",
-      "entrypoint": "deploy(bytes32,IPoolManager,IOpenableAsset,address)",
-      "atomicWithRootEntrypoint": true
-    }
-  ],
-  "releaseModules": [
-    {
-      "moduleId": "module:atomic-launch",
-      "targetId": "target:launch-factory",
-      "entrypoint": "launch(bytes32,bytes32)",
-      "postconditions": [
-        "hook permission bits equal 0x10cc",
-        "hook PoolManager, openable asset, registrar and Programmable owner match locators",
-        "BOX CREATE2 salt equals keccak256(abi.encode(launch caller, supplied seed))",
-        "only the launch registrar can deploy either runtime child",
-        "canonical PoolKey is registered and initialized at sqrtPriceX96 79228162514264337593543950336",
-        "one-sided BOX liquidity is owned permanently by the launch factory position",
-        "the launch caller is the immutable per-pool LP-fee recipient and fee collection cannot reduce liquidity",
-        "factory retains no BOX remainder"
       ]
     },
     {
-      "moduleId": "module:locked-liquidity-fees",
-      "targetId": "target:launch-factory",
-      "entrypoint": "collectFees(PoolKey,address)",
-      "postconditions": [
-        "only the immutable per-pool launch recipient can call",
-        "the recipient selects the destination for each collection",
-        "liquidityDelta is zero and the locked position liquidity is unchanged"
-      ]
+      "attributes": {
+        "summary": "Selected Ethereum Uniswap v4 PoolManager runtime dependency."
+      },
+      "componentId": "component:pool-manager",
+      "kind": "evm.external-dependency",
+      "sourceIds": [],
+      "targetIds": []
     }
   ],
   "declaredIdentities": [
     {
-      "identityId": "programmable-owner",
-      "kind": "immutable-address",
-      "address": "0x4957f49620AFf3Adbbe8195a4f633E49cc93376c",
-      "capability": "sole-programmable-fee-claim-authority"
+      "identity": {
+        "namespace": "eip155:1",
+        "value": "0x4957f49620aff3adbbe8195a4f633e49cc93376c"
+      },
+      "identityId": "identity:programmable-owner",
+      "role": "programmable-fee-owner"
+    }
+  ],
+  "edges": [
+    {
+      "attributes": {
+        "atomicPhase": "child-deployment",
+        "method": "DiscoveryBoxFactory.deploy"
+      },
+      "edgeId": "edge:box-deployed-by-box-factory",
+      "fromComponentId": "component:launch-system",
+      "kind": "deployment.create2",
+      "toComponentId": "component:discovery-box"
+    },
+    {
+      "attributes": {
+        "atomicPhase": "child-deployment",
+        "method": "DiscoveryHookFactory.deploy"
+      },
+      "edgeId": "edge:hook-deployed-by-hook-factory",
+      "fromComponentId": "component:launch-system",
+      "kind": "deployment.hook-miner-create2",
+      "toComponentId": "component:discovery-hook"
+    },
+    {
+      "attributes": {
+        "constructorWord": 1
+      },
+      "edgeId": "edge:hook-uses-box",
+      "fromComponentId": "component:discovery-hook",
+      "kind": "constructor.internal-child",
+      "toComponentId": "component:discovery-box"
+    },
+    {
+      "attributes": {
+        "constructorWord": 2,
+        "role": "registrar"
+      },
+      "edgeId": "edge:hook-uses-launch-registrar",
+      "fromComponentId": "component:discovery-hook",
+      "kind": "constructor.target",
+      "toComponentId": "component:launch-system"
+    },
+    {
+      "attributes": {
+        "constructorWord": 0
+      },
+      "edgeId": "edge:hook-uses-pool-manager",
+      "fromComponentId": "component:discovery-hook",
+      "kind": "constructor.external",
+      "toComponentId": "component:pool-manager"
+    },
+    {
+      "attributes": {
+        "constructorWord": 3
+      },
+      "edgeId": "edge:hook-uses-programmable-owner",
+      "fromComponentId": "component:discovery-hook",
+      "kind": "constructor.declared-identity",
+      "toComponentId": "component:launch-system"
+    },
+    {
+      "attributes": {
+        "atomicPhase": "pool-initialization"
+      },
+      "edgeId": "edge:launch-initializes-pool",
+      "fromComponentId": "component:launch-system",
+      "kind": "runtime.initialize",
+      "toComponentId": "component:pool-manager"
+    },
+    {
+      "attributes": {
+        "atomicPhase": "liquidity-formation",
+        "positionRemovable": false
+      },
+      "edgeId": "edge:launch-locks-liquidity",
+      "fromComponentId": "component:launch-system",
+      "kind": "runtime.position-lock",
+      "toComponentId": "component:pool-manager"
+    },
+    {
+      "attributes": {
+        "constructorWord": 1
+      },
+      "edgeId": "edge:launch-uses-box-factory",
+      "fromComponentId": "component:launch-system",
+      "kind": "constructor.target",
+      "toComponentId": "component:launch-system"
+    },
+    {
+      "attributes": {
+        "constructorWord": 2
+      },
+      "edgeId": "edge:launch-uses-hook-factory",
+      "fromComponentId": "component:launch-system",
+      "kind": "constructor.target",
+      "toComponentId": "component:launch-system"
+    },
+    {
+      "attributes": {
+        "constructorWord": 0
+      },
+      "edgeId": "edge:launch-uses-pool-manager",
+      "fromComponentId": "component:launch-system",
+      "kind": "constructor.external",
+      "toComponentId": "component:pool-manager"
     }
   ],
   "extensions": {
+    "atomicLaunchPlan": {
+      "entrypoint": "target:launch-factory.launch(bytes32,bytes32)",
+      "failurePolicy": "Any child deployment, HookMiner permission, constructor binding, registration, initialization, settlement, or liquidity mismatch reverts the single launch transaction.",
+      "steps": [
+        {
+          "action": "Derive the Discovery Box CREATE2 salt from the launch caller and supplied seed.",
+          "step": 1
+        },
+        {
+          "action": "Deploy child:discovery-box through target:box-factory with target:launch-factory as registrar and initial recipient.",
+          "step": 2
+        },
+        {
+          "action": "Deploy child:discovery-hook through target:hook-factory using the supplied HookMiner salt and all four immutable constructor bindings.",
+          "step": 3
+        },
+        {
+          "action": "Register the canonical PoolKey in child:discovery-hook and initialize it through dependency:pool-manager.",
+          "step": 4
+        },
+        {
+          "action": "Add the one-sided Discovery Box position, settle through dependency:pool-manager, and retain the position permanently in target:launch-factory.",
+          "step": 5
+        },
+        {
+          "action": "Return any deterministic rounding remainder to the launch caller and record the immutable fee recipient.",
+          "step": 6
+        }
+      ],
+      "transactionBoundary": "single-ethereum-transaction"
+    },
+    "externalDependencyBindings": [
+      {
+        "address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+        "dependencyId": "dependency:pool-manager",
+        "evidenceId": "v4-poolmanager-ethereum",
+        "productionPolicy": "Recheck current runtime and interface before deployment."
+      }
+    ],
     "initialPool": {
       "currency0": "native-eth",
-      "currency1TargetId": "target:discovery-box",
+      "currency1": "child:discovery-box",
       "dynamicFee": true,
-      "tickSpacing": 60,
+      "feeCollectionEntrypoint": "target:launch-factory.collectFees(PoolKey,address)",
+      "feeRecipient": "launch-caller-immutable-per-pool",
+      "positionOwner": "target:launch-factory",
+      "positionRemovable": false,
       "sqrtPriceX96": "79228162514264337593543950336",
       "tickLower": -600,
-      "tickUpper": 0,
-      "positionOwnerTargetId": "target:launch-factory",
-      "positionRemovable": false,
-      "feeRecipient": "launch-caller-immutable-per-pool",
-      "launchFrontRunPolicy": "caller-bound BOX salt and registrar-only child factories",
-      "feeCollectionEntrypoint": "collectFees(PoolKey,address)"
+      "tickSpacing": 60,
+      "tickUpper": 0
+    },
+    "internalChildPlans": [
+      {
+        "childId": "child:discovery-box",
+        "constructor": {
+          "abiEncodedArgumentsTemplate": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "addressLocators": [
+            {
+              "byteOffset": 0,
+              "encoding": "abi-address-word",
+              "kind": "target",
+              "targetId": "target:launch-factory"
+            }
+          ]
+        },
+        "contractName": "DiscoveryBox",
+        "declaredHookPermissions": null,
+        "deployerTargetId": "target:box-factory",
+        "saltSource": "keccak256(abi.encode(launch-session-wallet, launch.calldata.boxSaltSeed))",
+        "sourceId": "source:primary",
+        "sourceSha256": "sha256:78d27b65215d410155ac6ca02b733bfb0ce649b12439f228b7ec7f280f611df6",
+        "sourceUnitName": "src/DiscoveryBox.sol"
+      },
+      {
+        "childId": "child:discovery-hook",
+        "constructor": {
+          "abiEncodedArgumentsTemplate": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "addressLocators": [
+            {
+              "byteOffset": 0,
+              "dependencyId": "dependency:pool-manager",
+              "encoding": "abi-address-word",
+              "kind": "external-onchain-dependency"
+            },
+            {
+              "byteOffset": 32,
+              "childId": "child:discovery-box",
+              "encoding": "abi-address-word",
+              "kind": "internal-child"
+            },
+            {
+              "byteOffset": 64,
+              "encoding": "abi-address-word",
+              "kind": "target",
+              "targetId": "target:launch-factory"
+            },
+            {
+              "byteOffset": 96,
+              "encoding": "abi-address-word",
+              "identityId": "identity:programmable-owner",
+              "kind": "declared-identity"
+            }
+          ]
+        },
+        "contractName": "DiscoveryHook",
+        "declaredHookPermissions": [
+          "afterInitialize",
+          "afterSwap",
+          "afterSwapReturnDelta",
+          "beforeSwap",
+          "beforeSwapReturnDelta"
+        ],
+        "deployerTargetId": "target:hook-factory",
+        "saltSource": "launch.calldata.hookSalt validated by HookMiner against flags 0x10cc",
+        "sourceId": "source:primary",
+        "sourceSha256": "sha256:17b6febf869ea367df2008b1de18007843e43c81ae1702daaf19e95fea657ec3",
+        "sourceUnitName": "src/DiscoveryHook.sol"
+      }
+    ],
+    "proposalStatus": "architecture-review-required",
+    "releaseDeploymentOrder": [
+      "target:box-factory",
+      "target:hook-factory",
+      "target:launch-factory"
+    ]
+  },
+  "externalOnchainDependencies": [
+    {
+      "dependencyId": "dependency:pool-manager"
     }
-  }
+  ],
+  "internalChildDeployments": [
+    {
+      "childId": "child:discovery-box"
+    },
+    {
+      "childId": "child:discovery-hook"
+    }
+  ],
+  "language": "solidity",
+  "launcher": {
+    "route": {
+      "adapterId": "discovery-launch-factory-v1",
+      "kind": "evm.create2"
+    }
+  },
+  "releaseModules": [],
+  "rootComponentId": "component:launch-system",
+  "rootTargetId": "target:launch-factory",
+  "schemaVersion": "programmable.launch-specification.v1",
+  "targets": [
+    {
+      "componentId": "component:launch-system",
+      "constructor": {
+        "abiEncodedArguments": "0x",
+        "addressLocators": []
+      },
+      "contractName": "DiscoveryBoxFactory",
+      "declaredHookPermissions": null,
+      "deploymentMode": "create2",
+      "deploymentValueWei": "0",
+      "initializer": null,
+      "initializerValueWei": "0",
+      "libraries": [],
+      "saltStrategy": "compiler-deterministic-v1",
+      "sourceId": "source:primary",
+      "sourceSha256": "sha256:dbd1a5b532cfd88eb6f3412738c44e852b1c0e305efa003dc788985e50a71b74",
+      "sourceUnitName": "src/DiscoveryBoxFactory.sol",
+      "targetId": "target:box-factory"
+    },
+    {
+      "componentId": "component:launch-system",
+      "constructor": {
+        "abiEncodedArguments": "0x",
+        "addressLocators": []
+      },
+      "contractName": "DiscoveryHookFactory",
+      "declaredHookPermissions": null,
+      "deploymentMode": "create2",
+      "deploymentValueWei": "0",
+      "initializer": null,
+      "initializerValueWei": "0",
+      "libraries": [],
+      "saltStrategy": "compiler-deterministic-v1",
+      "sourceId": "source:primary",
+      "sourceSha256": "sha256:4050c131cd6dc55b447157d37ead2472c6b5f93cbdbdb6a9027f511c02f0f5d1",
+      "sourceUnitName": "src/DiscoveryHookFactory.sol",
+      "targetId": "target:hook-factory"
+    },
+    {
+      "componentId": "component:launch-system",
+      "constructor": {
+        "abiEncodedArguments": "0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "addressLocators": [
+          {
+            "byteOffset": 0,
+            "dependencyId": "dependency:pool-manager",
+            "encoding": "abi-address-word",
+            "kind": "external-onchain-dependency"
+          },
+          {
+            "byteOffset": 32,
+            "encoding": "abi-address-word",
+            "kind": "target",
+            "targetId": "target:box-factory"
+          },
+          {
+            "byteOffset": 64,
+            "encoding": "abi-address-word",
+            "kind": "target",
+            "targetId": "target:hook-factory"
+          }
+        ]
+      },
+      "contractName": "DiscoveryLaunchFactory",
+      "declaredHookPermissions": null,
+      "deploymentMode": "create2",
+      "deploymentValueWei": "0",
+      "initializer": null,
+      "initializerValueWei": "0",
+      "libraries": [],
+      "saltStrategy": "compiler-deterministic-v1",
+      "sourceId": "source:primary",
+      "sourceSha256": "sha256:abda631409b964bb185e6d6d2abc10d0f3cca378814c4e5bf9ef65a7b2ac0011",
+      "sourceUnitName": "src/DiscoveryLaunchFactory.sol",
+      "targetId": "target:launch-factory"
+    }
+  ]
 }
