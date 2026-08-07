@@ -6,7 +6,7 @@ This plan applies to the isolated prototype. A passed local test does not prove 
 
 - Pin Solidity 0.8.26, Cancun EVM settings, Foundry, v4 core, v4 periphery and OpenZeppelin hook dependencies; disable automatic remapping discovery so ignored local directories cannot alter the compiler input.
 - Record the compiler-resolved source closure, lock revisions, build information and review-target hash.
-- Reproduce `review-build-manifest.json` from one exact source commit and preserve the emitted build-info and five deployable artifacts with the independent witness.
+- Reproduce `review-build-manifest.json` from one exact source commit, normalize only Foundry's repository-root path fields, and preserve the emitted raw build-info and five deployable artifacts with the independent witness.
 - Run formatting, build, full tests, Slither, runtime size and initcode size checks.
 - Run a pinned-fork test against exact deployment records and a separate current-head smoke test.
 
