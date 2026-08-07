@@ -1,3 +1,3 @@
-sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
+evidenceOriginCommit: b1a1734001355f670a42ac263b6dc81aa6fae19d
 command: forge fmt --check
-exitCode: 0
+result: passed

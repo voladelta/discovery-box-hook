@@ -1,5 +1,3 @@
-sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
-command: forge test --gas-report --match-contract DiscoveryLaunchFactoryTest
 No files changed, compilation skipped
 
 Ran 5 tests for test/DiscoveryLaunchFactory.t.sol:DiscoveryLaunchFactoryTest
@@ -8,7 +6,7 @@ Ran 5 tests for test/DiscoveryLaunchFactory.t.sol:DiscoveryLaunchFactoryTest
 [PASS] test_launchAtomicallyDeploysRegistersInitializesAndLocksLiquidity() (gas: 62344064)
 [PASS] test_launchRecipientCanCollectFeesButCannotRemovePrincipal() (gas: 121067369)
 [PASS] test_unlockCallbackRejectsDirectCaller() (gas: 34258)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 694.21ms (1.23s CPU time)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 692.57ms (1.22s CPU time)
 
 ╭------------------------------------------------------+-----------------+-------+--------+-------+---------╮
 | lib/v4-core/src/PoolManager.sol:PoolManager Contract |                 |       |        |       |         |
@@ -151,5 +149,4 @@ Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 694.21ms (1.23s CPU
 ╰----------------------------------------------------------------+-----------------+---------+---------+---------+---------╯
 
 
-Ran 1 test suite in 697.55ms (694.21ms CPU time): 5 tests passed, 0 failed, 0 skipped (5 total tests)
-exitCode: 0
+Ran 1 test suite in 694.77ms (692.57ms CPU time): 5 tests passed, 0 failed, 0 skipped (5 total tests)

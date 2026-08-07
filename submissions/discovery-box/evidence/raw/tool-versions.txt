@@ -1,6 +1,5 @@
-sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
-builderCommit: ae64016097784aae2ee70c0574765f427ebd54ad
-command: forge --version; node --version; bun --version; uv --version; git --version; forge config --json
+evidenceOriginCommit: b1a1734001355f670a42ac263b6dc81aa6fae19d
+evidenceOriginTree: 706a03d8c9c19bf6bfe97237cc8fb065624aeaff
 forge Version: 1.7.1-Homebrew
 Commit SHA: 4072e48705af9d93e3c0f6e29e93b5e9a40caed8
 Build Timestamp: 2026-05-08T07:44:24.000000000Z (1778226264)
@@ -23,21 +22,9 @@ git version 2.50.1 (Apple Git-155)
     "@uniswap/v4-core/=lib/v4-core/",
     "@uniswap/v4-periphery/=lib/v4-periphery/",
     "forge-std/=lib/forge-std/src/",
-    "solmate/=lib/v4-core/lib/solmate/",
-    "@ensdomains/=lib/v4-core/node_modules/@ensdomains/",
-    "ds-test/=lib/v4-core/lib/forge-std/lib/ds-test/src/",
-    "erc4626-tests/=lib/oz-contracts/lib/erc4626-tests/",
-    "forge-gas-snapshot/=lib/v4-periphery/lib/permit2/lib/forge-gas-snapshot/src/",
-    "halmos-cheatcodes/=lib/oz-contracts/lib/halmos-cheatcodes/src/",
-    "hardhat/=lib/v4-core/node_modules/hardhat/",
-    "openzeppelin-contracts/=lib/v4-core/lib/openzeppelin-contracts/",
-    "oz-contracts/=lib/oz-contracts/",
-    "oz-hooks/=lib/oz-hooks/src/",
-    "permit2/=lib/v4-periphery/lib/permit2/",
-    "v4-core/=lib/v4-core/src/",
-    "v4-periphery/=lib/v4-periphery/"
+    "solmate/=lib/v4-core/lib/solmate/"
   ],
-  "auto_detect_remappings": true,
+  "auto_detect_remappings": false,
   "libraries": [],
   "cache": true,
   "cache_path": "cache",
@@ -271,4 +258,3 @@ git version 2.50.1 (Apple Git-155)
   "compilation_restrictions": [],
   "script_execution_protection": true
 }
-exitCode: 0

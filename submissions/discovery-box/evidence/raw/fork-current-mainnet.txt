@@ -1,17 +1,10 @@
-sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
-rpcClass: public-unauthenticated-current-head-rpc
-chainId: 1
-observedCurrentHead: 25699399
-poolManager: 0x000000000004444c5dc75cB358380D2e3dE08A90
-expectedRuntimeHash: 0x785f1014552b7ce7d5fb7d0c970ca60edee94fd00425d7ca21609acac7ce1293
-command: forge test --match-path test/DiscoveryMainnetFork.t.sol --fork-url https://eth.drpc.org --fork-block-number 25699399 -vv
+forkBlock: 25706470
 No files changed, compilation skipped
-2026-08-07T00:07:45.808643Z  WARN evm::traces::external: etherscan config not found
-2026-08-07T00:07:46.084520Z  WARN foundry_fork_db::cache: Failed to read cache file err=Os { code: 2, kind: NotFound, message: "No such file or directory" } path="/Users/mbp/.foundry/cache/rpc/mainnet/25699399"
+2026-08-07T23:47:59.952747Z  WARN evm::traces::external: etherscan config not found
+2026-08-07T23:48:00.232455Z  WARN foundry_fork_db::cache: Failed to read cache file err=Os { code: 2, kind: NotFound, message: "No such file or directory" } path="/Users/mbp/.foundry/cache/rpc/mainnet/25706470"
 
 Ran 1 test for test/DiscoveryMainnetFork.t.sol:DiscoveryMainnetForkTest
-[PASS] test_mainnetPoolManagerLaunchFourQuadrantsAndClaimLifecycle() (gas: 38820437)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 8.32s (4.61s CPU time)
+[PASS] test_mainnetPoolManagerLaunchFourQuadrantsAndClaimLifecycle() (gas: 41785008)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 9.11s (4.64s CPU time)
 
-Ran 1 test suite in 8.61s (8.32s CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)
-exitCode: 0
+Ran 1 test suite in 9.40s (9.11s CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)

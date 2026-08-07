@@ -1,5 +1,3 @@
-sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
-command: forge test --match-path test/DiscoveryHookInvariant.t.sol -vv
 No files changed, compilation skipped
 
 Ran 5 tests for test/DiscoveryHookInvariant.t.sol:DiscoveryHookInvariantTest
@@ -8,412 +6,409 @@ Ran 5 tests for test/DiscoveryHookInvariant.t.sol:DiscoveryHookInvariantTest
 ╭-------------------------------+-----------------+-------+---------+----------╮
 | Contract                      | Selector        | Calls | Reverts | Discards |
 +==============================================================================+
-| DiscoveryHookInvariantHandler | buy             | 2701  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buy             | 2674  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | buyExactOutput  | 2695  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2701  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | claim           | 2720  | 0       | 0        |
+| DiscoveryHookInvariantHandler | claim           | 2722  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | openBoxes       | 2688  | 0       | 0        |
+| DiscoveryHookInvariantHandler | openBoxes       | 2623  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sell            | 2768  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sell            | 2844  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sellExactOutput | 2812  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sellExactOutput | 2820  | 0       | 0        |
 ╰-------------------------------+-----------------+-------+---------+----------╯
 
 Logs:
-  Bound result 204497024543
-  Bound result 381675319
-  Bound result 900676753223
-  Bound result 1877800303
-  Bound result 939778546
-  Bound result 1631976393
-  Bound result 270325482470
-  Bound result 744
-  Bound result 22034
-  Bound result 357957373
-  Bound result 3443496100
-  Bound result 4047
-  Bound result 43184416
-  Bound result 551
-  Bound result 87475048592675827557
-  Bound result 6966
-  Bound result 22
-  Bound result 3675
-  Bound result 999999016383
-  Bound result 3462
-  Bound result 4157812008350944351
-  Bound result 2881543549
-  Bound result 1000001
+  Bound result 1963
+  Bound result 18685436309
+  Bound result 99
+  Bound result 994018243553048323
+  Bound result 886123287598291094
+  Bound result 1926424728
+  Bound result 1901860
+  Bound result 987982422241435259
+  Bound result 987982420307292115
   Bound result 1
-  Bound result 4991
-  Bound result 1576
-  Bound result 21926
-  Bound result 1
-  Bound result 7405
-  Bound result 127
-  Bound result 18946749458524
-  Bound result 2013603557572364141
-  Bound result 1
-  Bound result 1693356449095
-  Bound result 365474044908
-  Bound result 53
-  Bound result 2205026871119
-  Bound result 20682
-  Bound result 999999947002
-  Bound result 475462806449
+  Bound result 480947812156
+  Bound result 2928782473969
   Bound result 1000000
-  Bound result 2495391294945
-  Bound result 7
-  Bound result 2514385233147688182
-  Bound result 15987939718149581885
-  Bound result 2779
-  Bound result 4089496660
-  Bound result 2859113449
-  Bound result 8462
-  Bound result 242326078416
-  Bound result 999999001505
-  Bound result 12
-  Bound result 393
-  Bound result 125263518
-  Bound result 2
-  Bound result 753771471339
-  Bound result 358988467
-  Bound result 16994
-  Bound result 2363107688
+  Bound result 4840
+  Bound result 185192965095
+  Bound result 4376121046
+  Bound result 1000002
+  Bound result 160152313754
+  Bound result 3529
+  Bound result 999999012687
+  Bound result 500926
+  Bound result 999999005449
+  Bound result 1000002
+  Bound result 4859
+  Bound result 987984597791214126
+  Bound result 987982413755174509
+  Bound result 778652523485
+  Bound result 25
   Bound result 1
-  Bound result 987940979266186975
-  Bound result 149
+  Bound result 1000000
+  Bound result 987983198655886278
+  Bound result 6751
+  Bound result 999999004364
+  Bound result 999999000066
+  Bound result 36223445
+  Bound result 1000000
+  Bound result 6055
+  Bound result 545
+  Bound result 1000001
+  Bound result 2586
+  Bound result 1913675496456
+  Bound result 6131384453
+  Bound result 413
+  Bound result 7171883946
+  Bound result 6447
+  Bound result 307661560
+  Bound result 230671527
+  Bound result 3187657074
+  Bound result 1
+  Bound result 999999003585
+  Bound result 920501306259
+  Bound result 1317
+  Bound result 68782373638
+  Bound result 1450
+  Bound result 1000001
+  Bound result 215094440
 
 [PASS] invariant_exactOutputCoverageIsNonVacuous() (runs: 256, calls: 16384, reverts: 0)
 
 ╭-------------------------------+-----------------+-------+---------+----------╮
 | Contract                      | Selector        | Calls | Reverts | Discards |
 +==============================================================================+
-| DiscoveryHookInvariantHandler | buy             | 2701  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buy             | 2674  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | buyExactOutput  | 2695  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2701  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | claim           | 2720  | 0       | 0        |
+| DiscoveryHookInvariantHandler | claim           | 2722  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | openBoxes       | 2688  | 0       | 0        |
+| DiscoveryHookInvariantHandler | openBoxes       | 2623  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sell            | 2768  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sell            | 2844  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sellExactOutput | 2812  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sellExactOutput | 2820  | 0       | 0        |
 ╰-------------------------------+-----------------+-------+---------+----------╯
 
 Logs:
-  Bound result 204497024543
-  Bound result 381675319
-  Bound result 900676753223
-  Bound result 1877800303
-  Bound result 939778546
-  Bound result 1631976393
-  Bound result 270325482470
-  Bound result 78379087
-  Bound result 22020
-  Bound result 357957373
-  Bound result 3443496100
-  Bound result 3327641367
-  Bound result 200
-  Bound result 551
-  Bound result 87474865449500646717
-  Bound result 6955
-  Bound result 22
-  Bound result 3675
-  Bound result 999999016384
-  Bound result 3462
-  Bound result 4157812008350944351
-  Bound result 2881543549
-  Bound result 1000001
+  Bound result 1963
+  Bound result 18685436309
+  Bound result 25
+  Bound result 11
+  Bound result 6252521864721883361
+  Bound result 45261875315222035689
+  Bound result 1926424728
+  Bound result 1901860
+  Bound result 63987978181474329032
+  Bound result 63987978179538827110
   Bound result 1
-  Bound result 4972
-  Bound result 1542
-  Bound result 1159
-  Bound result 1
-  Bound result 7405
-  Bound result 127
-  Bound result 18946749458524
-  Bound result 2013603557572364141
-  Bound result 1
-  Bound result 1693356449095
-  Bound result 5328150250563
-  Bound result 53
-  Bound result 105131550983
-  Bound result 4123494386
-  Bound result 369856079368
-  Bound result 475462806449
+  Bound result 480947812156
+  Bound result 2928782473969
   Bound result 1000000
-  Bound result 59025636371
-  Bound result 7
-  Bound result 2529118210886156871
-  Bound result 10420395345450993884
-  Bound result 8116
-  Bound result 4089496660
-  Bound result 9689091561
-  Bound result 8398
-  Bound result 242326078416
-  Bound result 2980526986
-  Bound result 12
-  Bound result 2658737898
-  Bound result 125263518
-  Bound result 2
-  Bound result 265790318731
-  Bound result 358988467
-  Bound result 16910
-  Bound result 2363107688
   Bound result 1
-  Bound result 987939982954420516
-  Bound result 5
+  Bound result 185192965095
+  Bound result 34
+  Bound result 4376121046
+  Bound result 1000002
+  Bound result 160152313754
+  Bound result 3684
+  Bound result 2
+  Bound result 999999007148
+  Bound result 500926
+  Bound result 999999003728
+  Bound result 1000002
+  Bound result 4980
+  Bound result 27987980357022745333
+  Bound result 2251799813685248
+  Bound result 987650000
+  Bound result 25
+  Bound result 1
+  Bound result 22
+  Bound result 1000000
+  Bound result 5987978173981286453
+  Bound result 6835
+  Bound result 999999004698
+  Bound result 999999000066
+  Bound result 36223445
+  Bound result 3
+  Bound result 1000000
+  Bound result 6903
+  Bound result 303
+  Bound result 1000001
+  Bound result 4299
+  Bound result 1590675650908
+  Bound result 6131384453
+  Bound result 1
+  Bound result 413
+  Bound result 7171883946
+  Bound result 6679
+  Bound result 307661560
+  Bound result 230671527
+  Bound result 3187657074
+  Bound result 1
+  Bound result 1
+  Bound result 999999003828
+  Bound result 1119951778561
+  Bound result 1076
+  Bound result 149479664828
+  Bound result 1450
+  Bound result 1000001
+  Bound result 215094440
 
 [PASS] invariant_feeRemainderIsBounded() (runs: 256, calls: 16384, reverts: 0)
 
 ╭-------------------------------+-----------------+-------+---------+----------╮
 | Contract                      | Selector        | Calls | Reverts | Discards |
 +==============================================================================+
-| DiscoveryHookInvariantHandler | buy             | 2701  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buy             | 2674  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | buyExactOutput  | 2695  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2701  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | claim           | 2720  | 0       | 0        |
+| DiscoveryHookInvariantHandler | claim           | 2722  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | openBoxes       | 2688  | 0       | 0        |
+| DiscoveryHookInvariantHandler | openBoxes       | 2623  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sell            | 2768  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sell            | 2844  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sellExactOutput | 2812  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sellExactOutput | 2820  | 0       | 0        |
 ╰-------------------------------+-----------------+-------+---------+----------╯
 
 Logs:
-  Bound result 204497024543
-  Bound result 381675319
-  Bound result 900676753223
-  Bound result 1877800303
-  Bound result 939778546
-  Bound result 1631976393
-  Bound result 270325482470
-  Bound result 78379087
-  Bound result 22020
-  Bound result 357957373
-  Bound result 3443496100
-  Bound result 3327641367
-  Bound result 200
-  Bound result 551
-  Bound result 87474865449500646717
-  Bound result 6955
-  Bound result 22
-  Bound result 3675
-  Bound result 999999016384
-  Bound result 3462
-  Bound result 4157812008350944351
-  Bound result 2881543549
-  Bound result 1000001
+  Bound result 1963
+  Bound result 18685436309
+  Bound result 25
+  Bound result 11
+  Bound result 6252521864721883361
+  Bound result 45261875315222035689
+  Bound result 1926424728
+  Bound result 1901860
+  Bound result 63987978181474329032
+  Bound result 63987978179538827110
   Bound result 1
-  Bound result 4972
-  Bound result 1542
-  Bound result 1159
-  Bound result 1
-  Bound result 7405
-  Bound result 127
-  Bound result 18946749458524
-  Bound result 2013603557572364141
-  Bound result 1
-  Bound result 1693356449095
-  Bound result 5328150250563
-  Bound result 53
-  Bound result 105131550983
-  Bound result 4123494386
-  Bound result 630142920533
-  Bound result 475462806449
+  Bound result 480947812156
+  Bound result 2928782473969
   Bound result 1000000
-  Bound result 284376867251
-  Bound result 7
-  Bound result 2523032935852546017
-  Bound result 12049519803811225227
-  Bound result 8116
-  Bound result 4089496660
-  Bound result 432589248
-  Bound result 8399
-  Bound result 242326078416
-  Bound result 999999001551
-  Bound result 12
-  Bound result 2658737898
-  Bound result 125263518
-  Bound result 2
-  Bound result 225496889899
-  Bound result 358988467
-  Bound result 16910
-  Bound result 2363107688
   Bound result 1
-  Bound result 987940977927896072
-  Bound result 5
+  Bound result 185192965095
+  Bound result 34
+  Bound result 4376121046
+  Bound result 1000002
+  Bound result 160152313754
+  Bound result 3684
+  Bound result 2
+  Bound result 999999007148
+  Bound result 500926
+  Bound result 999999003728
+  Bound result 1000002
+  Bound result 4980
+  Bound result 27987980357022745333
+  Bound result 2251799813685248
+  Bound result 987650000
+  Bound result 25
+  Bound result 1
+  Bound result 22
+  Bound result 1000000
+  Bound result 5987978173981286453
+  Bound result 6835
+  Bound result 999999004698
+  Bound result 999999000066
+  Bound result 36223445
+  Bound result 3
+  Bound result 1000000
+  Bound result 6903
+  Bound result 303
+  Bound result 1000001
+  Bound result 4299
+  Bound result 1590675650908
+  Bound result 6131384453
+  Bound result 1
+  Bound result 413
+  Bound result 7171883946
+  Bound result 6679
+  Bound result 307661560
+  Bound result 230671527
+  Bound result 3187657074
+  Bound result 1
+  Bound result 1
+  Bound result 999999003828
+  Bound result 1119951778561
+  Bound result 1076
+  Bound result 149479664828
+  Bound result 1450
+  Bound result 1000001
+  Bound result 215094440
 
 [PASS] invariant_openableSupplyIsConserved() (runs: 256, calls: 16384, reverts: 0)
 
 ╭-------------------------------+-----------------+-------+---------+----------╮
 | Contract                      | Selector        | Calls | Reverts | Discards |
 +==============================================================================+
-| DiscoveryHookInvariantHandler | buy             | 2701  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buy             | 2674  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | buyExactOutput  | 2695  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2701  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | claim           | 2720  | 0       | 0        |
+| DiscoveryHookInvariantHandler | claim           | 2722  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | openBoxes       | 2688  | 0       | 0        |
+| DiscoveryHookInvariantHandler | openBoxes       | 2623  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sell            | 2768  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sell            | 2844  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sellExactOutput | 2812  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sellExactOutput | 2820  | 0       | 0        |
 ╰-------------------------------+-----------------+-------+---------+----------╯
 
 Logs:
-  Bound result 204497024543
-  Bound result 381675319
-  Bound result 900676753223
-  Bound result 1877800303
-  Bound result 939778546
-  Bound result 1631976393
-  Bound result 270325482470
-  Bound result 78379087
-  Bound result 22020
-  Bound result 357957373
-  Bound result 3443496100
-  Bound result 3327641367
-  Bound result 200
-  Bound result 551
-  Bound result 87474865449500646717
-  Bound result 6955
-  Bound result 22
-  Bound result 3675
-  Bound result 999999016384
-  Bound result 3462
-  Bound result 4157812008350944351
-  Bound result 2881543549
+  Bound result 1963
+  Bound result 18685436309
+  Bound result 25
+  Bound result 11
   Bound result 1000001
+  Bound result 41979943767885760769
+  Bound result 1926424728
+  Bound result 1901860
+  Bound result 63987978181474329165
+  Bound result 3964268111
   Bound result 1
-  Bound result 4972
-  Bound result 1542
-  Bound result 1159
-  Bound result 1
-  Bound result 7405
-  Bound result 127
-  Bound result 18946749458524
-  Bound result 2013603557572364141
-  Bound result 1
-  Bound result 1693356449095
-  Bound result 5328150250563
-  Bound result 53
-  Bound result 105131550983
-  Bound result 4123494386
-  Bound result 379402788946
-  Bound result 475462806449
+  Bound result 480947812156
+  Bound result 2928782473969
   Bound result 1000000
-  Bound result 198664807650
-  Bound result 7
-  Bound result 2528895017244183201
-  Bound result 15987939719998347244
-  Bound result 8114
-  Bound result 4089496660
-  Bound result 2859113448
-  Bound result 8399
-  Bound result 242326078416
-  Bound result 999999001551
-  Bound result 12
-  Bound result 2658737898
-  Bound result 125263518
+  Bound result 5222
+  Bound result 185192965095
+  Bound result 34
+  Bound result 4376121046
+  Bound result 1000002
+  Bound result 160152313754
+  Bound result 289817369
   Bound result 2
-  Bound result 55068912401
-  Bound result 358988467
-  Bound result 16952
-  Bound result 2363107688
+  Bound result 1000000
+  Bound result 500926
+  Bound result 999999001396
+  Bound result 1000002
+  Bound result 5206
+  Bound result 26304594147896699977
+  Bound result 12802405318225247636
+  Bound result 3276540133
+  Bound result 25
   Bound result 1
-  Bound result 987940981114952355
-  Bound result 77639869934
+  Bound result 12
+  Bound result 1000000
+  Bound result 15987978179320838840
+  Bound result 7038
+  Bound result 972276187822
+  Bound result 999999000066
+  Bound result 36223445
+  Bound result 3
+  Bound result 1000000
+  Bound result 2243
+  Bound result 295
+  Bound result 1000001
+  Bound result 2741
+  Bound result 14782
+  Bound result 6131384453
+  Bound result 11
+  Bound result 413
+  Bound result 7171883946
+  Bound result 6780
+  Bound result 307661560
+  Bound result 230671527
+  Bound result 3187657074
+  Bound result 1
+  Bound result 1
+  Bound result 999999003893
+  Bound result 1764420403171
+  Bound result 1378
+  Bound result 1267990660450
+  Bound result 1450
+  Bound result 1000001
+  Bound result 215094440
 
 [PASS] invariant_swapFeesRemainBacked() (runs: 256, calls: 16384, reverts: 0)
 
 ╭-------------------------------+-----------------+-------+---------+----------╮
 | Contract                      | Selector        | Calls | Reverts | Discards |
 +==============================================================================+
-| DiscoveryHookInvariantHandler | buy             | 2701  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buy             | 2674  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | buyExactOutput  | 2695  | 0       | 0        |
+| DiscoveryHookInvariantHandler | buyExactOutput  | 2701  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | claim           | 2720  | 0       | 0        |
+| DiscoveryHookInvariantHandler | claim           | 2722  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | openBoxes       | 2688  | 0       | 0        |
+| DiscoveryHookInvariantHandler | openBoxes       | 2623  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sell            | 2768  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sell            | 2844  | 0       | 0        |
 |-------------------------------+-----------------+-------+---------+----------|
-| DiscoveryHookInvariantHandler | sellExactOutput | 2812  | 0       | 0        |
+| DiscoveryHookInvariantHandler | sellExactOutput | 2820  | 0       | 0        |
 ╰-------------------------------+-----------------+-------+---------+----------╯
 
 Logs:
-  Bound result 204497024543
-  Bound result 381675319
-  Bound result 900676753223
-  Bound result 1877800303
-  Bound result 939778546
-  Bound result 1631976393
-  Bound result 270325482470
-  Bound result 78379087
-  Bound result 22020
-  Bound result 357957373
-  Bound result 3443496100
-  Bound result 3327641367
-  Bound result 200
-  Bound result 551
-  Bound result 87474865449500646717
-  Bound result 6955
-  Bound result 22
-  Bound result 3675
-  Bound result 999999016384
-  Bound result 3462
-  Bound result 4157812008350944351
-  Bound result 2881543549
-  Bound result 1000001
+  Bound result 1963
+  Bound result 18685436309
+  Bound result 25
+  Bound result 11
+  Bound result 6252521864721883361
+  Bound result 45261875315222035689
+  Bound result 1926424728
+  Bound result 1901860
+  Bound result 63987978181474329032
+  Bound result 63987978179538827110
   Bound result 1
-  Bound result 4972
-  Bound result 1542
-  Bound result 1159
-  Bound result 1
-  Bound result 7405
-  Bound result 127
-  Bound result 18946749458524
-  Bound result 2013603557572364141
-  Bound result 1
-  Bound result 1693356449095
-  Bound result 5328150250563
-  Bound result 53
-  Bound result 105131550983
-  Bound result 4123494386
-  Bound result 630142920533
-  Bound result 475462806449
+  Bound result 480947812156
+  Bound result 2928782473969
   Bound result 1000000
-  Bound result 284376867251
-  Bound result 7
-  Bound result 2523032935852546017
-  Bound result 12049519803811225227
-  Bound result 8116
-  Bound result 4089496660
-  Bound result 2542429946
-  Bound result 8399
-  Bound result 242326078416
-  Bound result 999999001551
-  Bound result 12
-  Bound result 2658737898
-  Bound result 125263518
-  Bound result 2
-  Bound result 225492703817
-  Bound result 358988467
-  Bound result 16910
-  Bound result 2363107688
   Bound result 1
-  Bound result 987940980037731519
-  Bound result 5
+  Bound result 185192965095
+  Bound result 34
+  Bound result 4376121046
+  Bound result 1000002
+  Bound result 160152313754
+  Bound result 3684
+  Bound result 2
+  Bound result 999999007148
+  Bound result 500926
+  Bound result 999999003728
+  Bound result 1000002
+  Bound result 4980
+  Bound result 27987980357022745333
+  Bound result 2251799813685248
+  Bound result 987650000
+  Bound result 25
+  Bound result 1
+  Bound result 22
+  Bound result 1000000
+  Bound result 5987978173981286453
+  Bound result 6835
+  Bound result 999999004698
+  Bound result 999999000066
+  Bound result 36223445
+  Bound result 3
+  Bound result 1000000
+  Bound result 6903
+  Bound result 303
+  Bound result 1000001
+  Bound result 4299
+  Bound result 1590675650908
+  Bound result 6131384453
+  Bound result 1
+  Bound result 413
+  Bound result 7171883946
+  Bound result 6679
+  Bound result 307661560
+  Bound result 230671527
+  Bound result 3187657074
+  Bound result 1
+  Bound result 1
+  Bound result 999999003828
+  Bound result 1119951778561
+  Bound result 1076
+  Bound result 149479664828
+  Bound result 1450
+  Bound result 1000001
+  Bound result 215094440
 
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 7.38s (35.65s CPU time)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 7.22s (34.23s CPU time)
 
-Ran 1 test suite in 7.38s (7.38s CPU time): 5 tests passed, 0 failed, 0 skipped (5 total tests)
-exitCode: 0
+Ran 1 test suite in 7.22s (7.22s CPU time): 5 tests passed, 0 failed, 0 skipped (5 total tests)

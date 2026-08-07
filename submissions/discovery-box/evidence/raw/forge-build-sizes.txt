@@ -1,7 +1,5 @@
-sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
-command: forge build --sizes
-Compiling 65 files with Solc 0.8.26
-Solc 0.8.26 finished in 6.42s
+Compiling 126 files with Solc 0.8.26
+Solc 0.8.26 finished in 8.18s
 Compiler run successful!
 
 ╭------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╮
@@ -136,4 +134,4 @@ Compiler run successful!
 | UnsafeMath                                                             | 31               | 81                | 24,545             | 49,071              |
 ╰------------------------------------------------------------------------+------------------+-------------------+--------------------+---------------------╯
 
-exitCode: 0
+Verified submissions/discovery-box/review-build-manifest.json

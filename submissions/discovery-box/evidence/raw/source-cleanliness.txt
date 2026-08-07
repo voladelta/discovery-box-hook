@@ -1,3 +1,4 @@
-sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
-command: git diff --exit-code HEAD -- src test foundry.toml remappings.txt package.json bun.lock analysis/economic_model.py submissions/discovery-box/submission.json submissions/discovery-box/source-topology.json submissions/discovery-box/launch.json submissions/discovery-box/PROPOSAL.md submissions/discovery-box/TEST_PLAN.md submissions/discovery-box/THREAT_MODEL.md submissions/discovery-box/compatibility-report.json
-exitCode: 0
+evidenceOriginCommit: b1a1734001355f670a42ac263b6dc81aa6fae19d
+evidenceOriginTree: 706a03d8c9c19bf6bfe97237cc8fb065624aeaff
+command: git diff --exit-code HEAD -- src test foundry.toml remappings.txt DEPENDENCIES.md package.json bun.lock analysis/economic_model.py submissions/discovery-box/submission.json submissions/discovery-box/source-topology.json submissions/discovery-box/launch.json submissions/discovery-box/review-build-manifest.json script/review-build-manifest.mjs .github/workflows/independent-security-review.yml
+result: passed
