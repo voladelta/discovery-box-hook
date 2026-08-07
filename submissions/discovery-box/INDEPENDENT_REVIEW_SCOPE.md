@@ -12,10 +12,11 @@ The record must identify:
 - the exact GitHub reviewer identity and review date
 - the GitHub Actions run used for independent reproduction
 - `submissions/discovery-box/review-build-manifest.json` and its SHA-256 digest
-- the source-closure, compiler-input, resolved-settings, build-info and deployable-artifact-set digests from that manifest
+- the source-closure, normalized compiler-input, resolved-settings, normalized build-info, compiler-output and deployable-artifact-set digests from that manifest
+- the raw host-specific build-info filename, SHA-256 digest and artifact-witness digest from the independent run
 - the exact Foundry, Solidity and Slither versions used by the reviewer
 
-The repository workflow `Independent accounting and security review witness` runs on a source pull request and can also accept the full source commit as a manual input after the workflow is present on the default branch. It checks out the exact pull-request head or dispatched commit, rebuilds the project, verifies the committed build manifest, runs the complete Foundry suite and dedicated stateful invariants, executes the pinned Mainnet PoolManager fork witness, and records Slither's non-clean output. A successful run proves reproduction only; it does not supply the required semantic review.
+The repository workflow `Independent accounting and security review witness` runs on a source pull request and can also accept the full source commit as a manual input after the workflow is present on the default branch. It checks out the exact pull-request head or dispatched commit, rebuilds the project, verifies the committed build manifest, preserves the raw build-info and deployable artifact JSON, runs the complete Foundry suite and dedicated stateful invariants, executes the pinned Mainnet PoolManager fork witness, and records Slither's non-clean output. Foundry embeds the absolute checkout root in three compiler-input path fields and derives its local build-info ID from that input. Manifest V2 normalizes only those repository-root paths; it remains exact over every source byte, resolved compiler setting, compiler output, ABI and bytecode. A successful run proves reproduction only; it does not supply the required semantic review.
 
 ## Minimum semantic coverage
 

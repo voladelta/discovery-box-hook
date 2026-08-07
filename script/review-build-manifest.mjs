@@ -81,13 +81,24 @@ function buildManifest() {
 
   const settings = buildInfo.input?.settings;
   if (!isPlainObject(settings)) throw new Error("Build-info compiler settings are missing");
+  const normalizedCompilerInput = normalizeCompilerInput(buildInfo.input);
+  const normalizedBuildInfo = {
+    _format: buildInfo._format,
+    source_id_to_path: buildInfo.source_id_to_path,
+    language: buildInfo.language,
+    input: normalizedCompilerInput,
+    output: buildInfo.output,
+    solcLongVersion: buildInfo.solcLongVersion,
+    solcVersion: buildInfo.solcVersion
+  };
+  const normalizedBuildInfoBytes = Buffer.from(canonicalJson(normalizedBuildInfo), "utf8");
   const launchSettings = launch.compiler?.settings;
   if (!isPlainObject(launchSettings)) throw new Error("launch.json compiler settings are missing");
 
   const sourceClosureSha256 = digestCanonical(sources);
   const artifactSetSha256 = digestCanonical(deployableRecords);
   return {
-    schemaVersion: "discovery-box.reproducible-build.v1",
+    schemaVersion: "discovery-box.reproducible-build.v2",
     subject: {
       applicationId: launch.applicationId,
       chain: launch.chain,
@@ -102,7 +113,7 @@ function buildManifest() {
       launchSettings,
       resolvedSettings: settings,
       resolvedSettingsSha256: digestCanonical(settings),
-      compilerInputSha256: digestCanonical(buildInfo.input)
+      compilerInputSha256: digestCanonical(normalizedCompilerInput)
     },
     sourceClosure: {
       method: "solc-input-literal-content-v1",
@@ -111,9 +122,12 @@ function buildManifest() {
       files: sources
     },
     buildInfo: {
-      foundryBuildInfoId: buildInfo.id,
-      byteLength: buildInfoBytes.length,
-      sha256: digest(buildInfoBytes)
+      format: buildInfo._format,
+      normalization: "repository-root-paths-v1",
+      normalizedByteLength: normalizedBuildInfoBytes.length,
+      normalizedSha256: digest(normalizedBuildInfoBytes),
+      compilerOutputSha256: digestCanonical(buildInfo.output),
+      sourceIdMapSha256: digestCanonical(buildInfo.source_id_to_path)
     },
     deployableArtifacts: {
       count: deployableRecords.length,
@@ -121,6 +135,30 @@ function buildManifest() {
       artifacts: deployableRecords
     }
   };
+}
+
+function normalizeCompilerInput(input) {
+  if (!isPlainObject(input)) throw new Error("Build-info compiler input is missing");
+  const normalized = JSON.parse(JSON.stringify(input));
+  normalized.basePath = normalizeCompilerPath(normalized.basePath, "basePath");
+  for (const field of ["allowPaths", "includePaths"]) {
+    if (!Array.isArray(normalized[field]) || normalized[field].some((entry) => typeof entry !== "string")) {
+      throw new Error(`Build-info compiler input ${field} is malformed`);
+    }
+    normalized[field] = normalized[field].map((entry) => normalizeCompilerPath(entry, field));
+  }
+  return normalized;
+}
+
+function normalizeCompilerPath(value, field) {
+  if (typeof value !== "string" || !path.isAbsolute(value)) {
+    throw new Error(`Build-info compiler input ${field} must use an absolute host path`);
+  }
+  const relative = path.relative(repositoryRoot, value);
+  if (path.isAbsolute(relative) || relative === ".." || relative.startsWith(`..${path.sep}`)) {
+    throw new Error(`Build-info compiler input ${field} escapes the repository`);
+  }
+  return relative === "" ? "." : relative.split(path.sep).join("/");
 }
 
 function sourceRecord(sourcePath, source) {
