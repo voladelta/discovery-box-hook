@@ -1523,6 +1523,7 @@
   },
   "implementation": {
     "sourcePaths": [
+      "submissions/discovery-box/source-topology.json",
       "src/openable/IOpenableAsset.sol",
       "src/openable/OpenableERC20.sol",
       "src/DiscoveryBox.sol",
