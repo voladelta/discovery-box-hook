@@ -7,7 +7,7 @@ This ledger binds the applicant-owned evidence for one strict Programmable stand
 | Item | Value |
 | --- | --- |
 | Solidity evidence-origin source commit | `b1a1734001355f670a42ac263b6dc81aa6fae19d` |
-| Review-bundle evidence-origin commit | `dc784be9ab6a493fad7e2ef7326abd605ffb73e3` |
+| Review-bundle evidence-origin commit | `637683a6a70915b13148630619d0a5853aff2a8a` |
 | Unchanged web/economic evidence origin | `46608fd0aec1baa217b20c13d3cb04365e981db2` |
 | Previous reviewed source target | `3853ff76e7a07d347b858a413eda9a6894d1a267` |
 | Source baseline before original repair | `2435073e4f950058d535438da4979f58fc95d0c9` |
@@ -43,7 +43,7 @@ The exact tool output and complete Foundry configuration are in `evidence/raw/to
 
 The strict 1.5 compatibility check passed with no blocker diagnostics and complete repository closure. Its four warnings route return-delta accounting and the declared novel project/token behavior to human architecture review; they are not represented as acceptance. The recorded structured submission hash is `sha256:c092cff0cdd87414add8a8a2278048725e32bd4c220c2d5f9fba3c5c92de7799`.
 
-The source-cleanliness record proves that the implementation, tests, Foundry configuration, dependency declaration, canonical source topology, launch graph, structured submission, review-build manifest, generator, scope and witness workflow matched review-bundle commit `dc784be9ab6a493fad7e2ef7326abd605ffb73e3`. The Solidity test, invariant, fork, gas and Slither records remain bound to compiler-configuration commit `b1a1734001355f670a42ac263b6dc81aa6fae19d`; the intervening diff changes no compiled input or test.
+The source-cleanliness record proves that the implementation, tests, Foundry configuration, dependency declaration, canonical source topology, launch graph, structured submission, review-build manifest, generator, scope and witness workflow matched review-bundle commit `637683a6a70915b13148630619d0a5853aff2a8a`. The Solidity test, invariant, fork, gas and Slither records remain bound to compiler-configuration commit `b1a1734001355f670a42ac263b6dc81aa6fae19d`; the intervening diff changes no compiled input or test.
 
 Foundry automatic remapping discovery is disabled. The resolved build now contains only the six repository-pinned remappings, so ignored local dependency directories cannot alter the compiler input or build-info relative to a clean checkout.
 

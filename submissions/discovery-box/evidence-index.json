@@ -2,10 +2,10 @@
   "schemaVersion": "1.0.0",
   "standardVersion": "1.5.0",
   "modelId": "discovery-box",
-  "generatedAt": "2026-08-07T23:54:25Z",
+  "generatedAt": "2026-08-07T23:59:38Z",
   "boundSourceCommit": "b1a1734001355f670a42ac263b6dc81aa6fae19d",
   "sourceBaselineCommit": "3853ff76e7a07d347b858a413eda9a6894d1a267",
-  "revisionPolicy": "Every Solidity artifact was produced from boundSourceCommit. Review-bundle files and their clean build are bound to dc784be9ab6a493fad7e2ef7326abd605ffb73e3. Web and economic evidence remains bound to the separately disclosed byte-identical origin 46608fd0aec1baa217b20c13d3cb04365e981db2. The evidence-only packaging commit may be later; any affected executable source, test, configuration or submission change requires the corresponding commands and digests to be regenerated.",
+  "revisionPolicy": "Every Solidity artifact was produced from boundSourceCommit. Review-bundle files and their clean build are bound to 637683a6a70915b13148630619d0a5853aff2a8a. Web and economic evidence remains bound to the separately disclosed byte-identical origin 46608fd0aec1baa217b20c13d3cb04365e981db2. The evidence-only packaging commit may be later; any affected executable source, test, configuration or submission change requires the corresponding commands and digests to be regenerated.",
   "claims": {
     "audit": false,
     "independentReview": false,
@@ -45,7 +45,7 @@
     {
       "id": "evidence-ledger",
       "path": "submissions/discovery-box/EVIDENCE.md",
-      "sha256": "sha256:c2fe1cd6867d3b281dd1f431a9b43c0c156d24c20ee8d8eb36f462411ef5ea98",
+      "sha256": "sha256:6e7c5899f8036104af7a9e5cf00b57633349c7d71726c35730995f3984e556bc",
       "result": "authored",
       "command": "manual evidence ledger assembled from the hash-bound raw artifacts in this index",
       "toolVersion": "evidence-index schema 1.0.0",
@@ -117,7 +117,7 @@
     {
       "id": "independent-review-workflow",
       "path": ".github/workflows/independent-security-review.yml",
-      "sha256": "sha256:c7a484c70069645c83b1a49ab2f742ac022bbb19d6cf047453b2c53d7afd1bf5",
+      "sha256": "sha256:66fff7c55de77014aab519952f9f652f79fbc3eee457ae2d91120c7e561129a0",
       "result": "prepared-not-run",
       "command": "GitHub pull_request or exact-commit workflow_dispatch event",
       "toolVersion": "GitHub Actions with SHA-pinned checkout, Foundry, Python and artifact actions",
@@ -144,7 +144,7 @@
     {
       "id": "tool-versions-raw",
       "path": "submissions/discovery-box/evidence/raw/tool-versions.txt",
-      "sha256": "sha256:87e5ec6c6327c230f454ae4699ba4c67a2adeba5623a1a204047f2625e9fb0ab",
+      "sha256": "sha256:9cb0e45497a43417aedeb992ead1ba3cf5fc801ac3d5e2b350c662d1704c8c91",
       "result": "recorded",
       "command": "forge --version; node --version; bun --version; uv --version; git --version; forge config --json",
       "toolVersion": "Foundry 1.7.1-Homebrew; Node 24.18.0; Bun 1.3.14; uv 0.12.0; Git 2.50.1",
@@ -153,7 +153,7 @@
     {
       "id": "source-cleanliness-raw",
       "path": "submissions/discovery-box/evidence/raw/source-cleanliness.txt",
-      "sha256": "sha256:b97dad43111416dabf047af74bdc4385d405409c85af2dea40b6b7e68f4bc891",
+      "sha256": "sha256:5fb8c58cffb72d21f9a1b24fc25ee07a902b9ea6a5b0668cfe8ef499e942a001",
       "result": "passed",
       "command": "git diff --exit-code HEAD -- src test foundry.toml remappings.txt DEPENDENCIES.md package.json bun.lock analysis/economic_model.py submissions/discovery-box/submission.json submissions/discovery-box/source-topology.json submissions/discovery-box/launch.json submissions/discovery-box/review-build-manifest.json script/review-build-manifest.mjs .github/workflows/independent-security-review.yml submissions/discovery-box/INDEPENDENT_REVIEW_SCOPE.md",
       "toolVersion": "Git 2.50.1 (Apple Git-155)",
@@ -171,7 +171,7 @@
     {
       "id": "forge-build-size-raw",
       "path": "submissions/discovery-box/evidence/raw/forge-build-sizes.txt",
-      "sha256": "sha256:9fc3953bbed220109ffd167cf322de6f1b7338607ad6ea0bc035bf59a994dbc5",
+      "sha256": "sha256:ccb11e7253539713b636cab6f5041a175464fe609d5410698b93b7f3cb79a7c8",
       "result": "passed",
       "command": "forge clean && forge build --sizes --build-info && node script/review-build-manifest.mjs --check submissions/discovery-box/review-build-manifest.json",
       "toolVersion": "Foundry 1.7.1-Homebrew; Solidity 0.8.26",
