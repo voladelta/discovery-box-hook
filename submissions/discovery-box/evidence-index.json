@@ -116,7 +116,7 @@
     {
       "id": "independent-review-workflow",
       "path": ".github/workflows/independent-security-review.yml",
-      "sha256": "sha256:0664c2f39a1b008be21bfc4811f460aa513326a7ab3b0284dd8fca49e4571d26",
+      "sha256": "sha256:c7a484c70069645c83b1a49ab2f742ac022bbb19d6cf047453b2c53d7afd1bf5",
       "result": "prepared-not-run",
       "command": "GitHub pull_request or exact-commit workflow_dispatch event",
       "toolVersion": "GitHub Actions with SHA-pinned checkout, Foundry, Python and artifact actions",

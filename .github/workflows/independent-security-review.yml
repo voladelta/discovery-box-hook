@@ -98,7 +98,7 @@ jobs:
             process.stdout.write(`${build.solcLongVersion}\n`);
           ' | tee review-witness/solc-version.txt
           node script/review-build-manifest.mjs \
-            --check submissions/discovery-box/review-build-manifest.json
+            --write review-witness/observed-review-build-manifest.json
           cp out/build-info/*.json review-witness/
           cp out/DiscoveryBox.sol/DiscoveryBox.json review-witness/
           cp out/DiscoveryBoxFactory.sol/DiscoveryBoxFactory.json review-witness/
@@ -106,6 +106,9 @@ jobs:
           cp out/DiscoveryHookFactory.sol/DiscoveryHookFactory.json review-witness/
           cp out/DiscoveryLaunchFactory.sol/DiscoveryLaunchFactory.json review-witness/
           cp submissions/discovery-box/review-build-manifest.json review-witness/
+          cmp \
+            submissions/discovery-box/review-build-manifest.json \
+            review-witness/observed-review-build-manifest.json
 
       - name: Reproduce complete Solidity tests
         shell: bash
