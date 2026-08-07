@@ -1,24 +1,24 @@
-sourceCommit: 9583b93c3fb6345a7beae5276a721ec9afda60ce
+sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
 command: bun test ./web/demo-model.test.ts ./web/judge-model.test.ts
 bun test v1.3.14 (0d9b296a)
 
 web/demo-model.test.ts:
-(pass) Discovery Box demo model > follows the canonical buy then open sequence [2.22ms]
-(pass) Discovery Box demo model > matches the immutable sell-fee curve at its boundaries [0.24ms]
+(pass) Discovery Box demo model > follows the canonical buy then open sequence [2.34ms]
+(pass) Discovery Box demo model > matches the immutable sell-fee curve at its boundaries [0.19ms]
 (pass) Discovery Box demo model > charges Programmable 10 basis points of gross ETH volume [0.01ms]
-(pass) Discovery Box demo model > ignores impossible transitions [0.21ms]
+(pass) Discovery Box demo model > ignores impossible transitions [0.32ms]
 
 web/judge-model.test.ts:
-(pass) judge-mode model > preserves the documented maturity results and locked target [0.24ms]
-(pass) judge-mode model > bounds exploratory openings without changing the canonical target [0.07ms]
-(pass) judge-mode model > maps every attack control to a source and test invariant [0.42ms]
+(pass) judge-mode model > preserves the documented maturity results and locked target [0.69ms]
+(pass) judge-mode model > bounds exploratory openings without changing the canonical target [0.06ms]
+(pass) judge-mode model > maps every attack control to a source and test invariant [0.64ms]
 (pass) judge-mode model > exposes only trace steps that have occurred [0.02ms]
 (pass) judge-mode model > opens one ticket box for three admissions and consumes exactly one [0.02ms]
-(pass) judge-mode model > an unauthorized ticket consumer leaves the balance unchanged [0.02ms]
-(pass) judge-mode model > assigns four deterministic collectible serials with ERC-1155 balances 2, 1, 1 [0.25ms]
+(pass) judge-mode model > an unauthorized ticket consumer leaves the balance unchanged [0.01ms]
+(pass) judge-mode model > assigns four deterministic collectible serials with ERC-1155 balances 2, 1, 1 [0.23ms]
 
  11 pass
  0 fail
  35 expect() calls
-Ran 11 tests across 2 files. [84.00ms]
+Ran 11 tests across 2 files. [91.00ms]
 exitCode: 0

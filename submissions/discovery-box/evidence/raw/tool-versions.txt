@@ -1,4 +1,5 @@
-sourceCommit: 9583b93c3fb6345a7beae5276a721ec9afda60ce
+sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
+builderCommit: ae64016097784aae2ee70c0574765f427ebd54ad
 command: forge --version; node --version; bun --version; uv --version; git --version; forge config --json
 forge Version: 1.7.1-Homebrew
 Commit SHA: 4072e48705af9d93e3c0f6e29e93b5e9a40caed8

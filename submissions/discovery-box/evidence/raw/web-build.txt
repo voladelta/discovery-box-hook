@@ -1,4 +1,4 @@
-sourceCommit: 9583b93c3fb6345a7beae5276a721ec9afda60ce
+sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
 command: bun run build
 $ tsc -b && vite build
 vite v8.1.5 building client environment for production...
@@ -14,5 +14,5 @@ dist/assets/secp256k1-CetCfzDq.js   26.40 kB │ gzip:  10.26 kB │ map:   156.
 dist/assets/call-xPGadLC5.js        92.46 kB │ gzip:  27.03 kB │ map:   410.08 kB
 dist/assets/index-C1XGuvaV.js      355.06 kB │ gzip: 108.01 kB │ map: 1,491.97 kB
 
-✓ built in 338ms
+✓ built in 329ms
 exitCode: 0

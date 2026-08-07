@@ -1,5 +1,6 @@
-sourceCommit: 9583b93c3fb6345a7beae5276a721ec9afda60ce
-command: uv run --python 3.14 python analysis/economic_model.py --runsBalanceBalanced perceived membership value: $10.00
+sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
+command: uv run --python 3.14 python analysis/economic_model.py --runs 20000
+Balanced perceived membership value: $10.00
 
 | Target | Reach probability | Median opened | 10% to 90% opened | Fee-induced openings | Median sell LP fee |
 | ---: | ---: | ---: | ---: | ---: | ---: |

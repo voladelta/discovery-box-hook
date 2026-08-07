@@ -6,11 +6,11 @@ This ledger binds the applicant-owned evidence for one strict Programmable stand
 
 | Item | Value |
 | --- | --- |
-| Evidence-origin source commit | `9583b93c3fb6345a7beae5276a721ec9afda60ce` |
+| Evidence-origin source commit | `46608fd0aec1baa217b20c13d3cb04365e981db2` |
 | Source baseline before repair | `2435073e4f950058d535438da4979f58fc95d0c9` |
 | Standard | `1.5.0` only |
 | Programmable fee policy | `programmable-volume-fee-v1` policy `1.1.0` |
-| Builder source | local `programmable-v4-builder` commit `5b47504299c5dbe0ab694be8d163e80d352c8166` |
+| Builder source | seven-file admission branch commit `ae64016097784aae2ee70c0574765f427ebd54ad` |
 | Builder result | structural preflight passed; closure `complete`; implementation remains `IN_PROGRESS`; design review required |
 | Hook permission mask | `0x10cc` |
 | Target chain | Ethereum mainnet, chain id 1 |
@@ -37,9 +37,9 @@ The exact tool output and complete Foundry configuration are in `evidence/raw/to
 
 ### Compatibility and source binding
 
-The strict 1.5 compatibility check passed with no blocker diagnostics and complete repository closure. Its four warnings route return-delta accounting and the declared novel project/token behavior to human architecture review; they are not represented as acceptance. The recorded structured submission hash is `sha256:d379b569c89dfed6983b8688da0985cb6fd4360f64ed8648422da083fd19941c`.
+The strict 1.5 compatibility check passed with no blocker diagnostics and complete repository closure. Its four warnings route return-delta accounting and the declared novel project/token behavior to human architecture review; they are not represented as acceptance. The recorded structured submission hash is `sha256:c092cff0cdd87414add8a8a2278048725e32bd4c220c2d5f9fba3c5c92de7799`.
 
-The source-cleanliness record proves that the implementation, tests, build configuration, economic model and 1.5 submission documents matched commit `9583b93c3fb6345a7beae5276a721ec9afda60ce` when evidence was executed.
+The source-cleanliness record proves that the implementation, tests, build configuration, economic model, canonical source topology, launch graph and 1.5 submission documents matched commit `46608fd0aec1baa217b20c13d3cb04365e981db2` when evidence was executed.
 
 ### Solidity format, build and size
 
@@ -76,7 +76,7 @@ Both fork runs deployed the local launch system against the real Mainnet PoolMan
 | Run | Block | RPC class | Result |
 | --- | ---: | --- | --- |
 | Pinned regression | 23,000,000 | public unauthenticated archive RPC | 1 passed, 0 failed |
-| Current-head snapshot | 25,697,445 | public unauthenticated current-head RPC | 1 passed, 0 failed |
+| Current-head snapshot | 25,699,399 | public unauthenticated current-head RPC | 1 passed, 0 failed |
 
 These are simulations, not deployment transactions or live fee-collection evidence.
 
@@ -124,8 +124,8 @@ Applicant-owned work completed in this revision: strict 1.5 manifest migration, 
 
 Platform or maintainer-owned work after applicant evidence review:
 
-- upgrade the trusted main validator to strict standard 1.5 and the required seven-file intake contract before resubmission
-- generate the final central package from this evidence revision and bind every central digest to the same public source/package revision
+- run the trusted-main validator against strict standard 1.5 and the required seven-file intake contract after resubmission
+- generate the final seven-file central package from this evidence revision and bind every central digest to the same public source/package revision
 - select and release the supported production router/adapter, then prove quote/execution parity for the supported paths
 - implement and review registry, UI, API and indexer integration, including reorg, backfill, freshness and direct-read reconciliation
 - authorize deployment, verify runtime/source/configuration, execute lifecycle checks, enable monitoring and make any availability decision
