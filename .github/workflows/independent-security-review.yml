@@ -139,6 +139,7 @@ jobs:
       - name: Preserve known non-clean Slither result
         shell: bash
         run: |
+          set +e
           set -uo pipefail
 
           slither . \
