@@ -6,6 +6,7 @@ This plan applies to the isolated prototype. A passed local test does not prove 
 
 - Pin Solidity 0.8.26, Cancun EVM settings, Foundry, v4 core, v4 periphery and OpenZeppelin hook dependencies.
 - Record the compiler-resolved source closure, lock revisions, build information and review-target hash.
+- Reproduce `review-build-manifest.json` from one exact source commit and preserve the emitted build-info and five deployable artifacts with the independent witness.
 - Run formatting, build, full tests, Slither, runtime size and initcode size checks.
 - Run a pinned-fork test against exact deployment records and a separate current-head smoke test.
 
@@ -148,4 +149,4 @@ Current state:
 - Solidity format, build, unit, fuzz, five stateful invariants and static analysis: passed locally
 - pinned Ethereum mainnet fork at block 23,000,000 and current-head smoke: passed locally against PoolManager `0x000000000004444c5dc75cB358380D2e3dE08A90` with runtime hash `0x785f1014552b7ce7d5fb7d0c970ca60edee94fd00425d7ca21609acac7ce1293`
 - local web model tests and production build: passed; production router, quote parity, indexer and wallet-gated membership tests: planned
-- independent accounting and security review: required before candidate status
+- independent accounting and security review: reproducible scope and witness prepared; an attributable review by a reviewer independent of the applicant remains required before candidate status

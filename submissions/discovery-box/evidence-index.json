@@ -2,12 +2,13 @@
   "schemaVersion": "1.0.0",
   "standardVersion": "1.5.0",
   "modelId": "discovery-box",
-  "generatedAt": "2026-08-07T00:09:00Z",
+  "generatedAt": "2026-08-07T23:39:26Z",
   "boundSourceCommit": "46608fd0aec1baa217b20c13d3cb04365e981db2",
   "sourceBaselineCommit": "2435073e4f950058d535438da4979f58fc95d0c9",
   "revisionPolicy": "Every executable artifact was produced from boundSourceCommit. The evidence-only packaging commit may be later; any executable-source, test, configuration or submission change requires affected commands and every digest to be regenerated.",
   "claims": {
     "audit": false,
+    "independentReview": false,
     "deployment": false,
     "routingApproval": false,
     "maintainerAcceptance": false,
@@ -21,7 +22,14 @@
       "format, build, size, unit, integration, fuzz and invariant runs",
       "pinned-block and current-head Mainnet PoolManager fork smoke runs",
       "pinned Slither output and finding dispositions",
-      "local web model tests and production build"
+      "local web model tests and production build",
+      "reproducible compiler, dependency-closure, build-info and deployable-artifact manifest",
+      "public independent-review scope and exact-commit reproduction workflow"
+    ],
+    "independentReviewer": [
+      "reproduce the exact source commit and public witness",
+      "complete the accounting, security, factory, custody and exit review scope",
+      "publish an attributable finding record independent of the applicant"
     ],
     "platformOrMaintainer": [
       "trusted-main strict 1.5 seven-file validator upgrade",
@@ -29,14 +37,14 @@
       "production router or adapter selection and quote-execution parity",
       "registry, UI, API and indexer integration including reorg, backfill and freshness tests",
       "deployment authorization, runtime and source verification, monitoring and availability decision",
-      "independent accounting, security, custody, architecture and provider reviews"
+      "verify the independent review record before manual signature or launch authority"
     ]
   },
   "artifacts": [
     {
       "id": "evidence-ledger",
       "path": "submissions/discovery-box/EVIDENCE.md",
-      "sha256": "sha256:4a2042da2cc316779866ae3633d0a6f555e05dd76194a05f70d06f2e783e844e",
+      "sha256": "sha256:e218dbbb76570b358ba6b7f5e71fa14eced238a0e27f65e1b7eca0cad048cfdf",
       "result": "authored",
       "command": "manual evidence ledger assembled from the hash-bound raw artifacts in this index",
       "toolVersion": "evidence-index schema 1.0.0",
@@ -77,6 +85,51 @@
       "command": "node /Users/mbp/Codehub/programmable-v4-builder-seven/skills/programmable-v4-hook-builder/scripts/cli.mjs prepare-pr submissions/discovery-box --repository-root /Users/mbp/Codehub/discovery-box",
       "toolVersion": "programmable-v4-builder seven-file admission commit ae64016097784aae2ee70c0574765f427ebd54ad",
       "scope": "Canonical declaration of the applicant-controlled src and web execution roots used by the autonomous seven-file application projection."
+    },
+    {
+      "id": "independent-review-scope",
+      "path": "submissions/discovery-box/INDEPENDENT_REVIEW_SCOPE.md",
+      "sha256": "sha256:dcdc24dcd1dce2bbfb0d82a01762764d6d6b922793fa8e70deb9a1b54da00c5f",
+      "result": "prepared-not-reviewed",
+      "command": "manual review-scope preparation from the maintainer's exact requested gate",
+      "toolVersion": "review request v1",
+      "scope": "Minimum independent accounting, return-delta, liability, authentication, factory, custody, compiler and artifact review contract; no completed review is claimed."
+    },
+    {
+      "id": "review-build-manifest",
+      "path": "submissions/discovery-box/review-build-manifest.json",
+      "sha256": "sha256:430212d54a11eeff074ebc3f2bbd9d189f28f2f34688921043bb8f37d34d4c35",
+      "result": "reproduced-locally",
+      "command": "forge clean && forge build --sizes --build-info && node script/review-build-manifest.mjs --check submissions/discovery-box/review-build-manifest.json",
+      "toolVersion": "Foundry 1.7.1-Homebrew; Solidity 0.8.26; review-build-manifest v1",
+      "scope": "Literal compiler input, 126-file dependency closure, resolved settings, exact build-info and five deployable artifacts prepared for independent reproduction."
+    },
+    {
+      "id": "review-build-manifest-generator",
+      "path": "script/review-build-manifest.mjs",
+      "sha256": "sha256:3f244d9ee517a7022c1d8da0f114b12721f0395e6cd93862f5e7eb8ccc0a3f01",
+      "result": "passed",
+      "command": "node script/review-build-manifest.mjs --check submissions/discovery-box/review-build-manifest.json",
+      "toolVersion": "Node 24.18.0",
+      "scope": "Deterministic generator and checker for repository-source equality, compiler input, dependency closure, build-info and deployable artifact commitments."
+    },
+    {
+      "id": "independent-review-workflow",
+      "path": ".github/workflows/independent-security-review.yml",
+      "sha256": "sha256:0664c2f39a1b008be21bfc4811f460aa513326a7ab3b0284dd8fca49e4571d26",
+      "result": "prepared-not-run",
+      "command": "GitHub pull_request or exact-commit workflow_dispatch event",
+      "toolVersion": "GitHub Actions with SHA-pinned checkout, Foundry, Python and artifact actions",
+      "scope": "Read-only public reproduction of the exact commit, build manifest, full tests, stateful invariants, pinned Mainnet fork and known non-clean Slither result."
+    },
+    {
+      "id": "test-plan",
+      "path": "submissions/discovery-box/TEST_PLAN.md",
+      "sha256": "sha256:c91b07a087dbd06b81d852ca17efc94b5902439b5d5103c79919f3cfc9eeb9ed",
+      "result": "updated",
+      "command": "manual evidence-state update",
+      "toolVersion": "test plan revision 1",
+      "scope": "Records the prepared independent witness while retaining the independent-review gate as incomplete."
     },
     {
       "id": "builder-check-raw",

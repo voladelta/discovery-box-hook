@@ -12,6 +12,7 @@ This ledger binds the applicant-owned evidence for one strict Programmable stand
 | Programmable fee policy | `programmable-volume-fee-v1` policy `1.1.0` |
 | Builder source | seven-file admission branch commit `ae64016097784aae2ee70c0574765f427ebd54ad` |
 | Builder result | structural preflight passed; closure `complete`; implementation remains `IN_PROGRESS`; design review required |
+| Reproducible build manifest | `submissions/discovery-box/review-build-manifest.json`; applicant-generated review input, not an independent decision |
 | Hook permission mask | `0x10cc` |
 | Target chain | Ethereum mainnet, chain id 1 |
 | PoolManager | `0x000000000004444c5dc75cB358380D2e3dE08A90` |
@@ -104,6 +105,22 @@ Slither `0.11.6` analyzed 59 contracts with 102 detectors and exited `255` after
 
 The raw result must remain attached to any review. The disposition does not replace an independent return-delta, custody or launch review.
 
+## Independent review preparation
+
+`submissions/discovery-box/review-build-manifest.json` binds the literal solc input for 126 source and dependency files, the resolved Solidity 0.8.26 compiler settings, the exact Foundry build-info digest, and five deployable artifacts: the three release factories and the two internal children. Its principal commitments are:
+
+| Commitment | Digest |
+| --- | --- |
+| Compiler input | `sha256:0cf0cca1cb956590a4a18d22aef57cfd3933b29a43f92b6c19ed8c65773521e2` |
+| Resolved compiler settings | `sha256:707b07a5637038f1be71f1e2b19ede898fbaf6c27b709ab07a9ec9937311539e` |
+| Source and dependency closure | `sha256:32859e1c39a97c90ef1572603a92e7c51325ec5ba4bfdf6ba96d649d26faf932` |
+| Foundry build-info bytes | `sha256:2c5885e7b94d48b2353818e7869ca4547edf619b75b9a71e913697f0db8a62c2` |
+| Deployable artifact set | `sha256:e17f12b893c4367971198e9d8be8179c9a2725c1b8fce5379692c661410177a1` |
+
+The pinned GitHub Actions workflow reproduces the manifest, complete tests, dedicated invariants, pinned Mainnet fork witness and known non-clean Slither output from one exact pull-request head. `INDEPENDENT_REVIEW_SCOPE.md` states the minimum semantic coverage and finding-disposition contract.
+
+These files prepare an immutable review target. They do not complete the gate. A reviewer independent of the applicant must still publish an attributable record for the exact final source commit and its successful reproduction run.
+
 ## Locked fee policy
 
 - Canonical quote asset: native ETH as `currency0`.
@@ -122,14 +139,20 @@ The raw result must remain attached to any review. The disposition does not repl
 
 Applicant-owned work completed in this revision: strict 1.5 manifest migration, policy 1.1 minimum/remainder semantics, local source/tests, pinned and current-head fork smoke, raw build/test/invariant/web evidence, pinned Slither output and technical disposition.
 
-Platform or maintainer-owned work after applicant evidence review:
+Independent-reviewer work before candidate status:
+
+- reproduce the exact source commit and artifact manifest through the public witness workflow
+- review all four return-delta quadrants, partial fills, lifetime remainder and claims, ERC-6909 backing, PoolManager authentication, mask `0x10cc`, atomic factory launch and permanent LP custody/fee exit
+- publish an attributable record with every material finding fixed or objectively dispositioned
+
+Platform or maintainer-owned work after applicant evidence and independent review:
 
 - run the trusted-main validator against strict standard 1.5 and the required seven-file intake contract after resubmission
 - generate the final seven-file central package from this evidence revision and bind every central digest to the same public source/package revision
 - select and release the supported production router/adapter, then prove quote/execution parity for the supported paths
 - implement and review registry, UI, API and indexer integration, including reorg, backfill, freshness and direct-read reconciliation
 - authorize deployment, verify runtime/source/configuration, execute lifecycle checks, enable monitoring and make any availability decision
-- obtain the required independent accounting, security, custody, architecture and provider reviews
+- verify the independent accounting and security record before any manual signature or later launch authority
 
 No production router, indexer or deployment is supplied here. Those omissions are explicit ownership boundaries, not passing local gates.
 
