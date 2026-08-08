@@ -151,7 +151,7 @@ function OnchainStatus() {
       {hasConfiguredDeployment ? (
         <div className="onchain-action">
           <div>
-            <strong>Open one BOX onchain</strong>
+            <strong>Open one $BOX onchain</strong>
             <span>
               {receipt.isSuccess
                 ? "Transaction confirmed on Ethereum mainnet."
@@ -160,7 +160,7 @@ function OnchainStatus() {
                   : account.isConnected && account.chainId !== 1
                     ? "Switch the connected wallet to Ethereum mainnet."
                     : account.isConnected
-                      ? "This submits open(1) to the configured BOX contract."
+                      ? "This submits open(1) to the configured DiscoBox contract."
                       : "Connect a wallet to enable this real transaction."}
             </span>
           </div>
@@ -191,7 +191,7 @@ function MembershipPasses({ active }: { active: boolean }) {
             <h3>{membership.name}</h3>
             <p>{membership.detail}</p>
           </div>
-          <span className="pass-duration">{active ? "30 days" : "Inside BOX"}</span>
+          <span className="pass-duration">{active ? "30 days" : "Inside $BOX"}</span>
         </article>
       ))}
     </div>
@@ -207,11 +207,11 @@ function BoxObject({ stage, pending }: { stage: string; pending: string | null }
         <div className="box-lid">
           <div className="box-lid-face">
             <BrandMark />
-            <span>DISCOVERY</span>
+            <span>DISCOBOX</span>
           </div>
         </div>
         <div className="box-base">
-          <span className="box-label">BOX / 001</span>
+          <span className="box-label">$BOX / 001</span>
           <strong>30 days × 3</strong>
           <span className="box-caption">OPENABLE MEMBERSHIP ASSET</span>
         </div>
@@ -248,11 +248,11 @@ export function App() {
   const actionCopy = state.pending === "buy"
     ? "Simulating pool swap"
     : state.pending === "open"
-      ? "Opening BOX"
+      ? "Opening $BOX"
       : state.stage === "ready"
-        ? "Buy one BOX · 0.018 ETH"
+        ? "Buy one $BOX · 0.018 ETH"
         : state.stage === "owned"
-          ? "Open BOX for memberships"
+          ? "Open $BOX for memberships"
           : "Membership bundle active";
 
   const announcement = state.pending === "buy"
@@ -268,9 +268,9 @@ export function App() {
   return (
     <div className="app-shell">
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="Discovery Box home">
+        <a className="brand" href="#top" aria-label="DiscoBox home">
           <BrandMark />
-          <span>Discovery Box</span>
+          <span>DiscoBox</span>
         </a>
         <div className="header-actions">
           <span className="mode-badge">
@@ -285,10 +285,13 @@ export function App() {
       <main id="top">
         <section className="hero" aria-labelledby="hero-heading">
           <div className="hero-copy">
-            <p className="eyebrow">Openable membership asset · Uniswap v4</p>
-            <h1 id="hero-heading">Keep the box liquid.<br />Open the access.</h1>
+            <p className="eyebrow">DiscoBox · $BOX · Uniswap v4</p>
+            <h1 id="hero-heading">
+              <span>Trade it unopened.</span>
+              <span>Open it for utility.</span>
+            </h1>
             <p className="hero-intro">
-              Buy an unopened BOX, then burn it for 30 days across three memberships.
+              Trade DiscoBox unopened, then burn one whole $BOX for 30 days across three memberships.
               Every opening permanently lowers the next sell LP fee.
             </p>
 
@@ -322,7 +325,7 @@ export function App() {
                 <span className="step-count">Demo step {state.stage === "ready" ? "1" : state.stage === "owned" ? "2" : "3"} of 3</span>
                 <strong>{state.stage === "ready" ? "Acquire the unopened asset" : state.stage === "owned" ? "Choose access over liquidity" : "Access is active"}</strong>
               </div>
-              <span className="demo-price">1 BOX</span>
+              <span className="demo-price">1 $BOX</span>
             </div>
 
             <BoxObject stage={state.stage} pending={state.pending} />
@@ -341,7 +344,7 @@ export function App() {
                 {state.stage === "ready"
                   ? "Demo action only · no wallet signature"
                   : state.stage === "owned"
-                    ? "Burns one whole BOX in the contract design"
+                    ? "Burns one whole $BOX in the contract design"
                     : "One expiry activates all three interface passes"}
               </p>
               {state.stage === "opened" ? (
@@ -383,12 +386,12 @@ export function App() {
 
           <dl className="state-ledger">
             <div>
-              <dt>Total BOX supply</dt>
+              <dt>Total $BOX supply</dt>
               <dd>{demo.totalSupply}.00</dd>
               <span>{demo.hasOpened ? "−1.00 burned" : "Fixed initial supply: 100"}</span>
             </div>
             <div>
-              <dt>Your unopened BOX</dt>
+              <dt>Your unopened $BOX</dt>
               <dd>{demo.walletBoxes}.00</dd>
               <span>{demo.hasOpened ? "Consumed for access" : demo.hasBought ? "Ready to open" : "Buy from the pool"}</span>
             </div>
@@ -455,7 +458,7 @@ export function App() {
       </main>
 
       <footer>
-        <a className="brand" href="#top"><BrandMark /><span>Discovery Box</span></a>
+        <a className="brand" href="#top"><BrandMark /><span>DiscoBox</span></a>
         <p>Local prototype · No deployment, audit or routing approval claimed.</p>
         <span>{formatLpFee(PROGRAMMABLE_FEE_PIPS)} Programmable fee on gross ETH volume</span>
       </footer>

@@ -1,6 +1,7 @@
 import { useReducer, type Dispatch } from "react";
 import { formatEther } from "viem";
 import { FluidButton } from "./components/FluidButton";
+import { FluidSlider } from "./components/FluidSlider";
 import {
   DEMO_BUY_WEI,
   MATURITY_TARGET,
@@ -168,7 +169,7 @@ function MembershipGate({ active }: { active: boolean }) {
           <span aria-hidden="true">{active ? "✓" : "×"}</span>
           <div>
             <strong>{active ? "Local membership check: active" : "Local membership check: denied"}</strong>
-            <small>{active ? "Demo expiry: 30 days remaining" : "Open one whole BOX to continue"}</small>
+            <small>{active ? "Demo expiry: 30 days remaining" : "Open one whole $BOX to continue"}</small>
           </div>
         </div>
       </div>
@@ -197,8 +198,8 @@ function MembershipGate({ active }: { active: boolean }) {
           <div key="locked" className="artifact-lock">
             <span className="keyhole" aria-hidden="true" />
             <strong>Membership required</strong>
-            <p>The artifact stays hidden until this demo opens a BOX.</p>
-            <a href="#top">Open a BOX above</a>
+            <p>The artifact stays hidden until this demo opens a $BOX.</p>
+            <a href="#top">Open a $BOX above</a>
           </div>
         )}
       </article>
@@ -352,7 +353,7 @@ function ApplicationSwitcher({ state, dispatch }: { state: JudgeState; dispatch:
       <div className="frontier" aria-labelledby="frontier-heading">
         <div className="frontier-intro">
           <span>Application frontier</span>
-          <h3 id="frontier-heading">Possible modules, all unimplemented.</h3>
+          <h3 id="frontier-heading">Possible extensions beyond membership, tickets, and deterministic collectibles.</h3>
           <p>Each would need its own security and operational boundary before becoming a real application.</p>
         </div>
         <div className="frontier-list">
@@ -470,17 +471,14 @@ function MaturityLaboratory({ demo, openingsOverride, onOpeningsChange }: {
             <text x="28" y="15">1.00%</text>
             <text x="572" y="142" textAnchor="end">0.30%</text>
           </svg>
-          <label className="opening-slider">
-            <span>Opening count</span>
-            <input
-              type="range"
-              min="0"
-              max="60"
-              step="1"
-              value={openings}
-              onInput={(event) => onOpeningsChange(Number(event.currentTarget.value))}
-            />
-          </label>
+          <FluidSlider
+            label="Opening count"
+            min={0}
+            max={60}
+            step={1}
+            value={openings}
+            onChange={onOpeningsChange}
+          />
           <div className="maturity-progress"><span style={{ transform: `scaleX(${maturity / 100})` }} /></div>
           <div className="curve-formula">
             <code>sellFee = 10,000 − min(opened, 40) × 7,000 / 40</code>
