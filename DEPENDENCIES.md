@@ -23,7 +23,7 @@ The local verification toolchain recorded on 2 August 2026 was:
 - Python 3.14.4 for the economic model
 - Slither 0.11.6 through `uvx --python 3.13`
 
-The Foundry compiler configuration and remappings are in `foundry.toml` and `remappings.txt`.
+The Foundry compiler configuration and remappings are in `foundry.toml` and `remappings.txt`. Automatic remapping discovery is disabled so ignored or locally restored dependency directories cannot change the compiler input or build-info in a clean checkout.
 
 ## Demonstration website
 

@@ -3,7 +3,9 @@ pragma solidity 0.8.26;
 
 import { Deployers } from "@uniswap/v4-core/test/utils/Deployers.sol";
 import { BaseHook } from "@openzeppelin/uniswap-hooks/src/base/BaseHook.sol";
+import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { Hooks } from "@uniswap/v4-core/src/libraries/Hooks.sol";
+import { CustomRevert } from "@uniswap/v4-core/src/libraries/CustomRevert.sol";
 import { LPFeeLibrary } from "@uniswap/v4-core/src/libraries/LPFeeLibrary.sol";
 import { IHooks } from "@uniswap/v4-core/src/interfaces/IHooks.sol";
 import { BalanceDelta, BalanceDeltaLibrary } from "@uniswap/v4-core/src/types/BalanceDelta.sol";
@@ -20,6 +22,7 @@ import { DiscoveryHook } from "../src/DiscoveryHook.sol";
 import { TicketBox } from "../src/applications/TicketBox.sol";
 
 contract DiscoveryHookTest is Deployers {
+    using SafeCast for uint256;
     using BalanceDeltaLibrary for BalanceDelta;
     using CurrencyLibrary for Currency;
     using PoolIdLibrary for PoolKey;
@@ -158,46 +161,80 @@ contract DiscoveryHookTest is Deployers {
         assertLt(fee, grossQuote + 1);
     }
 
-    function test_dustRoundsDownToZero() public view {
+    function test_feeMathDoesNotMakeSubminimumSwapsAdmissible() public view {
         assertEq(hook.programmableFeeFromGrossQuote(999), 0);
         assertEq(hook.programmableFeeOnTopOfNetQuote(998), 0);
         assertEq(hook.programmableFeeFromGrossQuote(1_000), 1);
         assertEq(hook.programmableFeeOnTopOfNetQuote(999), 1);
+        assertEq(hook.MINIMUM_GROSS_QUOTE(), 1_000);
+        assertEq(hook.PROJECT_FEE(), 0);
     }
 
-    function test_splitMicroSwapsCarryGrossFeeRemainder() public {
-        _swap(true, -999, 999);
-        assertEq(_liability(), 0);
-        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 998_001_000);
-
-        _swap(true, -999, 999);
+    function test_splitAcceptedSwapsCarryGrossFeeRemainder() public {
+        _swap(true, -1_500, 1_500);
         assertEq(_liability(), 1);
-        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 997_002_000);
-    }
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 500_000);
 
-    function test_splitMicroSwapsCarryFeeOnTopRemainder() public {
-        _swap(false, 499, 0);
-        assertEq(_liability(), 0);
-        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 499_000_000);
-
-        _swap(false, 500, 0);
-        assertEq(_liability(), 1);
+        _swap(true, -1_500, 1_500);
+        assertEq(_liability(), 3);
         assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 0);
     }
 
-    function test_mixedQuoteModesShareRemainderAccumulator() public {
-        _swap(true, -999, 999);
-        _swap(false, 499, 0);
+    function test_claimDoesNotResetLifetimeRemainder() public {
+        _swap(true, -1_500, 1_500);
+        uint256 liabilityBefore = _liability();
+        uint256 remainderBefore = hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner);
 
+        vm.prank(programmableOwner);
+        hook.claimProgrammableFee(liabilityBefore, programmableOwner);
+
+        assertEq(_liability(), 0);
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), remainderBefore);
+        assertEq(manager.balanceOf(address(hook), 0), 0);
+    }
+
+    function test_positiveGrossQuoteBelowMinimumRevertsInAllFourSwapQuadrants() public {
+        uint256 liabilityBefore = _liability();
+        uint256 remainderBefore = hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner);
+        uint256 backingBefore = manager.balanceOf(address(hook), 0);
+
+        _expectHookMinimumRevert(IHooks.beforeSwap.selector, 999);
+        _swap(true, -999, 999);
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
+
+        _expectHookMinimumRevert(IHooks.afterSwap.selector, 3);
+        _swap(true, 1, 1 ether);
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
+
+        _expectHookMinimumRevert(IHooks.afterSwap.selector, 988);
+        _swap(false, -999, 0);
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
+
+        _expectHookMinimumRevert(IHooks.beforeSwap.selector, 998);
+        _swap(false, 998, 0);
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
+
+        _swap(true, -1_000, 1_000);
         assertEq(_liability(), 1);
-        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), 498_001_000);
+    }
+
+    function test_fuzzSubminimumSpecifiedGrossInputRevertsAtomically(uint16 rawGrossQuote) public {
+        uint256 grossQuote = bound(uint256(rawGrossQuote), 1, 999);
+        uint256 liabilityBefore = _liability();
+        uint256 remainderBefore = hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner);
+        uint256 backingBefore = manager.balanceOf(address(hook), 0);
+
+        _expectHookMinimumRevert(IHooks.beforeSwap.selector, grossQuote);
+        _swap(true, -grossQuote.toInt256(), grossQuote);
+
+        _assertFeeState(liabilityBefore, remainderBefore, backingBefore);
     }
 
     function test_exactInputBuyChargesGrossSpecifiedEth() public {
         uint256 grossInput = 1e12;
         uint256 liabilityBefore = _liability();
 
-        BalanceDelta result = _swap(true, -int256(grossInput), grossInput);
+        BalanceDelta result = _swap(true, -grossInput.toInt256(), grossInput);
 
         uint256 fee = grossInput * 1_000 / 1_000_000;
         assertEq(uint256(-int256(result.amount0())), grossInput);
@@ -209,12 +246,12 @@ contract DiscoveryHookTest is Deployers {
         uint256 tokenOutput = 1e12;
         uint256 liabilityBefore = _liability();
 
-        BalanceDelta result = _swap(true, int256(tokenOutput), 1 ether);
+        BalanceDelta result = _swap(true, tokenOutput.toInt256(), 1 ether);
 
         uint256 grossInput = uint256(-int256(result.amount0()));
         uint256 fee = _liability() - liabilityBefore;
         assertEq(fee, grossInput * 1_000 / 1_000_000);
-        assertEq(result.amount1(), int128(int256(tokenOutput)));
+        assertEq(result.amount1(), SafeCast.toInt128(tokenOutput.toInt256()));
         assertEq(manager.balanceOf(address(hook), 0), _liability());
     }
 
@@ -222,7 +259,7 @@ contract DiscoveryHookTest is Deployers {
         uint256 tokenInput = 1e12;
         uint256 liabilityBefore = _liability();
 
-        BalanceDelta result = _swap(false, -int256(tokenInput), 0);
+        BalanceDelta result = _swap(false, -tokenInput.toInt256(), 0);
 
         uint256 fee = _liability() - liabilityBefore;
         uint256 netOutput = uint256(int256(result.amount0()));
@@ -236,10 +273,10 @@ contract DiscoveryHookTest is Deployers {
         uint256 netOutput = 1e12;
         uint256 liabilityBefore = _liability();
 
-        BalanceDelta result = _swap(false, int256(netOutput), 0);
+        BalanceDelta result = _swap(false, netOutput.toInt256(), 0);
 
         uint256 fee = _liability() - liabilityBefore;
-        assertEq(result.amount0(), int128(int256(netOutput)));
+        assertEq(result.amount0(), SafeCast.toInt128(netOutput.toInt256()));
         assertEq(fee, netOutput * 1_000 / 999_000);
         assertEq(fee, (netOutput + fee) * 1_000 / 1_000_000);
         assertEq(manager.balanceOf(address(hook), 0), _liability());
@@ -399,6 +436,27 @@ contract DiscoveryHookTest is Deployers {
         return hook.liability(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner);
     }
 
+    function _assertFeeState(uint256 expectedLiability, uint256 expectedRemainder, uint256 expectedBacking)
+        private
+        view
+    {
+        assertEq(_liability(), expectedLiability);
+        assertEq(hook.feeRemainder(key.toId(), CurrencyLibrary.ADDRESS_ZERO, programmableOwner), expectedRemainder);
+        assertEq(manager.balanceOf(address(hook), 0), expectedBacking);
+    }
+
+    function _expectHookMinimumRevert(bytes4 callback, uint256 grossQuote) private {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                CustomRevert.WrappedError.selector,
+                address(hook),
+                callback,
+                abi.encodeWithSelector(DiscoveryHook.GrossQuoteBelowMinimum.selector, grossQuote),
+                abi.encodeWithSelector(Hooks.HookCallFailed.selector)
+            )
+        );
+    }
+
     function _lastSwapFee(Vm.Log[] memory logs) private view returns (uint24 fee) {
         for (uint256 i = logs.length; i > 0; --i) {
             Vm.Log memory entry = logs[i - 1];
@@ -424,6 +482,8 @@ contract RejectEth {
 }
 
 contract DiscoveryHookFirstBuyTest is Deployers {
+    using SafeCast for uint256;
+
     using CurrencyLibrary for Currency;
     using PoolIdLibrary for PoolKey;
 
@@ -471,7 +531,9 @@ contract DiscoveryHookFirstBuyTest is Deployers {
         uint256 grossInput = 1e12;
         BalanceDelta result = swapRouter.swap{ value: grossInput }(
             key,
-            SwapParams({ zeroForOne: true, amountSpecified: -int256(grossInput), sqrtPriceLimitX96: MIN_PRICE_LIMIT }),
+            SwapParams({
+                zeroForOne: true, amountSpecified: -grossInput.toInt256(), sqrtPriceLimitX96: MIN_PRICE_LIMIT
+            }),
             PoolSwapTest.TestSettings({ takeClaims: false, settleUsingBurn: false }),
             ZERO_BYTES
         );

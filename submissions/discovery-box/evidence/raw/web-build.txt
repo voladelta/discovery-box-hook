@@ -1,0 +1,18 @@
+sourceCommit: 46608fd0aec1baa217b20c13d3cb04365e981db2
+command: bun run build
+$ tsc -b && vite build
+vite v8.1.5 building client environment for production...
+[2Ktransforming...✓ 1695 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                      0.83 kB │ gzip:   0.42 kB
+dist/assets/index-C4euwseR.css      46.20 kB │ gzip:   9.94 kB
+dist/assets/utils-Bpv4vmSW.js        2.23 kB │ gzip:   1.01 kB │ map:    13.58 kB
+dist/assets/sha2-hT-Q4pur.js         3.61 kB │ gzip:   1.91 kB │ map:    28.33 kB
+dist/assets/ccip-I4ejUri6.js         4.51 kB │ gzip:   1.95 kB │ map:    17.83 kB
+dist/assets/secp256k1-CetCfzDq.js   26.40 kB │ gzip:  10.26 kB │ map:   156.50 kB
+dist/assets/call-xPGadLC5.js        92.46 kB │ gzip:  27.03 kB │ map:   410.08 kB
+dist/assets/index-C1XGuvaV.js      355.06 kB │ gzip: 108.01 kB │ map: 1,491.97 kB
+
+✓ built in 329ms
+exitCode: 0

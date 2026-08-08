@@ -1,7 +1,7 @@
 {
-  "$schema": "urn:programmable:v4-hook-submission:1.3.0",
+  "$schema": "urn:programmable:v4-hook-submission:1.5.0",
   "schemaVersion": 1,
-  "standardVersion": "1.3.0",
+  "standardVersion": "1.5.0",
   "stage": "proposal",
   "model": {
     "id": "discovery-box",
@@ -16,6 +16,11 @@
     "contact": "https://github.com/voladelta",
     "beneficiary": null,
     "licenseDeclaration": "Discovery Box is submitted under the repository MIT License."
+  },
+  "builderTemplate": {
+    "schemaVersion": "1.0.0",
+    "source": "manual",
+    "templateSelection": null
   },
   "publicMetadata": {
     "project": {
@@ -37,6 +42,7 @@
       "metadataMutable": false,
       "metadataOwner": null
     },
+    "localDiscoveryTags": [],
     "claimedAffiliations": [],
     "providerPresentations": []
   },
@@ -81,16 +87,16 @@
   "launchLifecycle": {
     "tokenCreation": {
       "applicable": true,
-      "actor": "The selected official launch path creates DiscoveryBox with exactly 100e18 base units and no later mint authority.",
+      "actor": "DiscoveryLaunchFactory derives a caller-bound BOX salt from msg.sender and the supplied seed, then calls the bound DiscoveryBoxFactory to CREATE2-deploy DiscoveryBox with exactly 100e18 base units and no later mint authority; the child factory accepts only that launch registrar as caller.",
       "valueFlow": "The complete fixed supply enters the launch lifecycle; no ETH moves during token creation.",
-      "custody": "The launcher holds the supply only for atomic liquidity formation under the selected official launch profile.",
+      "custody": "DiscoveryLaunchFactory holds the supply only while the same transaction forms the locked initial position; it returns any integer-rounding remainder to the launch caller.",
       "failure": "Any metadata, supply or constructor mismatch reverts token creation and leaves no partial launch.",
       "event": "DiscoveryBoxCreated(address indexed token,uint256 initialSupply,uint256 maturityTarget,uint256 membershipDuration)",
       "notApplicableReason": null
     },
     "poolInitialization": {
       "applicable": true,
-      "actor": "The selected official launcher initializes one registered BOX/ETH dynamic-fee PoolKey through the pinned PoolManager.",
+      "actor": "The bound DiscoveryLaunchFactory deploys the HookMiner-addressed hook through DiscoveryHookFactory, registers the exact BOX/ETH PoolKey as registrar and initializes it through the pinned PoolManager.",
       "valueFlow": "No trader value moves; PoolManager records the initial price and the hook records the 30-basis-point initial LP fee.",
       "custody": "PoolManager owns pool state; the hook owns no liquidity principal.",
       "failure": "A wrong PoolKey, caller, initial price or repeated initialization reverts the complete initialization.",
@@ -99,11 +105,11 @@
     },
     "liquidityFormation": {
       "applicable": true,
-      "actor": "The selected official launch components create the initial one-sided position after pool initialization.",
-      "valueFlow": "The complete launch allocation of BOX enters the initial position; any Initial Buy contributes ETH under the official launch path.",
-      "custody": "The selected official locked-position component owns the initial position; third-party liquidity remains separately owned and removable.",
+      "actor": "DiscoveryLaunchFactory creates the initial BOX-only position during its authenticated PoolManager unlock after initialization.",
+      "valueFlow": "The maximum representable liquidity from the 100e18 BOX allocation enters the initial position; the factory returns only the base-unit rounding remainder to the launch caller and accepts no ETH Initial Buy.",
+      "custody": "DiscoveryLaunchFactory owns the raw initial position and exposes no principal-removal callback or method, so that position is permanent. The caller-bound launch stores that caller once as the pool's fee recipient and permits only accrued LP-fee collection to a chosen destination. A copied transaction derives different child addresses for a different caller and cannot steal the entitlement; third-party liquidity remains separately owned and removable.",
       "failure": "Any position, tick, amount or custody mismatch reverts the launch transaction without a partial position.",
-      "event": "The selected official launcher emits its position and launch events; Discovery Box does not duplicate them.",
+      "event": "DiscoveryLaunchCreated records the locked position and immutable fee recipient; LockedLiquidityFeesCollected records each fee-only collection.",
       "notApplicableReason": null
     },
     "initialTransaction": {
@@ -188,7 +194,7 @@
   },
   "programmableFee": {
     "policyId": "programmable-volume-fee-v1",
-    "policyVersion": "1.0.0",
+    "policyVersion": "1.1.0",
     "poolScope": "canonical-launch-pool-key",
     "rates": {
       "unit": "hundredths-of-bip",
@@ -242,6 +248,11 @@
         "owner"
       ],
       "crossPoolNetting": false,
+      "roundingPolicy": "cumulative-independent-platform-project-remainders",
+      "remainderScope": "canonical-pool-lifetime",
+      "claimResetsRemainders": false,
+      "minimumGrossQuoteUnits": 1000,
+      "fragmentationResistant": true,
       "valueFlowId": "programmable-volume-fee",
       "collectionEvent": "ProgrammableFeeAccrued(bytes32 indexed poolId,address indexed currency,uint256 grossQuote,uint256 fee)",
       "claimEvent": "ProgrammableFeeClaimed(bytes32 indexed poolId,address indexed currency,address indexed destination,uint256 amount)"
@@ -253,7 +264,8 @@
       ],
       "testPaths": [
         "test/DiscoveryHook.t.sol",
-        "test/DiscoveryHookInvariant.t.sol"
+        "test/DiscoveryHookInvariant.t.sol",
+        "test/DiscoveryMainnetFork.t.sol"
       ]
     }
   },
@@ -265,7 +277,7 @@
     "poolNamespace": "One hook instance admits one immutable PoolId derived from the registered BOX/ETH dynamic-fee PoolKey.",
     "poolAdmission": {
       "enforcement": "The constructor binds the pinned PoolManager and one-shot launch registration binds the exact BOX token, native ETH, dynamic fee flag, tick spacing and hook address.",
-      "factoryOrRegistry": "Only the selected official launcher or its immutable campaign factory may perform the one-shot canonical PoolKey registration.",
+      "factoryOrRegistry": "Only the exact DiscoveryLaunchFactory embedded as the hook registrar may perform the one-shot canonical PoolKey registration; DiscoveryHookFactory binds that registrar in the CREATE2 initcode.",
       "alternativePoolBehavior": "Alternative pools may exist, but this hook rejects them and they do not inherit the directional LP fee or mandatory Programmable fee by implication.",
       "rejectionRule": "Revert every callback whose PoolId differs from the registered canonical PoolId or whose caller is not the pinned PoolManager."
     },
@@ -381,7 +393,7 @@
       "backingSource": "PoolManager return-delta accounting creates hook-owned currency0 value. The hook mints an equal PoolManager ERC-6909 claim inside the callback, so no pre-settlement native ETH transfer is required.",
       "conservationEquation": "For each swap, final caller delta equals the core swap delta minus the hook fee delta; accrued liability equals newly backed hook value, and aggregate liability never exceeds redeemable backing.",
       "settlement": "Inside the callback the hook mints the computed native-currency claim and records the equal liability, then returns the equal positive hook delta. PoolManager applies that delta in the same unlock, cancelling the hook's transient debt and debiting the caller.",
-      "partialFillBehavior": "When ETH is unspecified, calculate from actual executed gross ETH volume. When ETH is specified, verify complete core execution and revert a partial fill rather than charge the requested amount.",
+      "partialFillBehavior": "When ETH is unspecified, calculate from actual executed gross ETH volume. When ETH is specified, reject any carried fee that would consume the complete gross input, then verify complete positive core execution and revert a partial fill rather than charge the requested amount.",
       "liabilityNamespace": "Liabilities are separate by canonical PoolId, currency0 and immutable Programmable beneficiary.",
       "liabilityKeyDimensions": [
         "poolId",
@@ -453,11 +465,11 @@
           "residualAmmEquation": "amountSpecified-plus-specifiedDelta",
           "finalCallerDeltaEquation": "pool-manager-swap-delta-minus-hook-delta",
           "specifiedDeltaCanConsumeEntireAmount": false,
-          "rounding": "Round F down. Amounts below 1000 wei may produce zero fee; F is always less than G.",
+          "rounding": "Add G*1000 to the shared 1,000,000-scale numerator, charge its integral quotient and retain the residual. If carried dust would make F equal G, revert before accrual so every successful swap keeps F<G.",
           "zeroAmmLeg": "forbidden",
           "partialFillRule": "A successful swap must consume the complete residual AMM input G-F. afterSwap compares the executed specified component with the residual and reverts any partial fill.",
           "slippageInvariant": "The router validates minimum BOX output against the final caller delta after both the LP fee and Programmable fee.",
-          "failureRule": "Zero input, sign crossing, int128 overflow, a partial fill, failed claim mint or ledger mismatch reverts the complete swap."
+          "failureRule": "Zero input, a carried fee that would consume the entire specified gross input, sign crossing, int128 overflow, a partial fill, failed claim mint or ledger mismatch reverts the complete swap."
         },
         "zeroForOneExactOutput": {
           "supported": true,
@@ -706,7 +718,7 @@
       "crossPoolNetting": false,
       "transferPolicy": "Claims are non-transferable by project policy: the hook exposes no ERC-6909 transfer or operator-approval method and redemption pays underlying ETH only through owner claims.",
       "redemption": "Only the immutable Programmable owner may start redemption. One claim-specific unlock burns no more than its liability and takes exactly that underlying amount to the destination supplied for that call.",
-      "roundingDust": "Fee calculation rounds the accumulated fractional numerator down and carries the residual in a common 999000000-denominator accumulator across swaps. A zero fee mints no claim; any claim balance above aggregate liability is surplus without a builder, project, rescue or sweep path.",
+      "roundingDust": "The platform accumulator stores the residual of cumulative gross native volume times 1000 on a 1,000,000-unit scale for the canonical pool lifetime; claims do not reset it. Gross modes divide by 1,000,000; fee-on-top modes solve the same identity by dividing net-volume numerators by 999,000. Thus accruedFee*1,000,000 + remainder equals cumulativeGrossVolume*1000 across mixed modes before claims, while lifetime fees earned are independent of claim timing. The project rate is zero and its independent stream is inert. Zero execution is fee-free; every positive executed gross quote below 1,000 units reverts before accounting in all four quadrants.",
       "aggregateSolvencyEquation": "For native currency id uint160(address(0)), PoolManager.balanceOf(DiscoveryHook,id) must be greater than or equal to the sum of all PoolId, currency and beneficiary liabilities; this hook admits one PoolId."
     },
     "nestedActions": {
@@ -777,7 +789,7 @@
   "authorities": [
     {
       "role": "canonical pool registrar",
-      "controller": "the immutable selected launcher or one-shot campaign factory",
+      "controller": "the exact DiscoveryLaunchFactory bound into each hook constructor by DiscoveryHookFactory",
       "capabilities": [
         "register the exact canonical BOX/ETH PoolKey once"
       ],
@@ -797,7 +809,25 @@
     }
   ],
   "dependencies": {
-    "onchain": [],
+    "onchain": [
+      {
+        "id": "v4-poolmanager-ethereum",
+        "name": "Uniswap v4 PoolManager on Ethereum",
+        "kind": "pool manager",
+        "repository": "https://github.com/Uniswap/v4-core",
+        "revision": "59d3ecf53afa9264a16bba0e38f4c5d2231f80bc",
+        "packageVersion": "1.0.0",
+        "license": "BUSL-1.1/MIT",
+        "sourceProvenance": "pinned-source",
+        "deploymentRecordId": "v4-poolmanager-ethereum",
+        "chainAddress": "0x000000000004444c5dc75cB358380D2e3dE08A90",
+        "runtimeHash": null,
+        "deploymentEvidencePath": null,
+        "trust": "The launch factories and hook bind this exact mainnet PoolManager address; source and deployment records are pinned, while runtime matching remains a separate release gate.",
+        "failure": "Missing code, callback failure, settlement failure or interface drift reverts the complete launch or pool action.",
+        "fallback": "No silent fallback is allowed; a different PoolManager requires a new launch specification and review target."
+      }
+    ],
     "offchain": []
   },
   "operations": {
@@ -821,32 +851,37 @@
       "failure": null,
       "fallback": null
     },
-    "monitoring": "The demo reconstructs AssetOpened, BoxOpened, ProgrammableFeeAccrued and ProgrammableFeeClaimed from confirmed logs, reconciles openedCount and the fee liability against direct contract reads, and shows stale or inconsistent data as unavailable.",
-    "incidentResponse": "The contracts have no pause or upgrade authority. If monitoring detects a mismatch, stop the demo's quote and trade controls, preserve read-only withdrawal and claim instructions, publish the exact affected PoolId and block, and require a new reviewed deployment rather than mutating this one."
+    "monitoring": "No production monitor or indexer is supplied. The planned integration will replay launch, opening, fee-accrual, fee-claim and locked-position-fee events, then reconcile openedCount and both fee balances against confirmed reads before exposing transactional state.",
+    "incidentResponse": "The contracts have no pause or upgrade authority. A future integration must withhold quote, trade and membership-gate actions on a reconciliation failure, preserve direct token and claim instructions, publish the exact affected PoolId and block, and require a new reviewed deployment rather than mutating this one."
   },
   "integration": {
-    "routerGeneration": "V2_0",
+    "routerGeneration": null,
     "routerDependencyId": null,
     "permit2DependencyId": null,
     "stateViewDependencyId": null,
     "quoterDependencyId": null,
     "sdkDependencies": [],
     "routerActionProfile": {
-      "routerVersionExplicit": true,
-      "universalRouterCommand": "V4_SWAP",
-      "v4Actions": [
-        "SWAP_EXACT_IN_SINGLE",
-        "SWAP_EXACT_OUT_SINGLE",
-        "SETTLE_ALL",
-        "TAKE_ALL"
-      ],
-      "settlementMode": "The demo router settles native ETH directly, settles BOX through the pinned v4 router path, refunds unused native ETH and validates that no intermediate delta remains.",
-      "permit2Mode": "mixed",
-      "finalSwapDeltaValidated": true
+      "routerVersionExplicit": null,
+      "universalRouterCommand": null,
+      "v4Actions": [],
+      "settlementMode": null,
+      "permit2Mode": null,
+      "finalSwapDeltaValidated": null
+    },
+    "sdkSafetyProfile": {
+      "packageRootImportsOnly": null,
+      "hookedQuoteSource": null,
+      "localHookedPoolMathDisabled": null,
+      "hookDataParity": null,
+      "multiHopHookDataMode": null,
+      "perHopPriceBounds": null,
+      "slippageSemantics": null,
+      "deprecatedLiquidityActionsDisabled": null
     },
     "appSourcePaths": [],
     "integrationTestPaths": [],
-    "quoteExecutionParity": "A local stateful quoter must execute the same hook callbacks and gross-up formulas at the same confirmed block. The UI withholds a quote when the opened-box count or pool state changes before submission.",
+    "quoteExecutionParity": null,
     "swapModes": [
       "zeroForOne-exactInput",
       "zeroForOne-exactOutput",
@@ -854,12 +889,14 @@
       "oneForZero-exactOutput"
     ],
     "partialFills": "Specified-native paths reject partial execution after core swap verification; unspecified-native paths calculate the fee only from actual executed native volume and exclude every unfilled amount.",
-    "slippage": "Minimum output and maximum input are checked against the final caller BalanceDelta after the dynamic LP fee and Programmable hook fee, never against a pre-fee core delta.",
-    "deadline": "Every demo swap carries a user-visible deadline no more than 10 minutes after quote creation; an expired action reverts before settlement.",
-    "permit2": "BOX approval follows the exact reviewed router generation and chain deployment. Native ETH uses msg.value; the hook itself requests no permit, signature or allowance.",
-    "stateReads": "Read the exact PoolId, slot0, liquidity, IOpenableAsset.openedCount, membership expiry, PoolManager ERC-6909 native-currency balance of the hook and owner liability at one confirmed block; reject wrong-chain or stale reads.",
+    "slippage": "No swap client is included. A future reviewed client must enforce minimum output or maximum input against the final caller BalanceDelta after both the dynamic LP fee and Programmable hook fee.",
+    "deadline": "No swap client is included. A future reviewed client must use an explicit bounded deadline and reject expiry before settlement.",
+    "permit2": "No swap client is included. A future reviewed BOX route must bind an exact Permit2 deployment and allowance mode; native ETH will use msg.value, while the hook itself requires no permit or signature.",
+    "stateReads": "The optional demo reads openedCount and the current sell LP fee directly from configured mainnet contracts. A future transactional integration must additionally bind the exact PoolId, slot0, liquidity, membership expiry, hook ERC-6909 balance and owner liability at one confirmed block.",
     "events": [
       "DiscoveryBoxCreated(address indexed token,uint256 initialSupply,uint256 maturityTarget,uint256 membershipDuration)",
+      "DiscoveryLaunchCreated(bytes32 indexed poolId,address indexed token,address indexed hook,address launcher,uint128 liquidity,uint256 lockedBoxAmount,uint256 boxRemainder)",
+      "LockedLiquidityFeesCollected(bytes32 indexed poolId,address indexed recipient,address indexed destination,uint256 amount0,uint256 amount1)",
       "DiscoveryPoolRegistered(bytes32 indexed poolId,uint160 expectedSqrtPriceX96)",
       "DiscoveryPoolInitialized(bytes32 indexed poolId,address indexed token,address indexed hook,uint24 initialLpFee)",
       "BoxOpened(address indexed account,uint256 boxCount,uint256 newExpiry,uint256 totalOpenedBoxes)",
@@ -867,7 +904,7 @@
       "ProgrammableFeeClaimed(bytes32 indexed poolId,address indexed currency,address indexed destination,uint256 amount)"
     ],
     "routingAndDiscoverability": {
-      "routingMode": "custom-reviewed",
+      "routingMode": "not-planned",
       "allowlistTriggers": {
         "usesDeltaFlag": true,
         "addressStartsWith91": false,
@@ -877,7 +914,7 @@
       "uniswapRoutingStatus": "not-applicable",
       "hookRegistryStatus": "not-submitted",
       "customHookDataRequired": false,
-      "standardRouterCompatible": true,
+      "standardRouterCompatible": false,
       "permissionedRouting": {
         "required": false,
         "minimumRouterGeneration": null,
@@ -886,16 +923,12 @@
         "positionManagerBinding": null,
         "routingAllowlistRequiredPerChain": null
       },
-      "sourcePaths": [
-        "src/DiscoveryHook.sol"
-      ],
-      "testPaths": [
-        "test/DiscoveryHook.t.sol"
-      ]
+      "sourcePaths": [],
+      "testPaths": []
     },
     "dataReconstruction": {
       "mode": "events-with-confirmed-reads",
-      "eventCoverage": "Reconstruct launch identity, opening count, membership expiry, Programmable fee accrual and claims. Pool swaps and liquidity remain authoritative in PoolManager rather than a project reserve ledger.",
+      "eventCoverage": "A future indexer must reconstruct launch identity, locked-position fee collection, opening count, membership expiry, Programmable fee accrual and claims. Pool swaps and liquidity remain authoritative in PoolManager rather than a project reserve ledger.",
       "cursor": "block-number-transaction-index-log-index",
       "startBlockPolicy": "Start from the recorded canonical launch block and reject any event whose chain, hook, token or PoolId differs from the immutable campaign record.",
       "finalityDepth": 12,
@@ -930,12 +963,14 @@
         "src/openable/IOpenableAsset.sol",
         "src/openable/OpenableERC20.sol",
         "src/DiscoveryBox.sol",
-        "src/DiscoveryHook.sol"
+        "src/DiscoveryHook.sol",
+        "src/DiscoveryLaunchFactory.sol"
       ],
       "testPaths": [
         "test/DiscoveryBox.t.sol",
         "test/DiscoveryHook.t.sol",
-        "test/DiscoveryHookInvariant.t.sol"
+        "test/DiscoveryHookInvariant.t.sol",
+        "test/DiscoveryLaunchFactory.t.sol"
       ]
     },
     "platformHandoff": {
@@ -986,7 +1021,8 @@
       "testPaths": [
         "test/DiscoveryBox.t.sol",
         "test/DiscoveryHook.t.sol",
-        "test/DiscoveryHookInvariant.t.sol"
+        "test/DiscoveryHookInvariant.t.sol",
+        "test/DiscoveryMainnetFork.t.sol"
       ],
       "schemaPaths": [],
       "evidencePaths": [
@@ -1487,18 +1523,24 @@
   },
   "implementation": {
     "sourcePaths": [
+      "submissions/discovery-box/source-topology.json",
       "src/openable/IOpenableAsset.sol",
       "src/openable/OpenableERC20.sol",
       "src/DiscoveryBox.sol",
+      "src/DiscoveryBoxFactory.sol",
       "src/DiscoveryHook.sol",
+      "src/DiscoveryHookFactory.sol",
+      "src/DiscoveryLaunchFactory.sol",
       "src/applications/TicketBox.sol",
       "src/applications/CollectibleBox.sol"
     ],
     "testPaths": [
       "test/DiscoveryBox.t.sol",
       "test/DiscoveryHook.t.sol",
+      "test/DiscoveryLaunchFactory.t.sol",
       "test/OpenableApplications.t.sol",
-      "test/DiscoveryHookInvariant.t.sol"
+      "test/DiscoveryHookInvariant.t.sol",
+      "test/DiscoveryMainnetFork.t.sol"
     ],
     "compilerBuildInfoPaths": [],
     "specificationPath": "submissions/discovery-box/launch.json",

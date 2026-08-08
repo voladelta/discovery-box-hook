@@ -1,0 +1,3 @@
+evidenceOriginCommit: b1a1734001355f670a42ac263b6dc81aa6fae19d
+command: forge fmt --check
+result: passed

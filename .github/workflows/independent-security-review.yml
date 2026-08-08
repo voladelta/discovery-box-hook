@@ -1,0 +1,179 @@
+name: Independent accounting and security review witness
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+    inputs:
+      source_commit:
+        description: Full immutable discovery-box-hook commit reviewed
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: independent-security-review-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  reproduce:
+    name: Reproduce exact review target
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout exact dispatched revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+          lfs: false
+          submodules: false
+
+      - name: Prove immutable review identity
+        shell: bash
+        env:
+          EXPECTED_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || inputs.source_commit }}
+          PULL_REQUEST_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha }}
+          DISPATCHED_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          [[ "$EXPECTED_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            test "$EXPECTED_SOURCE_COMMIT" = "$DISPATCHED_SOURCE_COMMIT"
+          else
+            test "$EXPECTED_SOURCE_COMMIT" = "$PULL_REQUEST_SOURCE_COMMIT"
+          fi
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_COMMIT"
+          git status --short --branch
+          git show -s --format='commit=%H%ntree=%T%nauthor=%an <%ae>%ncommitter=%cn <%ce>%nsubject=%s' HEAD
+
+      - name: Set up exact Foundry release
+        uses: foundry-rs/foundry-toolchain@b00af27efadbc7b4ca8b82abbd903b17cc874d2a # v1
+        with:
+          version: v1.7.1
+
+      - name: Set up Python for pinned Slither
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+
+      - name: Install pinned Slither
+        shell: bash
+        run: pipx install slither-analyzer==0.11.6
+
+      - name: Record tool identities
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p review-witness
+          forge --version | tee review-witness/foundry-version.txt
+          slither --version | tee review-witness/slither-version.txt
+          python --version 2>&1 | tee review-witness/python-version.txt
+          git --version | tee review-witness/git-version.txt
+
+      - name: Reproduce compiler input, build-info and deployable artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          forge fmt --check
+          forge clean
+          forge build --sizes --build-info 2>&1 | tee review-witness/forge-build-sizes.txt
+          node --input-type=module -e '
+            import fs from "node:fs";
+            const files = fs.readdirSync("out/build-info").filter((entry) => entry.endsWith(".json"));
+            if (files.length !== 1) process.exit(1);
+            const build = JSON.parse(fs.readFileSync(`out/build-info/${files[0]}`, "utf8"));
+            process.stdout.write(`${build.solcLongVersion}\n`);
+          ' | tee review-witness/solc-version.txt
+          node script/review-build-manifest.mjs \
+            --write review-witness/observed-review-build-manifest.json
+          cp out/build-info/*.json review-witness/
+          cp out/DiscoveryBox.sol/DiscoveryBox.json review-witness/
+          cp out/DiscoveryBoxFactory.sol/DiscoveryBoxFactory.json review-witness/
+          cp out/DiscoveryHook.sol/DiscoveryHook.json review-witness/
+          cp out/DiscoveryHookFactory.sol/DiscoveryHookFactory.json review-witness/
+          cp out/DiscoveryLaunchFactory.sol/DiscoveryLaunchFactory.json review-witness/
+          cp submissions/discovery-box/review-build-manifest.json review-witness/
+          cmp \
+            submissions/discovery-box/review-build-manifest.json \
+            review-witness/observed-review-build-manifest.json
+
+      - name: Reproduce complete Solidity tests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          forge test -vv 2>&1 | tee review-witness/forge-tests.txt
+
+      - name: Reproduce dedicated stateful accounting invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          forge test --match-path test/DiscoveryHookInvariant.t.sol -vv \
+            2>&1 | tee review-witness/forge-invariants.txt
+
+      - name: Reproduce pinned Mainnet PoolManager witness
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          forge test \
+            --match-path test/DiscoveryMainnetFork.t.sol \
+            --fork-url https://eth.drpc.org \
+            --fork-block-number 23000000 \
+            -vv 2>&1 | tee review-witness/fork-pinned-mainnet.txt
+
+      - name: Preserve known non-clean Slither result
+        shell: bash
+        run: |
+          set +e
+          set -uo pipefail
+
+          slither . \
+            --filter-paths 'lib|test' \
+            --exclude-dependencies \
+            > review-witness/slither.txt 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "$status" > review-witness/slither-exit-code.txt
+          cat review-witness/slither.txt
+          if [[ "$status" -ne 0 && "$status" -ne 255 ]]; then
+            echo "Unexpected Slither exit code: $status" >&2
+            exit 1
+          fi
+          grep -F '5 result(s) found' review-witness/slither.txt
+
+      - name: Record exact witness digests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          find review-witness -type f -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            | tee review-witness.sha256
+
+      - name: Upload immutable reproduction witness
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: independent-review-witness-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            review-witness/
+            review-witness.sha256
+          if-no-files-found: error
+          retention-days: 90

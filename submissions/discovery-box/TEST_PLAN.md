@@ -4,8 +4,9 @@ This plan applies to the isolated prototype. A passed local test does not prove 
 
 ## Build and dependency evidence
 
-- Pin Solidity 0.8.26, Cancun EVM settings, Foundry, v4 core, v4 periphery and OpenZeppelin hook dependencies.
+- Pin Solidity 0.8.26, Cancun EVM settings, Foundry, v4 core, v4 periphery and OpenZeppelin hook dependencies; disable automatic remapping discovery so ignored local directories cannot alter the compiler input.
 - Record the compiler-resolved source closure, lock revisions, build information and review-target hash.
+- Reproduce `review-build-manifest.json` from one exact source commit, normalize only Foundry's repository-root path fields, and preserve the emitted raw build-info and five deployable artifacts with the independent witness.
 - Run formatting, build, full tests, Slither, runtime size and initcode size checks.
 - Run a pinned-fork test against exact deployment records and a separate current-head smoke test.
 
@@ -39,12 +40,15 @@ This plan applies to the isolated prototype. A passed local test does not prove 
 - `afterInitialize` sets the stored LP fee to 3,000 hundredths of a basis point.
 - Check every enabled callback selector and return length.
 - Prove disabled callbacks cannot be reached through the hook address.
+- Through the bound launch factories, prove valid HookMiner deployment, exact constructor locators, atomic token/hook deployment, registration, initialization and one-sided liquidity; an invalid salt must roll back every child.
+- Prove the BOX salt is caller-bound, direct BOX/hook child deployment is restricted to the launch registrar and copied launch calldata cannot occupy the intended addresses or steal the LP-fee entitlement.
+- Prove only the immutable per-pool launch recipient can collect accrued initial-position LP fees, a chosen destination receives the exact amount and position liquidity cannot decrease.
 
 ## Directional LP fee
 
 For buys, test a constant 3,000 hundredths of a basis point at opened counts 0, 1, 20, 39, 40 and 100.
 
-Stateful invariant runs exercise buys, sells, whole-box openings and partial fee claims in arbitrary sequences. They must preserve fee solvency, keep the shared rounding remainder below its common denominator and conserve the openable asset supply after every sequence.
+Stateful invariant runs exercise exact-input and exact-output buys and sells, whole-box openings and partial fee claims in arbitrary sequences. They must preserve fee solvency, keep the shared rounding remainder below 1,000,000, prove `cumulative gross volume * 1000 = cumulative accrued fee * 1,000,000 + remainder` and conserve the openable asset supply after every sequence.
 
 For sells, test:
 
@@ -64,24 +68,29 @@ For sells, test:
 
 ## Programmable fee: all 4 quadrants
 
-Use native ETH as `currency0`. Test zero, 1, 999, 1,000, 999,000, 1,000,000, `type(int128).max` boundaries and randomized amounts.
+Use native ETH as `currency0`. Zero execution is fee-free. Every positive executed gross native amount below 1,000 units must revert before any accounting write; 1,000 is the first admissible positive gross amount. Test zero, 1, 999, 1,000, 999,000, 1,000,000, `type(int128).max` boundaries and randomized amounts.
 
 1. Zero for one, exact input: `F=floor(G*1000/1_000_000)`, AMM input `G-F`, final caller input `G`.
 2. Zero for one, exact output: for core ETH input `X`, `F=floor(X*1000/999_000)`, final gross input `X+F`, and `F=floor((X+F)*1000/1_000_000)`.
 3. One for zero, exact input: for gross ETH output `G`, `F=floor(G*1000/1_000_000)`, final caller output `G-F`.
 4. One for zero, exact output: for requested net ETH output `N`, `F=floor(N*1000/999_000)`, core output `N+F`, final caller output `N`, and `F=floor((N+F)*1000/1_000_000)`.
 
-The displayed formulas are the zero-carry identities. The implementation also carries fractional fee remainders in a common `999,000,000` denominator across gross and fee-on-top paths. Test two split micro-swaps in each mode and an alternating-mode sequence; the first dust swap may charge zero, but the accumulated integral fee must match the combined exact fraction.
+The displayed formulas are the zero-carry identities. The implementation stores the platform residual numerator below 1,000,000 for the canonical pool lifetime. Gross paths add `G*1000` and divide by 1,000,000; fee-on-top paths add `N*1000` and divide by 999,000 so the resulting fee also contributes to gross volume. The zero-rate project stream is inert. Test split admissible swaps and an alternating-mode sequence, then assert the exact cumulative gross-volume identity. Claims must not reset the remainder.
+
+For all four direction and exactness quadrants, construct a positive executed gross quote below 1,000 and require the exact wrapped `GrossQuoteBelowMinimum(grossQuote)` hook error. Each rejection must leave liability, remainder, backing and pool execution state unchanged. Then prove a gross quote of exactly 1,000 succeeds. Fuzz the complete 1 through 999 range and assert atomic rollback.
 
 For every case, prove:
 
 - the accumulated fee is the integral floor of 10 basis points of executed gross ETH volume, with fractional remainder carried across swaps
+- claims do not reset the lifetime remainder and cannot change the fee earned by later swaps
 - the project share is zero and the Programmable share is the complete hook fee
 - the hook mints exactly `F` ERC-6909 native-currency claims to itself
 - hook PoolManager delta is zero before unlock ends
 - new hook claim backing, liability and emitted fee are equal
 - the final caller delta is the core delta minus the hook delta
 - no fee is charged on reverted or zero-execution swaps
+
+The invariant handler must issue both exact-input and exact-output swaps in both directions. Record useful calls and reverts for each handler selector so exact-output stateful coverage cannot be inferred from unit tests alone.
 
 Specified-ETH paths must revert partial fills. Unspecified-ETH paths must charge the actual core result and exclude unfilled amounts. Test price-limit boundaries that force both behaviours.
 
@@ -110,9 +119,9 @@ Fuzz both gross-up identities across the complete safe int128 domain using a 512
 - Claim redemption enters one authenticated PoolManager unlock, burns exactly the hook-owned claim, takes equal ETH to the destination and ends with zero hook delta.
 - Prove the first buy succeeds when PoolManager starts with zero native ETH because accrual mints a claim instead of transferring pre-settlement ETH.
 
-## Router, quote and app
+## Router, quote and app (planned integration, not supplied here)
 
-- Encode all 4 modes through explicit Universal Router V2.0 `V4_SWAP` actions.
+- After selecting an exact reviewed production router generation, encode all 4 modes through its explicit v4 swap and settlement actions.
 - Validate the final caller delta after every hook and route leg.
 - Test BOX Permit2 allowance, native `msg.value`, unused ETH refund, deadline expiry and minimum output or maximum input failure.
 - Quote and execute from the same PoolKey, block state, exactness, direction and empty `hookData`; compare final amounts and both fee classes.
@@ -137,6 +146,7 @@ Current state:
 
 - deterministic Builder preflight: passed
 - 20,000-path reduced-form economic model: passed
-- Solidity build, unit, fuzz, invariant, fork and static analysis: planned
-- app and quote parity tests: planned
-- independent accounting and security review: required before candidate status
+- Solidity format, build, unit, fuzz, five stateful invariants and static analysis: passed locally
+- pinned Ethereum mainnet fork at block 23,000,000 and current-head smoke: passed locally against PoolManager `0x000000000004444c5dc75cB358380D2e3dE08A90` with runtime hash `0x785f1014552b7ce7d5fb7d0c970ca60edee94fd00425d7ca21609acac7ce1293`
+- local web model tests and production build: passed; production router, quote parity, indexer and wallet-gated membership tests: planned
+- independent accounting and security review: reproducible scope and witness prepared; an attributable review by a reviewer independent of the applicant remains required before candidate status

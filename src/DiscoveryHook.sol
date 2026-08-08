@@ -33,10 +33,12 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     uint24 public constant INITIAL_SELL_LP_FEE = 10_000;
     uint24 public constant SELL_LP_FEE_RANGE = INITIAL_SELL_LP_FEE - BUY_LP_FEE;
     uint24 public constant PROGRAMMABLE_FEE = 1_000;
+    uint24 public constant PROJECT_FEE = 0;
     uint24 public constant FEE_DENOMINATOR = 1_000_000;
     uint24 public constant NET_DENOMINATOR = FEE_DENOMINATOR - PROGRAMMABLE_FEE;
-    // Least common multiple of the gross and fee-on-top denominators.
-    uint256 public constant FEE_REMAINDER_DENOMINATOR = 999_000_000;
+    uint256 public constant MINIMUM_GROSS_QUOTE = 1_000;
+    // Fee numerators use the same 1e6 scale as gross quote volume.
+    uint256 public constant FEE_REMAINDER_DENOMINATOR = FEE_DENOMINATOR;
     int24 public constant TICK_SPACING = 60;
     address public constant PROGRAMMABLE_OWNER = 0x4957f49620AFf3Adbbe8195a4f633E49cc93376c;
 
@@ -77,6 +79,7 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     error InvalidInitializer();
     error InvalidInitialPrice();
     error PartialFillUnsupported();
+    error GrossQuoteBelowMinimum(uint256 grossQuote);
     error InvalidClaimAmount();
     error InsolventLiability();
     error InvalidClaimCallback();
@@ -290,6 +293,8 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
     }
 
     function _accrue(uint256 fee, uint256 grossQuote, uint256 remainderAfter) private {
+        if (grossQuote != 0 && grossQuote < MINIMUM_GROSS_QUOTE) revert GrossQuoteBelowMinimum(grossQuote);
+
         feeRemainder[registeredPoolId][CurrencyLibrary.ADDRESS_ZERO][programmableOwner] = remainderAfter;
         if (fee == 0) return;
 
@@ -304,11 +309,9 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
         pure
         returns (uint256 fee, uint256 grossBasis, uint256 remainderAfter)
     {
-        uint256 fraction = mulmod(grossQuote, PROGRAMMABLE_FEE, FEE_DENOMINATOR) * 999;
-        uint256 combinedFraction = fraction + remainderBefore;
-        fee = FullMath.mulDiv(grossQuote, PROGRAMMABLE_FEE, FEE_DENOMINATOR) + combinedFraction
-            / FEE_REMAINDER_DENOMINATOR;
-        remainderAfter = combinedFraction % FEE_REMAINDER_DENOMINATOR;
+        uint256 combinedRemainder = mulmod(grossQuote, PROGRAMMABLE_FEE, FEE_DENOMINATOR) + remainderBefore;
+        fee = FullMath.mulDiv(grossQuote, PROGRAMMABLE_FEE, FEE_DENOMINATOR) + combinedRemainder / FEE_DENOMINATOR;
+        remainderAfter = combinedRemainder % FEE_DENOMINATOR;
         grossBasis = grossQuote;
     }
 
@@ -317,11 +320,9 @@ contract DiscoveryHook is BaseHook, IUnlockCallback, ReentrancyGuardTransient {
         pure
         returns (uint256 fee, uint256 grossBasis, uint256 remainderAfter)
     {
-        uint256 fraction = mulmod(netQuote, PROGRAMMABLE_FEE, NET_DENOMINATOR) * 1_000;
-        uint256 combinedFraction = fraction + remainderBefore;
-        fee =
-            FullMath.mulDiv(netQuote, PROGRAMMABLE_FEE, NET_DENOMINATOR) + combinedFraction / FEE_REMAINDER_DENOMINATOR;
-        remainderAfter = combinedFraction % FEE_REMAINDER_DENOMINATOR;
+        uint256 combinedRemainder = mulmod(netQuote, PROGRAMMABLE_FEE, NET_DENOMINATOR) + remainderBefore;
+        fee = FullMath.mulDiv(netQuote, PROGRAMMABLE_FEE, NET_DENOMINATOR) + combinedRemainder / NET_DENOMINATOR;
+        remainderAfter = combinedRemainder % NET_DENOMINATOR;
         grossBasis = netQuote + fee;
     }
 

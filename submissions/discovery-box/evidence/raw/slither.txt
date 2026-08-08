@@ -1,0 +1,48 @@
+'forge clean' running (wd: /Users/mbp/Codehub/discovery-box)
+'forge config --json' running
+'forge build --build-info --deny never --skip ./test/** ./script/** --force' running (wd: /Users/mbp/Codehub/discovery-box)
+INFO:Detectors:
+Detector: reentrancy-balance
+Reentrancy in DiscoveryLaunchFactory.launch(bytes32,bytes32) (src/DiscoveryLaunchFactory.sol#84-122):
+	External call allowing reentrancy:
+	- result = poolManager.unlock(callbackData) (src/DiscoveryLaunchFactory.sol#112)
+	Balance read before the call:
+	- liquidity = LiquidityAmounts.getLiquidityForAmount1(TickMath.getSqrtPriceAtTick(INITIAL_TICK_LOWER),INITIAL_SQRT_PRICE_X96,box.balanceOf(address(this))) (src/DiscoveryLaunchFactory.sol#106-108)
+	Possible stale balance used after the call in a condition:
+	- result.length != 32 (src/DiscoveryLaunchFactory.sol#113)
+		- stale variable `REF_477`
+Reentrancy in DiscoveryLaunchFactory.launch(bytes32,bytes32) (src/DiscoveryLaunchFactory.sol#84-122):
+	External call allowing reentrancy:
+	- boxRemainder != 0 && ! box.transfer(msg.sender,boxRemainder) (src/DiscoveryLaunchFactory.sol#117)
+	Balance read before the call:
+	- boxRemainder = box.balanceOf(address(this)) (src/DiscoveryLaunchFactory.sol#116)
+	Possible stale balance used after the call in a condition:
+	- boxRemainder != 0 && ! box.transfer(msg.sender,boxRemainder) (src/DiscoveryLaunchFactory.sol#117)
+		- stale variable `boxRemainder`
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities
+INFO:Detectors:
+Detector: reentrancy-benign
+Reentrancy in DiscoveryLaunchFactory.launch(bytes32,bytes32) (src/DiscoveryLaunchFactory.sol#84-122):
+	External calls:
+	- box = boxFactory.deploy(boxSalt,address(this)) (src/DiscoveryLaunchFactory.sol#90)
+	- hook = hookFactory.deploy(hookSalt,poolManager,box,address(this)) (src/DiscoveryLaunchFactory.sol#91)
+	- hook.registerPool(key,INITIAL_SQRT_PRICE_X96) (src/DiscoveryLaunchFactory.sol#101)
+	- initialTick = poolManager.initialize(key,INITIAL_SQRT_PRICE_X96) (src/DiscoveryLaunchFactory.sol#102)
+	State variables written after the call(s):
+	- feeRecipient[key.toId()] = msg.sender (src/DiscoveryLaunchFactory.sol#104)
+	- unlockAction = UnlockAction.AddLiquidity (src/DiscoveryLaunchFactory.sol#110)
+	- unlockContextHash = keccak256(bytes)(callbackData) (src/DiscoveryLaunchFactory.sol#111)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+INFO:Detectors:
+Detector: timestamp
+DiscoveryBox._afterOpen(address,uint256,uint256,bytes) (src/DiscoveryBox.sol#27-38) uses timestamp for comparisons
+	Dangerous comparisons:
+	- expiry > block.timestamp (src/DiscoveryBox.sol#33)
+DiscoveryBox.hasActiveMembership(address) (src/DiscoveryBox.sol#40-44) uses timestamp for comparisons
+	Dangerous comparisons:
+	- membershipExpiry[account] > block.timestamp (src/DiscoveryBox.sol#43)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Slither:. analyzed (59 contracts with 102 detectors), 5 result(s) found
+exitCode: 255
+classification: completed-with-findings
+findingCount: 5
